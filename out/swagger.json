@@ -2586,6 +2586,144 @@
           }
         ]
       }
+    },
+    "/v1/attendance/{id}": {
+      "get": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Attendance list of a staff",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "staff": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "date": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "checkInTime": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "checkOutTime": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "createdBy": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae4ffc348ed682"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/attendance/mark": {
+      "post": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to mark Attendance",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "staff": {
+                  "type": "string",
+                  "example": "65cd9d8d5cae5ffc348ed638"
+                },
+                "date": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "checkInTime": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "checkOutTime": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   }
 }
