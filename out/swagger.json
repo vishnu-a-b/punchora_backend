@@ -2243,6 +2243,349 @@
           }
         ]
       }
+    },
+    "/v1/staff/": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Staff list",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "user": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "department": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "hospital": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "roles": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "joinDate": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "createdBy": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae4ffc348ed682"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-02-17T07:50:12.025Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2024-02-17T07:50:12.025Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create a Staff",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "user": {
+                  "type": "string",
+                  "example": "65cd9d8d5cae5ffc348ed638"
+                },
+                "department": {
+                  "type": "string",
+                  "example": "65cd9d8d5cae5ffc348ed638"
+                },
+                "hospital": {
+                  "type": "string",
+                  "example": "65cd9d8d5cae5ffc348ed638"
+                },
+                "roles": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "joinDate": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/staff/count-documents": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Endpoint to get total Staffs count"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/staff/{id}": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Staff details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "user": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "department": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "hospital": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "roles": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "joinDate": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae4ffc348ed682"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-02-17T07:50:12.025Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-02-17T07:50:12.025Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to update a Staff",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "department": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "hospital": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "roles": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "joinDate": {
+                      "type": "string",
+                      "example": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   }
 }

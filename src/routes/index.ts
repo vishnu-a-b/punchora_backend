@@ -7,6 +7,7 @@ import AccountRouter from "../modules/account/routes/AccountRouter";
 import AddressRouter from "../modules/address/routes/AddressRouter";
 import HospitalRouter from "../modules/hospital/routes/HospitalRouter";
 import DepartmentRouter from "../modules/department/routes/DepartmentRouter";
+import StaffRouter from "../modules/staff/routes/StaffRouter";
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use("/v1/account/", AccountRouter);
 router.use("/v1/address/", AddressRouter);
 router.use("/v1/hospital/", HospitalRouter);
 router.use("/v1/department/", DepartmentRouter);
+router.use("/v1/staff/", StaffRouter);
 
 
 export default router;
