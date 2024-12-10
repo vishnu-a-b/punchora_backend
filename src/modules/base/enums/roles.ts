@@ -1,6 +1,6 @@
 enum RolesEnum {
   staff = "staff",
-  departmentHead = "departmentHead",
+  departmentHead = "department-head",
 }
 
 export default RolesEnum;
