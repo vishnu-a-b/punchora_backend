@@ -1202,6 +1202,669 @@
           }
         ]
       }
+    },
+    "/v1/hospital/": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Hospitals",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "huid": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "photos": {
+                            "type": "array",
+                            "example": [
+                              "string"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "specialities": {
+                            "type": "array",
+                            "example": [
+                              "string"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "managementType": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "hospitalType": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "treatmentType": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "numberOfBeds": {
+                            "type": "string",
+                            "example": "number"
+                          },
+                          "haveEmergency": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "contactMobileNumbers": {
+                            "type": "array",
+                            "example": [
+                              "65cd9d8d5cae8ffc348ed631"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "contactLandlines": {
+                            "type": "array",
+                            "example": [
+                              "65cd9d8d5cae8ffc348ed631"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "isIndependent": {
+                            "type": "boolean",
+                            "example": false
+                          },
+                          "vcLink": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "photos",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "file"
+            }
+          },
+          {
+            "name": "specialities",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "managementType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Government",
+              "Cooperative",
+              "Mission",
+              "Private"
+            ]
+          },
+          {
+            "name": "hospitalType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Medical College",
+              "Super Speciality",
+              "High End",
+              "Medium",
+              "Nursing Home",
+              "Clinic"
+            ]
+          },
+          {
+            "name": "treatmentType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Modern Medicine",
+              "Homiopathy",
+              "Ayurveda",
+              "Sidha",
+              "Physio Therapy"
+            ]
+          },
+          {
+            "name": "numberOfBeds",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "haveEmergency",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "contactMobileNumbers",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contactLandlines",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isIndependent",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "vcLink",
+            "in": "formData",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/hospital/count-documents": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Endpoint to total Hospitals count"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/hospital/{id}": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to the details of a Hospital",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "huid": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "photos": {
+                      "type": "array",
+                      "example": [
+                        "string"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "specialities": {
+                      "type": "array",
+                      "example": [
+                        "string"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "managementType": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "hospitalType": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "treatmentType": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "numberOfBeds": {
+                      "type": "string",
+                      "example": "number"
+                    },
+                    "haveEmergency": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "contactMobileNumbers": {
+                      "type": "array",
+                      "example": [
+                        "65cd9d8d5cae8ffc348ed631"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "contactLandlines": {
+                      "type": "array",
+                      "example": [
+                        "65cd9d8d5cae8ffc348ed631"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "isIndependent": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "vcLink": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "photos",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "file"
+            }
+          },
+          {
+            "name": "specialities",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "managementType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Government",
+              "Cooperative",
+              "Mission",
+              "Private"
+            ]
+          },
+          {
+            "name": "hospitalType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Medical College",
+              "Super Speciality",
+              "High End",
+              "Medium",
+              "Nursing Home",
+              "Clinic"
+            ]
+          },
+          {
+            "name": "treatmentType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Modern Medicine",
+              "Homiopathy",
+              "Ayurveda",
+              "Sidha",
+              "Physio Therapy"
+            ]
+          },
+          {
+            "name": "numberOfBeds",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "haveEmergency",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "contactMobileNumbers",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contactLandlines",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isIndependent",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "vcLink",
+            "in": "formData",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/hospital/vcLink/{id}": {
+      "put": {
+        "tags": [
+          "Hospital"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to update vc link",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vcLink": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   }
 }
