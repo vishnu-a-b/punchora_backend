@@ -2724,6 +2724,293 @@
           }
         ]
       }
+    },
+    "/v1/leave-request/": {
+      "get": {
+        "tags": [
+          "Leave-Request"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Leave requests",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "staff": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "department": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "leaveDates": {
+                            "type": "array",
+                            "example": [
+                              "2024-02-15T05:53:06.960Z"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "remarks": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Leave-Request"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create Leave-Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "staff": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "department": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "leaveDates": {
+                  "type": "array",
+                  "example": [
+                    "2024-02-15T05:53:06.960Z"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "remarks": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/leave-request/accept-or-reject/{id}": {
+      "put": {
+        "tags": [
+          "Leave-Request"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to accept or reject Leave-Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "remarks": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/leave-request/{id}": {
+      "put": {
+        "tags": [
+          "Leave-Request"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to update a Leave-Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "leaveDates": {
+                  "type": "array",
+                  "example": [
+                    "2024-02-15T05:53:06.960Z"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Leave-Request"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
     }
   }
 }
