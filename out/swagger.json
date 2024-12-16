@@ -1,0 +1,1207 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Shanthibhavan APIs",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Enter the token with the `Bearer ` prefix, e.g. \"Bearer abcde12345"
+    }
+  },
+  "consumes": [
+    "application/json",
+    "multipart/form-data"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/auth/jwt/create": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create JWT tokens",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/auth/jwt/verify": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to verify JWT refresh-token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/role/": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Roles",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "number",
+                  "example": 1
+                },
+                "limit": {
+                  "type": "number",
+                  "example": 10
+                },
+                "skip": {
+                  "type": "number",
+                  "example": 0
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "slug": {
+                        "type": "string",
+                        "example": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Role"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create a Role",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "slug": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/role/{slug}": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Patient details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "example": "string"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/user/": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Users",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "mobileNo": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "photo": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "maritalStatus": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "roles": {
+                            "type": "array",
+                            "example": [
+                              "65cd9d8d5cae8ffc348ed631"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "isSuperAdmin": {
+                            "type": "boolean",
+                            "example": false
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mobileNo",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "dateOfBirth",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maritalStatus",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Bachelor",
+              "Married",
+              "Widower",
+              "Divorced"
+            ]
+          },
+          {
+            "name": "roles",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/user/filter-by-role/{slug}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Users",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "mobileNo": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "photo": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "maritalStatus": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "roles": {
+                            "type": "array",
+                            "example": [
+                              "65cd9d8d5cae8ffc348ed631"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "isSuperAdmin": {
+                            "type": "boolean",
+                            "example": false
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2024-02-15T05:53:06.960Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/user/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to the details of a User",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "mobileNo": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "photo": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "maritalStatus": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc148ed631"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "example": "string"
+                          }
+                        }
+                      }
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "isSuperAdmin": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "mobileNo",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "dateOfBirth",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "maritalStatus",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Bachelor",
+              "Married",
+              "Widower",
+              "Divorced"
+            ]
+          },
+          {
+            "name": "roles",
+            "in": "formData",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/account/details": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Endpoint to the details of a User using his jwt token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "mobileNo": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "photo": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "maritalStatus": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc148ed631"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "example": "string"
+                          }
+                        }
+                      }
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "isSuperAdmin": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-02-15T05:53:06.960Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/address/": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get all Addresses",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "skip": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "65cd9d8d5cae5ffc348ed638"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "thaluk": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "district": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "pinCode": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "latitude": {
+                            "type": "number",
+                            "example": 314
+                          },
+                          "longitude": {
+                            "type": "number",
+                            "example": 1.22
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create an Address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "taluk": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "district": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "pinCode": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "latitude": {
+                  "type": "number",
+                  "example": 10.83
+                },
+                "longitude": {
+                  "type": "number",
+                  "example": 112.74
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Address details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "thaluk": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "district": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "pinCode": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "latitude": {
+                      "type": "number",
+                      "example": 314
+                    },
+                    "longitude": {
+                      "type": "number",
+                      "example": 1.22
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Address"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to update an Address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "taluk": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "district": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "pinCode": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "latitude": {
+                  "type": "number",
+                  "example": 10.83
+                },
+                "longitude": {
+                  "type": "number",
+                  "example": 112.74
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Address"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    }
+  }
+}

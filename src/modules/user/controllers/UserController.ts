@@ -1,0 +1,144 @@
+import { Request, Response, NextFunction } from "express";
+import BaseController from "../../base/controllers.ts/BaseController";
+import UserService from "../services/UserService";
+import { validationResult } from "express-validator";
+import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedError";
+import NotFoundError from "../../../errors/errorTypes/NotFoundError";
+import mongoose from "mongoose";
+import BadRequestError from "../../../errors/errorTypes/BadRequestError";
+import Configs from "../../../configs/configs";
+import { User } from "../models/User";
+import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
+
+export default class UserController extends BaseController {
+  service = new UserService();
+
+  getList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { limit, skip, search } = req.query;
+      const { filterQuery, sort } = req;
+      const data = await this.service.list({
+        limit: Number(limit),
+        skip: Number(skip),
+        filterQuery,
+        sort,
+      });
+      this.sendSuccessResponseList(res, 200, { data });
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  filterByRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { limit, skip, search } = req.query;
+      const { filterQuery, sort } = req;
+      const data = await this.service.filterByRole(req.params.slug, {
+        limit: Number(limit),
+        skip: Number(skip),
+        filterQuery,
+        sort,
+      });
+      this.sendSuccessResponseList(res, 200, { data });
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  create = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      if (req.file) {
+        req.body.photo = Configs.domain + req.file.filename;
+      }
+      const user = await this.service.create(req.body);
+      this.sendSuccessResponse(res, 201, { data: user });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid data" }));
+      }
+      next(e);
+    }
+  };
+
+  getOne = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = await this.service.findOne(req.params.id);
+      if (!user) {
+        throw new NotFoundError({ error: "user not found" });
+      }
+      this.sendSuccessResponse(res, 200, { data: user });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      if (req.file) {
+        req.body.photo = Configs.domain + req.file.filename;
+      }
+      if (req.body.mobileNo) {
+        const availableUser = await User.findOne({
+          mobileNo: req.body.mobileNo,
+        });
+        if (availableUser && availableUser.id != req.params.id) {
+          next(
+            new ValidationFailedError({
+              errors: ["user with this mobile number already exists"],
+            })
+          );
+          return;
+        }
+      }
+
+      const {
+        name,
+        mobileNo,
+        email,
+        dateOfBirth,
+        gender,
+        maritalStatus,
+        roles,
+        isActive,
+        password,
+      } = req.body;
+      const body: any = {
+        name,
+        mobileNo,
+        password: password ? await createPasswordHash(password) : undefined,
+        email,
+        dateOfBirth,
+        gender,
+        maritalStatus,
+        roles,
+        isActive,
+      };
+      if (req.body.photo) {
+        body.photo = req.body.photo;
+      }
+      const user = await this.service.update(req.params.id, body);
+      if (!user) {
+        throw new NotFoundError({ error: "user not found" });
+      }
+      this.sendSuccessResponse(res, 200, { data: { _id: user!._id } });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+}
