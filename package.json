@@ -4,7 +4,8 @@
   "main": "server.ts",
   "scripts": {
     "dev": "node swagger-autogen.js && nodemon src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
