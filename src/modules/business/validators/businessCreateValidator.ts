@@ -2,6 +2,7 @@ import { body } from "express-validator";
 import CustomValidators from "../../base/customValidators/customValidators";
 import { Address } from "../../address/models/Address";
 import { ManagementTypes } from "../../base/enums/managementTypes";
+import { User } from "../../user/models/User";
 
 export const businessCreateValidator = [
   body("name")
@@ -45,6 +46,20 @@ export const businessCreateValidator = [
       });
       if (!areAllStrings) {
         return Promise.reject("contactLandlines should be an array of strings");
+      }
+    }),
+
+  body("admin")
+    .optional()
+    .custom(async (adminId: any) => {
+      try {
+        const admin = await User.findById(adminId);
+        if (!admin) {
+          return Promise.reject("user not found");
+        }
+        return Promise.resolve();
+      } catch (_) {
+        return Promise.reject();
       }
     }),
 ];

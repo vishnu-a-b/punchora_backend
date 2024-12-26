@@ -8,6 +8,9 @@ import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import Configs from "../../../configs/configs";
 import UserService from "../../user/services/UserService";
 import BusinessService from "../services/BusinessService";
+import RolesEnum from "../../base/enums/roles";
+import { Role } from "../../role/models/Role";
+import { User } from "../../user/models/User";
 
 export default class BusinessController extends BaseController {
   service = new BusinessService();
@@ -27,6 +30,18 @@ export default class BusinessController extends BaseController {
         req.body.photos = photoUrls;
       }
       const business = await this.service.create(req.body);
+      const admin: any = await this.userService.findOne(req.body.admin);
+      const adminRole = await Role.findOne({ slug: RolesEnum.businessAdmin });
+      if (admin && adminRole) {
+        const roles = admin.roles.map((role: any) => role._id as string);
+        roles.push(adminRole._id);
+        await User.findByIdAndUpdate(
+          { _id: admin._id },
+          {
+            roles,
+          }
+        );
+      }
 
       this.sendSuccessResponse(res, 201, { data: business });
     } catch (e: any) {

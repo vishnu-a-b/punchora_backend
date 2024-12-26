@@ -53,6 +53,11 @@ export const businessCreateDoc = async (
             "in": "formData",
             "type": "string"
           }
+          #swagger.parameters["admin"] = {
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
           
           #swagger.security = [
             {

@@ -12,7 +12,6 @@ const businessSchema = new mongoose.Schema(
       maxLength: 20,
       enum: Object.values(ManagementTypes),
     },
-
     contactMobileNumbers: [{ type: String, maxLength: 20, required: false }],
     contactLandlines: [{ type: String, maxLength: 20, required: false }],
     admin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -24,7 +23,7 @@ const businessSchema = new mongoose.Schema(
 );
 
 export const businessFilterFields: ModelFilterInterface = {
-  filterFields: ["managementType"],
+  filterFields: ["admin", "managementType"],
   searchFields: ["name"],
   sortFields: ["createdAt", "updatedAt"],
 };

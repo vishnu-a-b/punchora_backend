@@ -16,6 +16,8 @@ import { businessCreateDoc } from "../docs/businessCreateDoc";
 import { businessCreateValidator } from "../validators/businessCreateValidator";
 import { businessUpdateDoc } from "../docs/businessUpdateDoc";
 import { businessDeleteDoc } from "../docs/businessDeleteDoc";
+import { businessListofAdminDoc } from "../docs/businessListofAdminDoc";
+import RolesEnum from "../../base/enums/roles";
 
 const router = express.Router();
 const controller = new BusinessController();
@@ -78,5 +80,12 @@ router.put(
   controller.updateVcLink
 );
 router.delete("/:id", businessDeleteDoc, authorization, controller.delete);
+
+router.get(
+  "/admin/:id",
+  businessListofAdminDoc,
+  authorizeUser({ allowedRoles: [RolesEnum.businessAdmin] }),
+  controller.filterByAdmin
+);
 
 export default router;

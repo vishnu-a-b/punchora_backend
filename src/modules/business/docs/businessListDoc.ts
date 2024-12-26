@@ -32,6 +32,7 @@ export const businessListDoc = async (
                 "string"
               ],
               vcLink: "string",
+              admin: "string",
               createdAt: "2024-02-15T05:53:06.960Z",
               updatedAt: "2024-02-15T05:53:06.960Z",
             }
