@@ -5,11 +5,11 @@ import UserRouter from "../modules/user/routes/UserRouter";
 import RoleRouter from "../modules/role/routes/RoleRouter";
 import AccountRouter from "../modules/account/routes/AccountRouter";
 import AddressRouter from "../modules/address/routes/AddressRouter";
-import HospitalRouter from "../modules/hospital/routes/HospitalRouter";
 import DepartmentRouter from "../modules/department/routes/DepartmentRouter";
 import StaffRouter from "../modules/staff/routes/StaffRouter";
 import AttendanceRouter from "../modules/attendance/Routers/AttendanceRouter";
 import LeaveRequestRouter from "../modules/leaveRequest/routes/LeaveRequestRouter";
+import BusinessRouter from "../modules/business/routes/BusinessRouter";
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.use("/v1/role/", RoleRouter);
 router.use("/v1/user/", UserRouter);
 router.use("/v1/account/", AccountRouter);
 router.use("/v1/address/", AddressRouter);
-router.use("/v1/hospital/", HospitalRouter);
+router.use("/v1/business/", BusinessRouter);
 router.use("/v1/department/", DepartmentRouter);
 router.use("/v1/staff/", StaffRouter);
 router.use("/v1/attendance/", AttendanceRouter);

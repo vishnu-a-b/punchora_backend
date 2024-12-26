@@ -5,12 +5,12 @@ import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedEr
 import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import mongoose from "mongoose";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
-import HospitalService from "../services/HospitalService";
 import Configs from "../../../configs/configs";
 import UserService from "../../user/services/UserService";
+import BusinessService from "../services/BusinessService";
 
-export default class HospitalController extends BaseController {
-  service = new HospitalService();
+export default class BusinessController extends BaseController {
+  service = new BusinessService();
   userService = new UserService();
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -26,9 +26,9 @@ export default class HospitalController extends BaseController {
         });
         req.body.photos = photoUrls;
       }
-      const hospital = await this.service.create(req.body);
+      const business = await this.service.create(req.body);
 
-      this.sendSuccessResponse(res, 201, { data: hospital });
+      this.sendSuccessResponse(res, 201, { data: business });
     } catch (e: any) {
       next(e);
     }
@@ -67,14 +67,14 @@ export default class HospitalController extends BaseController {
 
   getOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const hospital = await this.service.findOne(req.params.id);
-      if (!hospital) {
-        throw new NotFoundError({ error: "hospital not found" });
+      const business = await this.service.findOne(req.params.id);
+      if (!business) {
+        throw new NotFoundError({ error: "business not found" });
       }
-      this.sendSuccessResponse(res, 200, { data: hospital });
+      this.sendSuccessResponse(res, 200, { data: business });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid business_id" }));
       }
       next(e);
     }
@@ -94,17 +94,17 @@ export default class HospitalController extends BaseController {
         });
         req.body.photos = photoUrls;
       }
-      const hospital = await this.service.update({
+      const business = await this.service.update({
         id: req.params.id,
-        hospital: req.body,
+        business: req.body,
       });
-      if (!hospital) {
-        throw new NotFoundError({ error: "hospital not found" });
+      if (!business) {
+        throw new NotFoundError({ error: "business not found" });
       }
-      this.sendSuccessResponse(res, 200, { data: { _id: hospital!._id } });
+      this.sendSuccessResponse(res, 200, { data: { _id: business!._id } });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid business_id" }));
       }
       next(e);
     }
@@ -116,17 +116,17 @@ export default class HospitalController extends BaseController {
         next(new ValidationFailedError({ errors: ["vcLink required"] }));
         return;
       }
-      const hospital = await this.service.update({
+      const business = await this.service.update({
         id: req.params.id,
-        hospital: { vcLink },
+        business: { vcLink },
       });
-      if (!hospital) {
-        throw new NotFoundError({ error: "hospital not found" });
+      if (!business) {
+        throw new NotFoundError({ error: "business not found" });
       }
-      this.sendSuccessResponse(res, 200, { data: { _id: hospital!._id } });
+      this.sendSuccessResponse(res, 200, { data: { _id: business!._id } });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid business_id" }));
       }
       next(e);
     }
@@ -134,14 +134,14 @@ export default class HospitalController extends BaseController {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const hospital = await this.service.delete(req.params.id);
-      if (!hospital) {
-        throw new NotFoundError({ error: "hospital not found" });
+      const business = await this.service.delete(req.params.id);
+      if (!business) {
+        throw new NotFoundError({ error: "business not found" });
       }
       this.sendSuccessResponse(res, 204, { data: {} });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid business_id" }));
       }
       next(e);
     }
@@ -149,8 +149,8 @@ export default class HospitalController extends BaseController {
 
   filterByAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const hospitals = await this.service.filterByAdmin(req.params.id);
-      this.sendSuccessResponse(res, 200, { data: hospitals });
+      const businesses = await this.service.filterByAdmin(req.params.id);
+      this.sendSuccessResponse(res, 200, { data: businesses });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
         next(new BadRequestError({ error: "invalid admin_d" }));

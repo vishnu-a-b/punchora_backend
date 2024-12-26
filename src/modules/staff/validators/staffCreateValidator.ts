@@ -1,10 +1,9 @@
 import { body } from "express-validator";
-import CustomValidators from "../../base/customValidators/customValidators";
 import { User } from "../../user/models/User";
 import { Department } from "../../department/models/Department";
-import { Hospital } from "../../hospital/models/Hospital";
 import { StaffRoles } from "../../base/enums/staffRoles";
 import { Staff } from "../models/Staff";
+import { Business } from "../../business/models/Business";
 
 export const staffCreateValidator = [
   body("user").custom(async (userId: any) => {
@@ -34,11 +33,11 @@ export const staffCreateValidator = [
       return Promise.reject();
     }
   }),
-  body("hospital").custom(async (hospitalId: any) => {
+  body("business").custom(async (businessId: any) => {
     try {
-      const hospital = await Hospital.findById(hospitalId);
-      if (!hospital) {
-        return Promise.reject("hospital not found");
+      const business = await Business.findById(businessId);
+      if (!business) {
+        return Promise.reject("business not found");
       }
 
       return Promise.resolve();

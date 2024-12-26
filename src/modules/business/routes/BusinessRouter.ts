@@ -1,24 +1,24 @@
 import express, { Request, Response, NextFunction } from "express";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
-import HospitalController from "../controllers/HospitalController";
-import { hospitalCreateValidator } from "../validators/hospitalCreateValidator";
 import authorizeUser from "../../../middlewares/authorizeUser";
 import multer from "multer";
 import { multerFileStorage } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import setFilterParams from "../../../middlewares/setFilterParams";
-import { hospitalFilterFields } from "../models/Hospital";
-import { hospitalCreateDoc } from "../docs/hospitalCreateDoc";
-import { hospitalListDoc } from "../docs/hospitalListDoc";
-import { hospitalDeleteDoc } from "../docs/hospitalDeleteDoc";
-import { hospitalUpdateDoc } from "../docs/hospitalUpdateDoc";
-import { hospitalDetailsDoc } from "../docs/hospitalDetailsDoc";
 import { vcLinkUpdateDoc } from "../docs/vcLinkUpdateDoc";
-import { hospitalCountDoc } from "../docs/hospitalCountDoc";
+import BusinessController from "../controllers/BusinessController";
+import { businessListDoc } from "../docs/businessListDoc";
+import { businessFilterFields } from "../models/Business";
+import { businessCountDoc } from "../docs/businessCountDoc";
+import { businessDetailsDoc } from "../docs/businessDetailsDoc";
+import { businessCreateDoc } from "../docs/businessCreateDoc";
+import { businessCreateValidator } from "../validators/businessCreateValidator";
+import { businessUpdateDoc } from "../docs/businessUpdateDoc";
+import { businessDeleteDoc } from "../docs/businessDeleteDoc";
 
 const router = express.Router();
-const controller = new HospitalController();
+const controller = new BusinessController();
 
 router.use(authenticateUser);
 
@@ -42,33 +42,33 @@ const authorization = authorizeUser({
 
 router.get(
   "/",
-  hospitalListDoc,
-  setFilterParams(hospitalFilterFields),
+  businessListDoc,
+  setFilterParams(businessFilterFields),
   controller.get
 );
 
 router.get(
   "/count-documents",
-  hospitalCountDoc,
+  businessCountDoc,
   controller.countTotalDocuments
 );
 
-router.get("/:id", hospitalDetailsDoc, controller.getOne);
+router.get("/:id", businessDetailsDoc, controller.getOne);
 
 router.post(
   "/",
   authorization,
-  hospitalCreateDoc,
+  businessCreateDoc,
   uploadMethod,
-  hospitalCreateValidator,
+  businessCreateValidator,
   controller.create
 );
 router.put(
   "/:id",
   authorization,
-  hospitalUpdateDoc,
+  businessUpdateDoc,
   uploadMethod,
-  hospitalCreateValidator,
+  businessCreateValidator,
   controller.update
 );
 router.put(
@@ -77,6 +77,6 @@ router.put(
   vcLinkUpdateDoc,
   controller.updateVcLink
 );
-router.delete("/:id", hospitalDeleteDoc, authorization, controller.delete);
+router.delete("/:id", businessDeleteDoc, authorization, controller.delete);
 
 export default router;

@@ -14,7 +14,7 @@ export const staffUpdateDoc = async (
               schema: {
               name: "string",
               department: "65cd9d8d5cae5ffc348ed638",
-              hospital: "65cd9d8d5cae5ffc348ed638",
+              business: "65cd9d8d5cae5ffc348ed638",
               roles: "string",
               joinDate: "string",
             }

@@ -4,14 +4,14 @@ import ModelFilterInterface from "../../../interfaces/ModelFilterInterface";
 const departmentSchema = new mongoose.Schema(
   {
     name: { type: String, maxLength: 200, required: true },
-    hospital: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital" },
+    business: { type: mongoose.Schema.Types.ObjectId, ref: "Business" },
     head: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
 
 export const departmentFilterFields: ModelFilterInterface = {
-  filterFields: ["hospital", "head"],
+  filterFields: ["business", "head"],
   searchFields: ["name"],
   sortFields: ["createdAt", "updatedAt"],
 };

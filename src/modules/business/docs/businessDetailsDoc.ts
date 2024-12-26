@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 
-export const hospitalDetailsDoc = async (
+export const businessDetailsDoc = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   /* 
-     #swagger.tags = ['Hospital']
+     #swagger.tags = ['Business']
      #swagger.responses[200] = {
-      description: 'Endpoint to the details of a Hospital',
+      description: 'Endpoint to the details of a Business',
       schema: {
         success: true,
         data: {
@@ -19,21 +19,13 @@ export const hospitalDetailsDoc = async (
             photos: [
                 "string"
             ],
-            specialities: [
+            managementType: "string",
+            contactMobileNumbers: [
                 "string"
             ],
-            managementType: "string",
-            hospitalType: "string",
-            treatmentType: "string",
-            numberOfBeds: "number",
-            haveEmergency: true,
-            contactMobileNumbers: [
-                "65cd9d8d5cae8ffc348ed631"
-            ],
             contactLandlines: [
-                "65cd9d8d5cae8ffc348ed631"
+                "string"
             ],
-            isIndependent: false,
             vcLink: "string",
             createdAt: "2024-02-15T05:53:06.960Z",
             updatedAt: "2024-02-15T05:53:06.960Z",

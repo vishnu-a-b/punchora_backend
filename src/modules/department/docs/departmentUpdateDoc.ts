@@ -12,7 +12,7 @@ export const departmentUpdateDoc = async (
             description: 'Endpoint to update an Department',
             schema: {
               name: "string",
-              hospital: "string",
+              business: "string",
               head: "string"
             }
           } 

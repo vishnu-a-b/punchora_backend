@@ -1203,10 +1203,10 @@
         ]
       }
     },
-    "/v1/hospital/": {
+    "/v1/business/": {
       "get": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "parameters": [
@@ -1228,7 +1228,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Endpoint to get all Hospitals",
+            "description": "Endpoint to get all Businesses",
             "schema": {
               "type": "object",
               "properties": {
@@ -1281,7 +1281,11 @@
                               "type": "string"
                             }
                           },
-                          "specialities": {
+                          "managementType": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "contactMobileNumbers": {
                             "type": "array",
                             "example": [
                               "string"
@@ -1290,47 +1294,14 @@
                               "type": "string"
                             }
                           },
-                          "managementType": {
-                            "type": "string",
-                            "example": "string"
-                          },
-                          "hospitalType": {
-                            "type": "string",
-                            "example": "string"
-                          },
-                          "treatmentType": {
-                            "type": "string",
-                            "example": "string"
-                          },
-                          "numberOfBeds": {
-                            "type": "string",
-                            "example": "number"
-                          },
-                          "haveEmergency": {
-                            "type": "boolean",
-                            "example": true
-                          },
-                          "contactMobileNumbers": {
-                            "type": "array",
-                            "example": [
-                              "65cd9d8d5cae8ffc348ed631"
-                            ],
-                            "items": {
-                              "type": "string"
-                            }
-                          },
                           "contactLandlines": {
                             "type": "array",
                             "example": [
-                              "65cd9d8d5cae8ffc348ed631"
+                              "string"
                             ],
                             "items": {
                               "type": "string"
                             }
-                          },
-                          "isIndependent": {
-                            "type": "boolean",
-                            "example": false
                           },
                           "vcLink": {
                             "type": "string",
@@ -1364,7 +1335,7 @@
       },
       "post": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "consumes": [
@@ -1393,15 +1364,6 @@
             }
           },
           {
-            "name": "specialities",
-            "in": "formData",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
             "name": "managementType",
             "in": "formData",
             "required": false,
@@ -1410,53 +1372,7 @@
               "Unknown",
               "Government",
               "Cooperative",
-              "Mission",
               "Private"
-            ]
-          },
-          {
-            "name": "hospitalType",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "Unknown",
-              "Medical College",
-              "Super Speciality",
-              "High End",
-              "Medium",
-              "Nursing Home",
-              "Clinic"
-            ]
-          },
-          {
-            "name": "treatmentType",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "Unknown",
-              "Modern Medicine",
-              "Homiopathy",
-              "Ayurveda",
-              "Sidha",
-              "Physio Therapy"
-            ]
-          },
-          {
-            "name": "numberOfBeds",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "haveEmergency",
-            "in": "formData",
-            "required": true,
-            "type": "string",
-            "enum": [
-              "true",
-              "false"
             ]
           },
           {
@@ -1478,16 +1394,6 @@
             }
           },
           {
-            "name": "isIndependent",
-            "in": "formData",
-            "required": true,
-            "type": "string",
-            "enum": [
-              "true",
-              "false"
-            ]
-          },
-          {
             "name": "vcLink",
             "in": "formData",
             "type": "string"
@@ -1505,15 +1411,15 @@
         ]
       }
     },
-    "/v1/hospital/count-documents": {
+    "/v1/business/count-documents": {
       "get": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "responses": {
           "200": {
-            "description": "Endpoint to total Hospitals count"
+            "description": "Endpoint to total business count"
           }
         },
         "security": [
@@ -1523,10 +1429,10 @@
         ]
       }
     },
-    "/v1/hospital/{id}": {
+    "/v1/business/{id}": {
       "get": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "parameters": [
@@ -1539,7 +1445,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Endpoint to the details of a Hospital",
+            "description": "Endpoint to the details of a Business",
             "schema": {
               "type": "object",
               "properties": {
@@ -1575,7 +1481,11 @@
                         "type": "string"
                       }
                     },
-                    "specialities": {
+                    "managementType": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "contactMobileNumbers": {
                       "type": "array",
                       "example": [
                         "string"
@@ -1584,47 +1494,14 @@
                         "type": "string"
                       }
                     },
-                    "managementType": {
-                      "type": "string",
-                      "example": "string"
-                    },
-                    "hospitalType": {
-                      "type": "string",
-                      "example": "string"
-                    },
-                    "treatmentType": {
-                      "type": "string",
-                      "example": "string"
-                    },
-                    "numberOfBeds": {
-                      "type": "string",
-                      "example": "number"
-                    },
-                    "haveEmergency": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "contactMobileNumbers": {
-                      "type": "array",
-                      "example": [
-                        "65cd9d8d5cae8ffc348ed631"
-                      ],
-                      "items": {
-                        "type": "string"
-                      }
-                    },
                     "contactLandlines": {
                       "type": "array",
                       "example": [
-                        "65cd9d8d5cae8ffc348ed631"
+                        "string"
                       ],
                       "items": {
                         "type": "string"
                       }
-                    },
-                    "isIndependent": {
-                      "type": "boolean",
-                      "example": false
                     },
                     "vcLink": {
                       "type": "string",
@@ -1655,7 +1532,7 @@
       },
       "put": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "consumes": [
@@ -1690,15 +1567,6 @@
             }
           },
           {
-            "name": "specialities",
-            "in": "formData",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
             "name": "managementType",
             "in": "formData",
             "required": false,
@@ -1707,53 +1575,7 @@
               "Unknown",
               "Government",
               "Cooperative",
-              "Mission",
               "Private"
-            ]
-          },
-          {
-            "name": "hospitalType",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "Unknown",
-              "Medical College",
-              "Super Speciality",
-              "High End",
-              "Medium",
-              "Nursing Home",
-              "Clinic"
-            ]
-          },
-          {
-            "name": "treatmentType",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "Unknown",
-              "Modern Medicine",
-              "Homiopathy",
-              "Ayurveda",
-              "Sidha",
-              "Physio Therapy"
-            ]
-          },
-          {
-            "name": "numberOfBeds",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "haveEmergency",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "true",
-              "false"
             ]
           },
           {
@@ -1775,16 +1597,6 @@
             }
           },
           {
-            "name": "isIndependent",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "true",
-              "false"
-            ]
-          },
-          {
             "name": "vcLink",
             "in": "formData",
             "type": "string"
@@ -1803,7 +1615,7 @@
       },
       "delete": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "parameters": [
@@ -1826,10 +1638,10 @@
         ]
       }
     },
-    "/v1/hospital/vcLink/{id}": {
+    "/v1/business/vcLink/{id}": {
       "put": {
         "tags": [
-          "Hospital"
+          "Business"
         ],
         "description": "",
         "parameters": [
@@ -1927,7 +1739,7 @@
                             "type": "string",
                             "example": "string"
                           },
-                          "hospital": {
+                          "business": {
                             "type": "string",
                             "example": "string"
                           },
@@ -1978,7 +1790,7 @@
                   "type": "string",
                   "example": "string"
                 },
-                "hospital": {
+                "business": {
                   "type": "string",
                   "example": "string"
                 },
@@ -2055,7 +1867,7 @@
                       "type": "string",
                       "example": "string"
                     },
-                    "hospital": {
+                    "business": {
                       "type": "string",
                       "example": "string"
                     },
@@ -2109,7 +1921,7 @@
                   "type": "string",
                   "example": "string"
                 },
-                "hospital": {
+                "business": {
                   "type": "string",
                   "example": "string"
                 },
@@ -2209,7 +2021,7 @@
                             "type": "string",
                             "example": "string"
                           },
-                          "hospital": {
+                          "business": {
                             "type": "string",
                             "example": "string"
                           },
@@ -2308,7 +2120,7 @@
                             "type": "string",
                             "example": "65cd9d8d5cae5ffc348ed638"
                           },
-                          "hospital": {
+                          "business": {
                             "type": "string",
                             "example": "65cd9d8d5cae5ffc348ed638"
                           },
@@ -2375,7 +2187,7 @@
                   "type": "string",
                   "example": "65cd9d8d5cae5ffc348ed638"
                 },
-                "hospital": {
+                "business": {
                   "type": "string",
                   "example": "65cd9d8d5cae5ffc348ed638"
                 },
@@ -2464,7 +2276,7 @@
                       "type": "string",
                       "example": "65cd9d8d5cae5ffc348ed638"
                     },
-                    "hospital": {
+                    "business": {
                       "type": "string",
                       "example": "65cd9d8d5cae5ffc348ed638"
                     },
@@ -2533,7 +2345,7 @@
                       "type": "string",
                       "example": "65cd9d8d5cae5ffc348ed638"
                     },
-                    "hospital": {
+                    "business": {
                       "type": "string",
                       "example": "65cd9d8d5cae5ffc348ed638"
                     },

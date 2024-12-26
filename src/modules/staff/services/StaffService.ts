@@ -30,7 +30,7 @@ export default class StaffService {
     return await Staff.findById(id).populate([
       "user",
       "department",
-      "hospital",
+      "business",
     ]);
   };
 

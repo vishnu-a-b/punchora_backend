@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 
-export const hospitalListofAdminDoc = async (
+export const businessListDoc = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   /* 
-     #swagger.tags = ['Hospital']
+     #swagger.tags = ['Business']
      #swagger.responses[200] = {
-      description: 'Endpoint to get all Hospitals of a hospital admin',
+      description: 'Endpoint to get all Businesses',
       schema: {
         success: true,
         data: {
@@ -24,22 +24,14 @@ export const hospitalListofAdminDoc = async (
               photos: [
                 "string"
               ],
-              specialities: [
+              managementType: "string",
+              contactMobileNumbers: [
                 "string"
               ],
-              managementType: "string",
-              hospitalType: "string",
-              treatmentType: "string",
-              numberOfBeds: "number",
-              haveEmergency: true,
-              contactMobileNumbers: [
-                "65cd9d8d5cae8ffc348ed631"
-              ],
               contactLandlines: [
-                "65cd9d8d5cae8ffc348ed631"
+                "string"
               ],
-              isIndependent: false,
-              admin: "string",
+              vcLink: "string",
               createdAt: "2024-02-15T05:53:06.960Z",
               updatedAt: "2024-02-15T05:53:06.960Z",
             }

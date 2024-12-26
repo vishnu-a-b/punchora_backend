@@ -10,7 +10,7 @@ export default class DepartmentService {
     limit = limit ? limit : 10;
     skip = skip ? skip : 0;
 
-    const hospitals = await Department.find(filterQuery)
+    const departments = await Department.find(filterQuery)
       .sort(sort)
       .limit(limit)
       .skip(skip);
@@ -19,7 +19,7 @@ export default class DepartmentService {
       total,
       limit,
       skip,
-      items: hospitals,
+      items: departments,
     };
   };
 

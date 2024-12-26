@@ -21,7 +21,7 @@ export const staffListDoc = async (
               name: "string",
               user: "65cd9d8d5cae5ffc348ed638",
               department: "65cd9d8d5cae5ffc348ed638",
-              hospital: "65cd9d8d5cae5ffc348ed638",
+              business: "65cd9d8d5cae5ffc348ed638",
               roles: "string",
               joinDate: "string",
               createdBy: "65cd9d8d5cae4ffc348ed682",

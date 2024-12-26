@@ -12,7 +12,7 @@ export const departmentCreateDoc = async (
             description: 'Endpoint to create a Department',
             schema: {
               name: "string",
-              hospital: "string",
+              business: "string",
               head: "string"
             }
           } 

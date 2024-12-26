@@ -22,7 +22,7 @@ export default class DepartmentController extends BaseController {
         return;
       }
 
-      const hospital = await this.service.create(req.body);
+      const department = await this.service.create(req.body);
       const head: any = await this.userService.findOne(req.body.head);
       const headRole = await Role.findOne({ slug: RolesEnum.departmentHead });
       if (head && headRole) {
@@ -36,7 +36,7 @@ export default class DepartmentController extends BaseController {
         );
       }
 
-      this.sendSuccessResponse(res, 201, { data: hospital });
+      this.sendSuccessResponse(res, 201, { data: department });
     } catch (e: any) {
       next(e);
     }
@@ -75,11 +75,11 @@ export default class DepartmentController extends BaseController {
 
   getOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const hospital = await this.service.findOne(req.params.id);
-      if (!hospital) {
+      const department = await this.service.findOne(req.params.id);
+      if (!department) {
         throw new NotFoundError({ error: "department not found" });
       }
-      this.sendSuccessResponse(res, 200, { data: hospital });
+      this.sendSuccessResponse(res, 200, { data: department });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
         next(new BadRequestError({ error: "invalid department_id" }));
@@ -106,7 +106,7 @@ export default class DepartmentController extends BaseController {
       this.sendSuccessResponse(res, 200, { data: { _id: department!._id } });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid department_id" }));
       }
       next(e);
     }
@@ -114,14 +114,14 @@ export default class DepartmentController extends BaseController {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const hospital = await this.service.delete(req.params.id);
-      if (!hospital) {
-        throw new NotFoundError({ error: "hospital not found" });
+      const department = await this.service.delete(req.params.id);
+      if (!department) {
+        throw new NotFoundError({ error: "department not found" });
       }
       this.sendSuccessResponse(res, 204, { data: {} });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid department_id" }));
       }
       next(e);
     }

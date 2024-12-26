@@ -12,9 +12,9 @@ const staffSchema = new mongoose.Schema(
       ref: "Department",
       required: true,
     },
-    hospital: {
+    business: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Hospital",
+      ref: "Business",
       required: true,
     },
     joinDate: {
@@ -45,7 +45,7 @@ staffSchema.pre("validate", async function (next) {
 });
 
 export const staffFilterFields: ModelFilterInterface = {
-  filterFields: ["user", "department", "hospital"],
+  filterFields: ["user", "department", "business"],
   searchFields: ["registrationNo"],
   sortFields: ["createdAt", "updatedAt", "registrationDate"],
 };

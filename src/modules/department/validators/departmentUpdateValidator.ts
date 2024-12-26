@@ -2,20 +2,20 @@ import { body } from "express-validator";
 import CustomValidators from "../../base/customValidators/customValidators";
 
 import { User } from "../../user/models/User";
-import { Hospital } from "../../hospital/models/Hospital";
+import { Business } from "../../business/models/Business";
 
 export const departmentUpdateValidator = [
   body("name")
     .optional()
     .custom(CustomValidators.isNotEmptyAndString)
     .isLength({ max: 50 }),
-  body("hospital")
+  body("business")
     .optional()
-    .custom(async (hospitalId: any) => {
+    .custom(async (businessId: any) => {
       try {
-        const hospital = await Hospital.findById(hospitalId);
-        if (!hospital) {
-          return Promise.reject("hospital not found");
+        const business = await Business.findById(businessId);
+        if (!business) {
+          return Promise.reject("business not found");
         }
         return Promise.resolve();
       } catch (_) {

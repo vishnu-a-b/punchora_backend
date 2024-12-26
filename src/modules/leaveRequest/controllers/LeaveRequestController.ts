@@ -73,7 +73,7 @@ export default class LeaveRequestController extends BaseController {
       this.sendSuccessResponse(res, 200, { data: { _id: leave!._id } });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid leave_request_id" }));
       }
       next(e);
     }
@@ -129,7 +129,7 @@ export default class LeaveRequestController extends BaseController {
       this.sendSuccessResponse(res, 204, { data: {} });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
-        next(new BadRequestError({ error: "invalid hospital_id" }));
+        next(new BadRequestError({ error: "invalid leave_request_id" }));
       }
       next(e);
     }

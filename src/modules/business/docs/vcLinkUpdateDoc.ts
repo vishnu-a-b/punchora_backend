@@ -6,7 +6,7 @@ export const vcLinkUpdateDoc = async (
   next: NextFunction
 ) => {
   /*  
-          #swagger.tags = ['Hospital']
+          #swagger.tags = ['Business']
           #swagger.parameters['parameter_name'] = {
             in: 'body',
             description: 'Endpoint to update vc link',
