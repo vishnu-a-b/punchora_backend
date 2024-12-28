@@ -410,10 +410,13 @@
             "type": "string"
           },
           {
-            "name": "photo",
+            "name": "photos",
             "in": "formData",
             "required": false,
-            "type": "file"
+            "type": "array",
+            "items": {
+              "type": "file"
+            }
           },
           {
             "name": "dateOfBirth",
@@ -741,10 +744,13 @@
             "type": "string"
           },
           {
-            "name": "photo",
+            "name": "photos",
             "in": "formData",
             "required": false,
-            "type": "file"
+            "type": "array",
+            "items": {
+              "type": "file"
+            }
           },
           {
             "name": "dateOfBirth",

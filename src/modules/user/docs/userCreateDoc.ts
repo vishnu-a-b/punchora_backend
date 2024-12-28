@@ -28,10 +28,13 @@ export const userCreateDoc = async (
             "required": true,
             "type": "string"
           }
-          #swagger.parameters["photo"] = {
+          #swagger.parameters["photos"] = {
             "in": "formData",
             "required": false,
-            "type": "file"
+            "type": "array",
+            "items": {
+              "type": "file",
+            }
           }
           #swagger.parameters["dateOfBirth"] = {
             "in": "formData",

@@ -52,8 +52,12 @@ export default class UserController extends BaseController {
         next(new ValidationFailedError({ errors: errors.array() }));
         return;
       }
-      if (req.file) {
-        req.body.photo = Configs.domain + req.file.filename;
+      let photoUrls: any[] = [];
+      if (req.files) {
+        (req.files as Express.Multer.File[])!.forEach((file) => {
+          photoUrls.push(Configs.domain + file.filename);
+        });
+        req.body.photos = photoUrls;
       }
       const user = await this.service.create(req.body);
       this.sendSuccessResponse(res, 201, { data: user });
@@ -87,8 +91,12 @@ export default class UserController extends BaseController {
         next(new ValidationFailedError({ errors: errors.array() }));
         return;
       }
-      if (req.file) {
-        req.body.photo = Configs.domain + req.file.filename;
+      let photoUrls: any[] = [];
+      if (req.files) {
+        (req.files as Express.Multer.File[])!.forEach((file) => {
+          photoUrls.push(Configs.domain + file.filename);
+        });
+        req.body.photos = photoUrls;
       }
       if (req.body.mobileNo) {
         const availableUser = await User.findOne({
