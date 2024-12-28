@@ -23,7 +23,7 @@ router.use(authenticateUser);
 const upload = multer({
   storage: multerFileStorage,
   fileFilter: multerImageFilter,
-}).single("photo");
+}).any();
 
 const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
   return upload(req, res, function (err) {
