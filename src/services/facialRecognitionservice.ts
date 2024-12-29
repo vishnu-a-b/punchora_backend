@@ -4,6 +4,7 @@ const faceapi = require("@vladmandic/face-api");
 
 import { FaceDescriptor } from "../modules/faceDescriptor/models/FaceDescriptor";
 import { User } from "../modules/user/models/User";
+import path from "path";
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({
   Canvas,
@@ -19,9 +20,11 @@ export class FaceRecognitionService {
   }
 
   private async initializeFaceAPI() {
-    await faceapi.nets.faceRecognitionNet.loadFromDisk("models");
-    await faceapi.nets.faceLandmark68Net.loadFromDisk("models");
-    await faceapi.nets.ssdMobilenetv1.loadFromDisk("models");
+    const MODEL_PATH = path.join(__dirname, "../../models");
+
+    await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_PATH);
+    await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_PATH);
+    await faceapi.nets.ssdMobilenetv1.loadFromDisk(MODEL_PATH);
   }
 
   createDescriptor = async (user: string, image: string) => {
