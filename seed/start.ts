@@ -8,11 +8,11 @@ import { Taluk } from "../src/modules/lists/taluk/models/Taluk";
 const bcrypt = require("bcryptjs");
 const run = async () => {
   await mongoose.connect(
-   `mongodb://${Configs.mongoUser}:${Configs.mongoPassword}@${Configs.mongoHost}:27017/${Configs.mongoDatabase}`
+   `mongodb+srv://${Configs.mongoUser}:${Configs.mongoPassword}@${Configs.mongoHost}/${Configs.mongoDatabase}`
   );
   await seedAdminUser();
-  // await seedRoles();
-  // await seedDistricts();
+  await seedRoles();
+  await seedDistricts();
   console.log("seed completed");
 };
 
@@ -30,7 +30,7 @@ const seedAdminUser = async () => {
     isActive: true,
     isSuperAdmin: true,
     photos:
-      ["https://wallpapers.com/images/high/the-batman-2022-digital-art-1of7ifxxcxh364oz.webp"],
+      [],
   };
   await User.create(admin);
 };
