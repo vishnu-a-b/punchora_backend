@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 import { Staff } from "../../staff/models/Staff";
 
-export const attendanceCreateValidator = [
+export const markAttendanceValidator = [
   body("staff").custom(async (staffId: any) => {
     try {
       const staff = await Staff.findById(staffId);

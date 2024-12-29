@@ -2,13 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import BaseController from "../../base/controllers.ts/BaseController";
 import { validationResult } from "express-validator";
 import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedError";
-import NotFoundError from "../../../errors/errorTypes/NotFoundError";
-import mongoose from "mongoose";
-import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import AttendanceService from "../services/AttendanceService";
+import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
+import { Staff } from "../../staff/models/Staff";
 
 export default class AttendanceController extends BaseController {
   service = new AttendanceService();
+  facialRecognitionService = new FaceRecognitionService();
+
   markAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
@@ -32,9 +33,59 @@ export default class AttendanceController extends BaseController {
       if (body.checkInTime) {
         data = await this.service.checkIn({
           date: body.date,
-          checkInTime: body.checkOutTime,
+          checkInTime: body.checkInTime,
           staff: body.staff,
           createdBy: req.user._id,
+        });
+      }
+
+      this.sendSuccessResponse(res, 201, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  markAttendanceViaRecognition = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      const body = req.body;
+      if (!body.checkOutTime && !body.checkInTime) {
+        throw new Error("checkOutTime or checkInTime required");
+      }
+      if (!req.file) {
+        next(new ValidationFailedError({ errors: ["no photo provided"] }));
+      }
+      const user = await this.facialRecognitionService.recognizeUser(
+        req.file!.path
+      );
+      if (!user) {
+        throw new Error("facial recognition failed");
+      }
+      const staff = await Staff.findOne({ user: user.id });
+      if (!staff) {
+        throw new Error("facial recognition failed");
+      }
+      let data: any;
+      if (body.checkOutTime) {
+        data = await this.service.checkOut({
+          date: body.date,
+          checkOutTime: body.checkOutTime,
+          staff: staff.id,
+        });
+      }
+      if (body.checkInTime) {
+        data = await this.service.checkIn({
+          date: body.date,
+          checkInTime: body.checkInTime,
+          staff: staff.id,
         });
       }
 

@@ -4,7 +4,7 @@ interface AttendanceCheckIn {
   staff: string;
   date: Date;
   checkInTime: Date;
-  createdBy: string
+  createdBy?: string | undefined;
 }
 
 interface AttendanceCheckOut {

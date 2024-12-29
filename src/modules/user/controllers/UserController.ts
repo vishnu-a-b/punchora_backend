@@ -9,9 +9,11 @@ import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import Configs from "../../../configs/configs";
 import { User } from "../models/User";
 import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
+import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 
 export default class UserController extends BaseController {
   service = new UserService();
+  facialRecognitionService = new FaceRecognitionService();
 
   getList = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -60,6 +62,11 @@ export default class UserController extends BaseController {
         req.body.photos = photoUrls;
       }
       const user = await this.service.create(req.body);
+      if (req.files) {
+        (req.files as Express.Multer.File[])!.forEach((file) => {
+          this.facialRecognitionService.createDescriptor(user.id, file.path);
+        });
+      }
       this.sendSuccessResponse(res, 201, { data: user });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {

@@ -2649,10 +2649,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "string"
-                },
                 "staff": {
                   "type": "string",
                   "example": "65cd9d8d5cae5ffc348ed638"
@@ -2671,6 +2667,53 @@
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/attendance/mark-via-photo": {
+      "post": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "checkInTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkOutTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "required": true,
+            "type": "file"
           }
         ],
         "responses": {

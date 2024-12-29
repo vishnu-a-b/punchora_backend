@@ -11,7 +11,6 @@ export const markAttendanceDoc = async (
             in: 'body',
             description: 'Endpoint to mark Attendance',
             schema: {
-              name: "string",
               staff: "65cd9d8d5cae5ffc348ed638",
               date: "string",
               checkInTime: "string",
