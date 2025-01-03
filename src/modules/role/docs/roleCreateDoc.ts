@@ -11,7 +11,7 @@ export const roleCreateDoc = async (
             in: 'body',
             description: 'Endpoint to create a Role',
             schema: {
-              name: "string",
+              title: "string",
               slug: "string"
             }
           } 

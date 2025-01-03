@@ -15,7 +15,7 @@ export const staffCreateDoc = async (
               user: "65cd9d8d5cae5ffc348ed638",
               department: "65cd9d8d5cae5ffc348ed638",
               business: "65cd9d8d5cae5ffc348ed638",
-              roles: "string",
+              role: "string",
               joinDate: "string",
             }
           } 

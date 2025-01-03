@@ -156,4 +156,19 @@ export default class UserController extends BaseController {
       next(e);
     }
   };
+
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = await this.service.delete(req.params.id);
+      if (!user) {
+        throw new NotFoundError({ error: "user not found" });
+      }
+      this.sendSuccessResponse(res, 204, { data: {} });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user id" }));
+      }
+      next(e);
+    }
+  };
 }

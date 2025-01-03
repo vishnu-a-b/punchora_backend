@@ -1,4 +1,5 @@
 export enum StaffRoles {
-  nurse,
-  doctor,
+  nurse = "nurse",
+  doctor = "doctor",
+  regularStaff = "regular-staff",
 }

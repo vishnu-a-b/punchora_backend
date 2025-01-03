@@ -7,7 +7,7 @@ const endpointsFiles = ["./src/routes/*.ts"];
 
 const config = {
   info: {
-    title: "Shanthibhavan APIs",
+    title: "Shanthibhavan HRMS APIs",
     description: "",
   },
   host: process.env.SERVER_URL,

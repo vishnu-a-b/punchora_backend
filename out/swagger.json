@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Shanthibhavan APIs",
+    "title": "Shanthibhavan HRMS APIs",
     "description": "",
     "version": "1.0.0"
   },
@@ -177,7 +177,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
+                "title": {
                   "type": "string",
                   "example": "string"
                 },
@@ -795,6 +795,30 @@
               "true",
               "false"
             ]
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -2339,7 +2363,7 @@
                   "type": "string",
                   "example": "65cd9d8d5cae5ffc348ed638"
                 },
-                "roles": {
+                "role": {
                   "type": "string",
                   "example": "string"
                 },
@@ -2497,7 +2521,7 @@
                       "type": "string",
                       "example": "65cd9d8d5cae5ffc348ed638"
                     },
-                    "roles": {
+                    "role": {
                       "type": "string",
                       "example": "string"
                     },

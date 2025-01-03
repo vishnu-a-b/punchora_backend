@@ -60,4 +60,7 @@ export default class UserService {
   update = async (id: string, user: any) => {
     return await User.findByIdAndUpdate(id, user);
   };
+  delete = async (id: any) => {
+    return await User.findByIdAndDelete(id);
+  };
 }

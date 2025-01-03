@@ -14,6 +14,7 @@ import { userListDoc } from "../docs/userListDoc";
 import { userDetailsDoc } from "../docs/userDetailsDoc";
 import { userUpdateDoc } from "../docs/userUpdateDoc";
 import { userUpdateValidator } from "../validators/UserUpdateValidator";
+import { userDeleteDoc } from "../docs/userDeleteDoc";
 const router = express.Router();
 
 const controller = new UserController();
@@ -70,6 +71,14 @@ router.put(
   uploadMethod,
   userUpdateValidator,
   controller.update
+);
+
+router.delete(
+  "/:id",
+  authenticateUser,
+  userDeleteDoc,
+  authorizeUser({ allowedRoles: [] }),
+  controller.delete
 );
 
 export default router;

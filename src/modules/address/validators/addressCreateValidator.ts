@@ -6,9 +6,11 @@ export const addressCreateValidator = [
     .custom(CustomValidators.isNotEmptyAndString)
     .isLength({ max: 200 }),
   body("taluk")
+    .optional()
     .custom(CustomValidators.isNotEmptyAndString)
     .isLength({ max: 50 }),
   body("district")
+    .optional()
     .custom(CustomValidators.isNotEmptyAndString)
     .isLength({ max: 50 }),
   body("pinCode")

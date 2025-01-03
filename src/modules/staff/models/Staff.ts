@@ -46,7 +46,7 @@ staffSchema.pre("validate", async function (next) {
 
 export const staffFilterFields: ModelFilterInterface = {
   filterFields: ["user", "department", "business"],
-  searchFields: ["registrationNo"],
+  searchFields: ["registrationNo", "name"],
   sortFields: ["createdAt", "updatedAt", "registrationDate"],
 };
 
