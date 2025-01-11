@@ -14,7 +14,15 @@ export const markAttendanceDoc = async (
               staff: "65cd9d8d5cae5ffc348ed638",
               date: "string",
               checkInTime: "string",
-              checkOutTime: "string",              
+              checkOutTime: "string",
+              checkInLocation: {
+                latitude: 23123424,
+                longitude: 42342345
+              },
+              checkOutLocation: {
+                latitude: 23123424,
+                longitude: 42342345
+              }                
             }
           } 
           

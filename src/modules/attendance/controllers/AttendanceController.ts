@@ -27,20 +27,34 @@ export default class AttendanceController extends BaseController {
       }
       let data: any;
       if (body.checkOutTime) {
+        if (!body.checkOutLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkOut({
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: body.staff,
           checkOutPhoto: body.photo,
+          checkOutLocation: body.checkOutLocation,
         });
       }
       if (body.checkInTime) {
+        if (!body.checkInLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
           checkInPhoto: body.photo,
           staff: body.staff,
           createdBy: req.user._id,
+          checkInLocation: body.checkInLocation,
         });
       }
 
@@ -81,19 +95,33 @@ export default class AttendanceController extends BaseController {
       }
       let data: any;
       if (body.checkOutTime) {
+        if (!body.checkOutLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkOut({
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: staff.id,
           checkOutPhoto: body.photo,
+          checkOutLocation: body.checkOutLocation,
         });
       }
       if (body.checkInTime) {
+        if (!body.checkInLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
           staff: staff.id,
           checkInPhoto: body.photo,
+          checkInLocation: body.checkInLocation,
         });
       }
 

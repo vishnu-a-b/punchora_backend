@@ -4,7 +4,8 @@ interface AttendanceCheckIn {
   staff: string;
   date: Date;
   checkInTime: Date;
-  checkInPhoto: string | undefined
+  checkInPhoto: string | undefined;
+  checkInLocation: { latitude: number; longitude: number };
   createdBy?: string | undefined;
 }
 
@@ -12,7 +13,8 @@ interface AttendanceCheckOut {
   staff: string;
   date: Date;
   checkOutTime: Date;
-  checkOutPhoto: string | undefined
+  checkOutPhoto: string | undefined;
+  checkOutLocation: { latitude: number; longitude: number };
 }
 
 export default class AttendanceService {

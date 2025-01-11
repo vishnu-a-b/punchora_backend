@@ -6,8 +6,6 @@ export const multerImageFilter = (
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ) => {
-  console.log("file.mimetype");
-  console.log(file.mimetype);
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/jpg" ||

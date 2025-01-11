@@ -2688,6 +2688,32 @@
                 "checkOutTime": {
                   "type": "string",
                   "example": "string"
+                },
+                "checkInLocation": {
+                  "type": "object",
+                  "properties": {
+                    "latitude": {
+                      "type": "number",
+                      "example": 23123424
+                    },
+                    "longitude": {
+                      "type": "number",
+                      "example": 42342345
+                    }
+                  }
+                },
+                "checkOutLocation": {
+                  "type": "object",
+                  "properties": {
+                    "latitude": {
+                      "type": "number",
+                      "example": 23123424
+                    },
+                    "longitude": {
+                      "type": "number",
+                      "example": 42342345
+                    }
+                  }
                 }
               }
             }

@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 import ModelFilterInterface from "../../../interfaces/ModelFilterInterface";
 import { AttendanceStatus } from "../../base/enums/attendanceStatus";
 
+const locationSchema = new mongoose.Schema({
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+});
+
 const attendanceSchema = new mongoose.Schema(
   {
     staff: { type: mongoose.Schema.Types.ObjectId, ref: "Staff" },
@@ -17,6 +22,8 @@ const attendanceSchema = new mongoose.Schema(
     },
     checkInPhoto: { type: String, required: false, maxLength: 200 },
     checkOutPhoto: { type: String, required: false, maxLength: 200 },
+    checkInLocation: { type: locationSchema },
+    checkOutLocation: { type: locationSchema },
     status: {
       type: String,
       maxLength: 20,
