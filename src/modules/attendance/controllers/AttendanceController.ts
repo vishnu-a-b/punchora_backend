@@ -5,6 +5,7 @@ import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedEr
 import AttendanceService from "../services/AttendanceService";
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 import { Staff } from "../../staff/models/Staff";
+import Configs from "../../../configs/configs";
 
 export default class AttendanceController extends BaseController {
   service = new AttendanceService();
@@ -18,9 +19,11 @@ export default class AttendanceController extends BaseController {
         return;
       }
       const body = req.body;
-
       if (!body.checkOutTime && !body.checkInTime) {
         throw new Error("checkOutTime or checkInTime required");
+      }
+      if (req.file) {
+        body.photo = Configs.domain + req.file.filename;
       }
       let data: any;
       if (body.checkOutTime) {
@@ -28,12 +31,14 @@ export default class AttendanceController extends BaseController {
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: body.staff,
+          checkOutPhoto: body.photo,
         });
       }
       if (body.checkInTime) {
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
+          checkInPhoto: body.photo,
           staff: body.staff,
           createdBy: req.user._id,
         });
@@ -63,6 +68,7 @@ export default class AttendanceController extends BaseController {
       if (!req.file) {
         next(new ValidationFailedError({ errors: ["no photo provided"] }));
       }
+      body.photo = Configs.domain + req.file!.filename;
       const user = await this.facialRecognitionService.recognizeUser(
         req.file!.path
       );
@@ -79,6 +85,7 @@ export default class AttendanceController extends BaseController {
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: staff.id,
+          checkOutPhoto: body.photo,
         });
       }
       if (body.checkInTime) {
@@ -86,6 +93,7 @@ export default class AttendanceController extends BaseController {
           date: body.date,
           checkInTime: body.checkInTime,
           staff: staff.id,
+          checkInPhoto: body.photo,
         });
       }
 

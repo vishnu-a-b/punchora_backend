@@ -4,6 +4,7 @@ interface AttendanceCheckIn {
   staff: string;
   date: Date;
   checkInTime: Date;
+  checkInPhoto: string | undefined
   createdBy?: string | undefined;
 }
 
@@ -11,6 +12,7 @@ interface AttendanceCheckOut {
   staff: string;
   date: Date;
   checkOutTime: Date;
+  checkOutPhoto: string | undefined
 }
 
 export default class AttendanceService {

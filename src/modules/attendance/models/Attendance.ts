@@ -15,6 +15,8 @@ const attendanceSchema = new mongoose.Schema(
     checkOutTime: {
       type: Date,
     },
+    checkInPhoto: { type: String, required: false, maxLength: 200 },
+    checkOutPhoto: { type: String, required: false, maxLength: 200 },
     status: {
       type: String,
       maxLength: 20,
