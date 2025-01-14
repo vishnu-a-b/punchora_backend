@@ -95,7 +95,7 @@ export default class AttendanceController extends BaseController {
       }
       let data: any;
       console.log(body)
-      if (body.checkIn === false) {
+      if (body.checkIn === "false") {
         data = await this.service.checkOut({
           date: body.date,
           checkOutTime: body.checkOutTime,
@@ -103,7 +103,7 @@ export default class AttendanceController extends BaseController {
           checkOutPhoto: body.photo,
         });
       }
-      if (body.checkIn === true) {
+      if (body.checkIn === "true") {
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
