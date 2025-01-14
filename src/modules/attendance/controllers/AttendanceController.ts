@@ -86,12 +86,14 @@ export default class AttendanceController extends BaseController {
       const user = await this.facialRecognitionService.recognizeUser(
         req.file!.path
       );
+      console.log(user);
       if (!user) {
-        throw new Error("facial recognition failed");
+        throw new Error("facial recognition failed. No user found");
       }
       const staff = await Staff.findOne({ user: user.id });
+      console.log(staff);
       if (!staff) {
-        throw new Error("facial recognition failed");
+        throw new Error("facial recognition failed. No staff found");
       }
       let data: any;
       if (body.checkOutTime) {
