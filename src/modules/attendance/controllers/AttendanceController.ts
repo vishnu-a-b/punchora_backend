@@ -76,6 +76,7 @@ export default class AttendanceController extends BaseController {
         return;
       }
       const body = req.body;
+      console.log(body)
       if (!body.checkOutTime && !body.checkInTime) {
         throw new Error("checkOutTime or checkInTime required");
       }
@@ -86,12 +87,10 @@ export default class AttendanceController extends BaseController {
       const user = await this.facialRecognitionService.recognizeUser(
         req.file!.path
       );
-      console.log(user);
       if (!user) {
         throw new Error("facial recognition failed. No user found");
       }
       const staff = await Staff.findOne({ user: user.id });
-      console.log(staff);
       if (!staff) {
         throw new Error("facial recognition failed. No staff found");
       }

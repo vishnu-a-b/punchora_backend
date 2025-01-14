@@ -65,16 +65,12 @@ export class FaceRecognitionService {
       const values = records.map((record) => {
         return { user: record.user, descriptor: record.descriptor };
       });
-      console.log("values");
-      // console.log(values)
 
       let bestMatch: { user: string | undefined; distance: number } = {
         user: "",
         distance: Infinity,
       };
-      console.log("bestMatch")
 
-      console.log(bestMatch)
 
       for (const { user, descriptor } of values) {
         const distance = faceapi.euclideanDistance(
@@ -85,8 +81,6 @@ export class FaceRecognitionService {
           bestMatch = { user: user?.toString(), distance };
         }
       }
-      console.log("after iteration")
-      console.log(bestMatch)
 
       if (bestMatch.distance > this.faceMatchingThreshold) {
         console.log("No matching face found")
