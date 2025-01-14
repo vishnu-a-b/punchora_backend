@@ -57,6 +57,7 @@ export class FaceRecognitionService {
         .withFaceDescriptor();
 
       if (!detection) {
+        console.log("No face detected in the image")
         throw new Error("No face detected in the image");
       }
 
@@ -64,6 +65,8 @@ export class FaceRecognitionService {
       const values = records.map((record) => {
         return { user: record.user, descriptor: record.descriptor };
       });
+      console.log("values");
+      console.log(values)
 
       let bestMatch: { user: string | undefined; distance: number } = {
         user: "",
@@ -81,6 +84,7 @@ export class FaceRecognitionService {
       }
 
       if (bestMatch.distance > this.faceMatchingThreshold) {
+        console.log("No matching face found")
         throw new Error("No matching face found");
       }
       const user = await User.findById(bestMatch.user);
