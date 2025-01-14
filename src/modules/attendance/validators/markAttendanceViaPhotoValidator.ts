@@ -5,9 +5,9 @@ export const markAttendanceViaPhotoValidator = [
   body("checkInTime").optional().isISO8601(),
   body("checkOutTime").optional().isISO8601(),
   body("checkInLocation").optional(),
-  body("checkInLocation.latitude").isNumeric(),
-  body("checkInLocation.longitude").isNumeric(),
+  body("checkInLocation.latitude").optional().isNumeric(),
+  body("checkInLocation.longitude").optional().isNumeric(),
   body("checkOutLocation").optional(),
-  body("checkOutLocation.latitude").isNumeric(),
-  body("checkOutLocation.longitude").isNumeric(),
+  body("checkOutLocation.latitude").optional().isNumeric(),
+  body("checkOutLocation.longitude").optional().isNumeric(),
 ];
