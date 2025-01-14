@@ -76,7 +76,6 @@ export default class AttendanceController extends BaseController {
         return;
       }
       const body = req.body;
-      console.log(body);
       if (!body.checkOutTime && !body.checkInTime) {
         throw new Error("checkOutTime or checkInTime required");
       }
@@ -95,6 +94,7 @@ export default class AttendanceController extends BaseController {
         throw new Error("facial recognition failed. No staff found");
       }
       let data: any;
+      console.log(body)
       if (body.checkIn === false) {
         data = await this.service.checkOut({
           date: body.date,
