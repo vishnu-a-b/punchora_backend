@@ -32,12 +32,16 @@ const singleUploadMethod = (
   });
 };
 
-router.use(authenticateUser);
-
-router.get("/:id", attendanceListDoc, controller.getAttendanceForStaff);
+router.get(
+  "/:id",
+  authenticateUser,
+  attendanceListDoc,
+  controller.getAttendanceForStaff
+);
 
 router.post(
   "/mark",
+  authenticateUser,
   markAttendanceDoc,
   markAttendanceValidator,
   controller.markAttendance
