@@ -1,6 +1,6 @@
 export enum AttendanceStatus {
-  present,
-  absent,
-  leave,
-  checkedIn,
+  present = "present",
+  absent = "absent",
+  leave = "leave",
+  checkedIn = "checkedIn",
 }
