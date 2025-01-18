@@ -44,7 +44,7 @@ export default class AttendanceController extends BaseController {
       if (body.checkInTime) {
         if (!body.checkInLocation) {
           next(
-            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+            new ValidationFailedError({ errors: ["checkInLocation required"] })
           );
           return;
         }
@@ -94,21 +94,35 @@ export default class AttendanceController extends BaseController {
         throw new Error("facial recognition failed. No staff found");
       }
       let data: any;
-      console.log(body)
+      console.log(body);
       if (body.checkIn === "false") {
+        if (!body.checkOutLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkOutLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkOut({
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: staff.id,
           checkOutPhoto: body.photo,
+          checkOutLocation: body.checkOutLocation,
         });
       }
       if (body.checkIn === "true") {
+        if (!body.checkInLocation) {
+          next(
+            new ValidationFailedError({ errors: ["checkInLocation required"] })
+          );
+          return;
+        }
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
           staff: staff.id,
           checkInPhoto: body.photo,
+          checkInLocation: body.checkInLocation,
         });
       }
 

@@ -1,3 +1,4 @@
+import { AttendanceStatus } from "../../base/enums/attendanceStatus";
 import { Attendance } from "../models/Attendance";
 
 interface AttendanceCheckIn {
@@ -65,7 +66,12 @@ export default class AttendanceService {
         },
         staff: data.staff,
       },
-      { $set: { checkOutTime: data.checkOutTime } },
+      {
+        $set: {
+          checkOutTime: data.checkOutTime,
+          status: AttendanceStatus.present,
+        },
+      },
       { new: true }
     );
   };

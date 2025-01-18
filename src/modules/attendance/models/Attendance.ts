@@ -28,6 +28,7 @@ const attendanceSchema = new mongoose.Schema(
       type: String,
       maxLength: 20,
       enum: Object.values(AttendanceStatus),
+      default: AttendanceStatus.checkedIn,
     },
   },
   { timestamps: true }
