@@ -107,7 +107,7 @@ export default class AttendanceController extends BaseController {
           checkOutTime: body.checkOutTime,
           staff: staff.id,
           checkOutPhoto: body.photo,
-          checkOutLocation: body.checkOutLocation,
+          checkOutLocation: JSON.parse(body.checkOutLocation),
         });
       }
       if (body.checkIn === "true") {
@@ -122,7 +122,7 @@ export default class AttendanceController extends BaseController {
           checkInTime: body.checkInTime,
           staff: staff.id,
           checkInPhoto: body.photo,
-          checkInLocation: body.checkInLocation,
+          checkInLocation: JSON.parse(body.checkInLocation),
         });
       }
 
