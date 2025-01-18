@@ -70,6 +70,8 @@ export default class AttendanceService {
         $set: {
           checkOutTime: data.checkOutTime,
           status: AttendanceStatus.present,
+          checkOutLocation: data.checkOutLocation,
+          checkOutPhoto: data.checkOutPhoto,
         },
       },
       { new: true }
