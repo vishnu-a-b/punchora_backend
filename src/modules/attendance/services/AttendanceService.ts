@@ -19,8 +19,11 @@ interface AttendanceCheckOut {
 
 export default class AttendanceService {
   checkIn = async (data: AttendanceCheckIn) => {
+    console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
+    console.log(startOfDay);
+    console.log(endOfDay);
     endOfDay.setHours(23, 59, 59, 999);
     let attendance = await Attendance.findOne({
       date: {
@@ -36,8 +39,11 @@ export default class AttendanceService {
   };
 
   checkOut = async (data: AttendanceCheckOut) => {
+    console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
+    console.log(startOfDay);
+    console.log(endOfDay);
     endOfDay.setHours(23, 59, 59, 999);
     let attendance = await Attendance.findOne({
       date: {
