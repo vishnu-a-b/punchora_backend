@@ -22,9 +22,9 @@ export default class AttendanceService {
     console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
+    endOfDay.setHours(23, 59, 59, 999);
     console.log(startOfDay);
     console.log(endOfDay);
-    endOfDay.setHours(23, 59, 59, 999);
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
@@ -42,9 +42,9 @@ export default class AttendanceService {
     console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
+    endOfDay.setHours(23, 59, 59, 999);
     console.log(startOfDay);
     console.log(endOfDay);
-    endOfDay.setHours(23, 59, 59, 999);
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
