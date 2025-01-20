@@ -93,7 +93,6 @@ export default class AttendanceController extends BaseController {
       if (!staff) {
         throw new Error("facial recognition failed. No staff found");
       }
-      let data: any;
       console.log(body);
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
@@ -102,7 +101,7 @@ export default class AttendanceController extends BaseController {
           );
           return;
         }
-        data = await this.service.checkOut({
+        await this.service.checkOut({
           date: body.date,
           checkOutTime: body.checkOutTime,
           staff: staff.id,
@@ -117,7 +116,7 @@ export default class AttendanceController extends BaseController {
           );
           return;
         }
-        data = await this.service.checkIn({
+        await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
           staff: staff.id,
@@ -126,7 +125,7 @@ export default class AttendanceController extends BaseController {
         });
       }
 
-      this.sendSuccessResponse(res, 201, { data });
+      this.sendSuccessResponse(res, 201, { data: staff });
     } catch (e: any) {
       next(e);
     }
