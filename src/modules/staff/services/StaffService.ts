@@ -1,3 +1,5 @@
+import { error } from "console";
+import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { Staff } from "../models/Staff";
 
@@ -32,6 +34,15 @@ export default class StaffService {
       "department",
       "business",
     ]);
+  };
+
+  findOneWithUserId = async (id: string) => {
+    const staffs = await Staff.find({ user: id })
+      .populate(["user", "department"])
+      .limit(1);
+    if (staffs.length < 1)
+      throw new NotFoundError({ error: "Staff not found" });
+    return staffs[0];
   };
 
   update = async ({ id, staff }: any) => {

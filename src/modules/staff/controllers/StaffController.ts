@@ -69,6 +69,18 @@ export default class StaffController extends BaseController {
     }
   };
 
+  getWithUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const staff = await this.service.findOneWithUserId(req.params.id);
+      this.sendSuccessResponse(res, 200, { data: staff });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid staff_id" }));
+      }
+      next(e);
+    }
+  };
+
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
