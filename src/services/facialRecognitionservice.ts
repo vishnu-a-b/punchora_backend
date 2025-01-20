@@ -81,6 +81,9 @@ export class FaceRecognitionService {
           bestMatch = { user: user?.toString(), distance };
         }
       }
+      console.log("bestMatch");
+      console.log(bestMatch);
+      console.log(bestMatch.distance);
 
       if (bestMatch.distance > this.faceMatchingThreshold) {
         console.log("No matching face found")

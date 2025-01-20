@@ -58,6 +58,9 @@ export default class AttendanceService {
     if (!attendance) {
       throw Error("Unable to check out");
     }
+    if (attendance.status != AttendanceStatus.checkedIn) {
+      return attendance;
+    }
     attendance = await Attendance.findOneAndUpdate(
       {
         date: {
@@ -76,6 +79,7 @@ export default class AttendanceService {
       },
       { new: true }
     );
+    return attendance;
   };
 
   filterByDate = async (startDate: Date, endDate: Date, staff: string) => {
