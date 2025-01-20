@@ -27,7 +27,7 @@ router.get(
   controller.get
 );
 router.get("/count-documents", staffCountDoc, controller.countTotalDocuments);
-router.get("/user/id", staffDetailsDoc, controller.getWithUserId);
+router.get("/user/:id", staffDetailsDoc, controller.getWithUserId);
 router.get("/:id", staffDetailsDoc, controller.getOne);
 router.post(
   "/",
