@@ -2405,6 +2405,81 @@
         ]
       }
     },
+    "/v1/staff/user/id": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Staff details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "user": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "department": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "business": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae5ffc348ed638"
+                    },
+                    "roles": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "joinDate": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "createdBy": {
+                      "type": "string",
+                      "example": "65cd9d8d5cae4ffc348ed682"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-02-17T07:50:12.025Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-02-17T07:50:12.025Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/v1/staff/{id}": {
       "get": {
         "tags": [
