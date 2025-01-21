@@ -142,6 +142,8 @@ export default class AttendanceController extends BaseController {
       if (!startDate || !endDate) {
         throw Error("startDate & endDate required as query parameters");
       }
+      console.log(startDate)
+      console.log(endDate);
       const data = await this.service.filterByDate(
         new Date(startDate as string),
         new Date(endDate as string),

@@ -83,8 +83,12 @@ export default class AttendanceService {
   };
 
   filterByDate = async (startDate: Date, endDate: Date, staff: string) => {
+    console.log(startDate);
+    console.log(endDate);
     const startOfStartDate = new Date(startDate);
     const endOfEndDate = new Date(endDate);
+    startOfStartDate.setHours(0, 0, 0, 0);
+    endOfEndDate.setHours(23, 59, 59, 999);
     const attendances = await Attendance.find({
       date: {
         $gte: startOfStartDate,
