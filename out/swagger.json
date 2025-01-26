@@ -2405,12 +2405,20 @@
         ]
       }
     },
-    "/v1/staff/user/id": {
+    "/v1/staff/user/{id}": {
       "get": {
         "tags": [
           "Staff"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Endpoint to get Staff details",
@@ -2740,58 +2748,33 @@
           "Attendance"
         ],
         "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
         "parameters": [
           {
-            "name": "parameter_name",
-            "in": "body",
-            "description": "Endpoint to mark Attendance",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "staff": {
-                  "type": "string",
-                  "example": "65cd9d8d5cae5ffc348ed638"
-                },
-                "date": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "checkInTime": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "checkOutTime": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "checkInLocation": {
-                  "type": "object",
-                  "properties": {
-                    "latitude": {
-                      "type": "number",
-                      "example": 23123424
-                    },
-                    "longitude": {
-                      "type": "number",
-                      "example": 42342345
-                    }
-                  }
-                },
-                "checkOutLocation": {
-                  "type": "object",
-                  "properties": {
-                    "latitude": {
-                      "type": "number",
-                      "example": 23123424
-                    },
-                    "longitude": {
-                      "type": "number",
-                      "example": 42342345
-                    }
-                  }
-                }
-              }
-            }
+            "name": "date",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "checkInTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkOutTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "required": true,
+            "type": "file"
           }
         ],
         "responses": {

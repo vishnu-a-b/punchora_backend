@@ -5,27 +5,29 @@ export const markAttendanceDoc = async (
   res: Response,
   next: NextFunction
 ) => {
-  /*  
+          /*  
           #swagger.tags = ['Attendance']
-          #swagger.parameters['parameter_name'] = {
-            in: 'body',
-            description: 'Endpoint to mark Attendance',
-            schema: {
-              staff: "65cd9d8d5cae5ffc348ed638",
-              date: "string",
-              checkInTime: "string",
-              checkOutTime: "string",
-              checkInLocation: {
-                latitude: 23123424,
-                longitude: 42342345
-              },
-              checkOutLocation: {
-                latitude: 23123424,
-                longitude: 42342345
-              }                
-            }
-          } 
-          
+          #swagger.consumes = ['multipart/form-data']
+          #swagger.parameters["date"] = {
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+          #swagger.parameters["checkInTime"] = {
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+            #swagger.parameters["checkOutTime"] = {
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+          #swagger.parameters["photo"] = {
+            "in": "formData",
+            "required": true,
+            "type": "file"
+          }
           #swagger.security = [
             {
               JWT: []

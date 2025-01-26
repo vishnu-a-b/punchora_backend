@@ -22,11 +22,12 @@ export default class AttendanceController extends BaseController {
       if (!body.checkOutTime && !body.checkInTime) {
         throw new Error("checkOutTime or checkInTime required");
       }
-      if (req.file) {
-        body.photo = Configs.domain + req.file.filename;
+      if (!req.file) {
+        next(new ValidationFailedError({ errors: ["no photo provided"] }));
       }
+      body.photo = Configs.domain + req.file!.filename;
       let data: any;
-      if (body.checkOutTime) {
+      if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
           next(
             new ValidationFailedError({ errors: ["checkOutLocation required"] })
@@ -38,10 +39,10 @@ export default class AttendanceController extends BaseController {
           checkOutTime: body.checkOutTime,
           staff: body.staff,
           checkOutPhoto: body.photo,
-          checkOutLocation: body.checkOutLocation,
+          checkOutLocation: JSON.parse(body.checkOutLocation),
         });
       }
-      if (body.checkInTime) {
+      if (body.checkIn === "true") {
         if (!body.checkInLocation) {
           next(
             new ValidationFailedError({ errors: ["checkInLocation required"] })
@@ -51,10 +52,10 @@ export default class AttendanceController extends BaseController {
         data = await this.service.checkIn({
           date: body.date,
           checkInTime: body.checkInTime,
-          checkInPhoto: body.photo,
           staff: body.staff,
+          checkInPhoto: body.photo,
+          checkInLocation: JSON.parse(body.checkInLocation),
           createdBy: req.user._id,
-          checkInLocation: body.checkInLocation,
         });
       }
 
@@ -93,7 +94,6 @@ export default class AttendanceController extends BaseController {
       if (!staff) {
         throw new Error("facial recognition failed. No staff found");
       }
-      console.log(body);
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
           next(
@@ -142,8 +142,6 @@ export default class AttendanceController extends BaseController {
       if (!startDate || !endDate) {
         throw Error("startDate & endDate required as query parameters");
       }
-      console.log(startDate)
-      console.log(endDate);
       const data = await this.service.filterByDate(
         new Date(startDate as string),
         new Date(endDate as string),
