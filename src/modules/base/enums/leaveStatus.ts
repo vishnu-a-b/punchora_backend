@@ -1,5 +1,5 @@
 export enum LeaveStatus {
-  pending,
-  approved,
-  rejected,
+  pending = "pending",
+  approved = "approved",
+  rejected = "rejected",
 }

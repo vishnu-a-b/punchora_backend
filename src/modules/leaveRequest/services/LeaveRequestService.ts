@@ -38,6 +38,7 @@ export default class LeaveRequestService {
     skip = skip ? skip : 0;
 
     const requests = await LeaveRequest.find(filterQuery)
+      .populate(["staff", "department"])
       .sort(sort)
       .limit(limit)
       .skip(skip);
