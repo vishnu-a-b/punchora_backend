@@ -3,8 +3,11 @@ import { Staff } from "../../staff/models/Staff";
 
 export const markAttendanceValidator = [
   body("staff").custom(async (staffId: any) => {
+    console.log("staff id in validator")
+    console.log(staffId)
     try {
       const staff = await Staff.findById(staffId);
+      console.log(staff)
       if (!staff) {
         return Promise.reject("staff not found");
       }
