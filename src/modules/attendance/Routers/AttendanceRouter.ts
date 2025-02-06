@@ -43,6 +43,7 @@ router.post(
   "/mark",
   authenticateUser,
   markAttendanceDoc,
+  singleUploadMethod,
   markAttendanceValidator,
   controller.markAttendance
 );
