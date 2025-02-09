@@ -11,6 +11,7 @@ import { leaveRequestUpdateValidator } from "../validators/leaveRequestUpdateVal
 import { leaveRequestAcceptorRejectDoc } from "../docs/leaveRequestAcceptorRejectDoc";
 import LeaveRequestController from "../controllers/LeaveRequestController";
 import { leaveRequestDeleteDoc } from "../docs/leaveRequestDeleteDoc";
+import RolesEnum from "../../base/enums/roles";
 
 const router = express.Router();
 const controller = new LeaveRequestController();
@@ -18,7 +19,7 @@ const controller = new LeaveRequestController();
 router.use(authenticateUser);
 
 const authorization = authorizeUser({
-  allowedRoles: [],
+  allowedRoles: [RolesEnum.staff],
 });
 
 router.get(

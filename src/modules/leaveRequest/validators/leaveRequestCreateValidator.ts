@@ -2,7 +2,6 @@ import { body } from "express-validator";
 import CustomValidators from "../../base/customValidators/customValidators";
 import { Staff } from "../../staff/models/Staff";
 import { Department } from "../../department/models/Department";
-import { LeaveStatus } from "../../base/enums/leaveStatus";
 
 export const leaveRequestCreateValidator = [
   body("reason").custom(CustomValidators.isNotEmptyAndString),
