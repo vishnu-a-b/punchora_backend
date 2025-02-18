@@ -49,14 +49,16 @@ export default class StaffService {
     endOfDay.setHours(23, 59, 59, 999);
 
     for (const staff of staffs) {
-      const attendance = await Attendance.find({
+      const attendance = await Attendance.findOne({
         date: {
           $gte: startOfDay,
           $lte: endOfDay,
         },
         staff: staff,
       });
-      staffData.push({ ...staff, ...{ attendance } });
+      let data = staff;
+      data.attendance = attendance;
+      staffData.push(data);
     }
     const total = await Staff.countDocuments(filterQuery);
     return {
