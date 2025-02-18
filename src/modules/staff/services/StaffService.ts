@@ -2,6 +2,7 @@ import { error } from "console";
 import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { Staff } from "../models/Staff";
+import { Attendance } from "../../attendance/models/Attendance";
 
 export default class StaffService {
   create = async (staff: any) => {
@@ -23,6 +24,46 @@ export default class StaffService {
       limit,
       skip,
       items: staffs,
+    };
+  };
+
+  findAndGetAttendance = async ({
+    limit,
+    skip,
+    filterQuery,
+    sort,
+  }: ListFilterData) => {
+    limit = limit ? limit : 10;
+    skip = skip ? skip : 0;
+    let staffData = [];
+
+    const staffs: any[] = await Staff.find(filterQuery)
+      .populate(["user", "department"])
+      .sort(sort)
+      .limit(limit)
+      .skip(skip);
+    const today = new Date();
+    const startOfDay = today;
+    const endOfDay = today;
+    startOfDay.setHours(0, 0, 0, 0);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    for (const staff of staffs) {
+      const attendance = await Attendance.find({
+        date: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+        staff: staff,
+      });
+      staffData.push({ ...staff, ...{ attendance } });
+    }
+    const total = await Staff.countDocuments(filterQuery);
+    return {
+      total,
+      limit,
+      skip,
+      items: staffData,
     };
   };
 
