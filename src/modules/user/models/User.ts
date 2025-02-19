@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
       match: [/^\S+@\S+\.\S+$/, "Invalid email format"],
     },
     photos: [{ type: String, maxLength: 200 }],
+    profilePicture: { type: String },
     dateOfBirth: {
       type: Date,
       validate: {

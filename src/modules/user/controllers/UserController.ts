@@ -157,6 +157,28 @@ export default class UserController extends BaseController {
     }
   };
 
+  updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      const { oldPassword, newPassword } = req.body;
+      const user = await this.service.updatePassword(
+        req.params.id,
+        oldPassword,
+        newPassword
+      );
+      this.sendSuccessResponse(res, 200, { data: { _id: user!._id } });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await this.service.delete(req.params.id);

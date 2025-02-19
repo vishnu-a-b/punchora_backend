@@ -1,3 +1,5 @@
+import NotFoundError from "../../../errors/errorTypes/NotFoundError";
+import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedError";
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
 import { Role } from "../../role/models/Role";
@@ -59,6 +61,23 @@ export default class UserService {
 
   update = async (id: string, user: any) => {
     return await User.findByIdAndUpdate(id, user);
+  };
+
+  updatePassword = async (
+    id: string,
+    oldPassword: string,
+    newPassword: string
+  ) => {
+    const oldPasswordHash = await createPasswordHash(oldPassword);
+    const user = await User.findById(id);
+    if (!user) {
+      throw new NotFoundError({ error: "user not found" });
+    }
+    if (user.password !== oldPasswordHash) {
+      throw new ValidationFailedError({ error: "incorrect passowrd" });
+    }
+    const newPasswordHash = await createPasswordHash(newPassword);
+    return await User.findByIdAndUpdate(id, { password: newPasswordHash });
   };
   delete = async (id: any) => {
     return await User.findByIdAndDelete(id);

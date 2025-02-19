@@ -17,6 +17,7 @@ const staffSchema = new mongoose.Schema(
       ref: "Business",
       required: true,
     },
+    designation: { type: String, maxLength: 200 },
     joinDate: {
       type: Date,
       required: true,
@@ -45,7 +46,7 @@ staffSchema.pre("validate", async function (next) {
 });
 
 export const staffFilterFields: ModelFilterInterface = {
-  filterFields: ["user", "department", "business"],
+  filterFields: ["user", "department", "business", "designation"],
   searchFields: ["registrationNo", "name"],
   sortFields: ["createdAt", "updatedAt", "registrationDate"],
 };

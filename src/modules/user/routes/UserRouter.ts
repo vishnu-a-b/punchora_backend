@@ -15,6 +15,9 @@ import { userDetailsDoc } from "../docs/userDetailsDoc";
 import { userUpdateDoc } from "../docs/userUpdateDoc";
 import { userUpdateValidator } from "../validators/UserUpdateValidator";
 import { userDeleteDoc } from "../docs/userDeleteDoc";
+import RolesEnum from "../../base/enums/roles";
+import { updatePasswordDoc } from "../docs/updatePasswordDoc";
+import { updatePasswordValidator } from "../validators/updatePasswordValidator";
 const router = express.Router();
 
 const controller = new UserController();
@@ -71,6 +74,14 @@ router.put(
   uploadMethod,
   userUpdateValidator,
   controller.update
+);
+
+router.put(
+  "/update-password/:id",
+  authorizeUser({ allowedRoles: [RolesEnum.staff] }),
+  updatePasswordDoc,
+  updatePasswordValidator,
+  controller.updatePassword
 );
 
 router.delete(
