@@ -69,7 +69,8 @@ export default class UserService {
     newPassword: string
   ) => {
     const oldPasswordHash = await createPasswordHash(oldPassword);
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("password");
+    console.log(user)
     if (!user) {
       throw new NotFoundError({ error: "user not found" });
     }
