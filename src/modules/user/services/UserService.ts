@@ -4,6 +4,7 @@ import ListFilterData from "../../../interfaces/ListFilterData";
 import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
 import { Role } from "../../role/models/Role";
 import { User } from "../models/User";
+const bcrypt = require("bcryptjs");
 
 export default class UserService {
   list = async ({ limit, skip, filterQuery, sort }: ListFilterData) => {
@@ -68,20 +69,15 @@ export default class UserService {
     oldPassword: string,
     newPassword: string
   ) => {
-    const oldPasswordHash = await createPasswordHash(oldPassword);
     const user = await User.findById(id).select("password");
-    console.log(user)
     if (!user) {
       throw new NotFoundError({ error: "user not found" });
     }
-    console.log("current password");
-    console.log(user.password);
-    console.log("old password hash");
-    console.log(oldPasswordHash);
     const newPasswordHash = await createPasswordHash(newPassword);
     console.log("new password hash");
     console.log(newPasswordHash);
-    if (user.password !== oldPasswordHash) {
+    const result = await bcrypt.compare(oldPassword, user.password);
+    if (!result) {
       throw new ValidationFailedError({ error: "incorrect password" });
     }
 
