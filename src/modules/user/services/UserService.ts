@@ -73,10 +73,17 @@ export default class UserService {
     if (!user) {
       throw new NotFoundError({ error: "user not found" });
     }
-    if (user.password !== oldPasswordHash) {
-      throw new ValidationFailedError({ error: "incorrect passowrd" });
-    }
+    console.log("current password");
+    console.log(user.password);
+    console.log("old password hash");
+    console.log(oldPasswordHash);
     const newPasswordHash = await createPasswordHash(newPassword);
+    console.log("new password hash");
+    console.log(newPasswordHash);
+    if (user.password !== oldPasswordHash) {
+      throw new ValidationFailedError({ error: "incorrect password" });
+    }
+
     return await User.findByIdAndUpdate(id, { password: newPasswordHash });
   };
   delete = async (id: any) => {
