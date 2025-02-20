@@ -2411,6 +2411,10 @@
                   "type": "string",
                   "example": "string"
                 },
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
                 "joinDate": {
                   "type": "string",
                   "example": "string"
@@ -3260,6 +3264,137 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/location-data/{id}": {
+      "get": {
+        "tags": [
+          "LocationData"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Location Data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "staff": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "checkInTime": {
+                        "type": "number",
+                        "example": 231323
+                      },
+                      "checkOutTime": {
+                        "type": "number",
+                        "example": 1232131.3
+                      },
+                      "createdBy": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae4ffc348ed682"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/v1/location-data/": {
+      "post": {
+        "tags": [
+          "LocationData"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "parameter_name",
+            "in": "body",
+            "description": "Endpoint to create an LocationData",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "staff": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "latitude": {
+                  "type": "number",
+                  "example": 10.83
+                },
+                "longitude": {
+                  "type": "number",
+                  "example": 112.74
+                }
+              }
+            }
           }
         ],
         "responses": {
