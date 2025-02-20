@@ -2,6 +2,7 @@ import { body } from "express-validator";
 import { Department } from "../../department/models/Department";
 import { StaffRoles } from "../../base/enums/staffRoles";
 import { Business } from "../../business/models/Business";
+import { StaffTypes } from "../../base/enums/staffTypes";
 
 export const staffUpdateValidator = [
   body("department")
@@ -34,4 +35,5 @@ export const staffUpdateValidator = [
     }),
   body("joinDate").optional().isISO8601(),
   body("role").optional().isIn(Object.values(StaffRoles)),
+  body("type").optional().isIn(Object.values(StaffTypes)),
 ];

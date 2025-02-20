@@ -10,6 +10,8 @@ import StaffRouter from "../modules/staff/routes/StaffRouter";
 import AttendanceRouter from "../modules/attendance/Routers/AttendanceRouter";
 import LeaveRequestRouter from "../modules/leaveRequest/routes/LeaveRequestRouter";
 import BusinessRouter from "../modules/business/routes/BusinessRouter";
+import LocationDataRouter from "../modules/location/Routers/LocationDataRouter";
+
 
 const router = express.Router();
 
@@ -24,5 +26,6 @@ router.use("/v1/department/", DepartmentRouter);
 router.use("/v1/staff/", StaffRouter);
 router.use("/v1/attendance/", AttendanceRouter);
 router.use("/v1/leave-request/", LeaveRequestRouter);
+router.use("/v1/location-data/", LocationDataRouter);
 
 export default router;

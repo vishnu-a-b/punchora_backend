@@ -4,6 +4,7 @@ import { Department } from "../../department/models/Department";
 import { StaffRoles } from "../../base/enums/staffRoles";
 import { Staff } from "../models/Staff";
 import { Business } from "../../business/models/Business";
+import { StaffTypes } from "../../base/enums/staffTypes";
 
 export const staffCreateValidator = [
   body("user").custom(async (userId: any) => {
@@ -27,7 +28,6 @@ export const staffCreateValidator = [
       if (!department) {
         return Promise.reject("department not found");
       }
-
       return Promise.resolve();
     } catch (_) {
       return Promise.reject();
@@ -47,4 +47,5 @@ export const staffCreateValidator = [
   }),
   body("joinDate").isISO8601(),
   body("role").isIn(Object.values(StaffRoles)),
+  body("type").isIn(Object.values(StaffTypes)),
 ];

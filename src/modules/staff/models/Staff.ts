@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import ModelFilterInterface from "../../../interfaces/ModelFilterInterface";
 import { StaffRoles } from "../../base/enums/staffRoles";
 import { User } from "../../user/models/User";
+import { StaffTypes } from "../../base/enums/staffTypes";
 
 const staffSchema = new mongoose.Schema(
   {
@@ -27,6 +28,13 @@ const staffSchema = new mongoose.Schema(
       required: true,
       maxLength: 20,
       enum: Object.values(StaffRoles),
+    },
+    type: {
+      type: String,
+      required: true,
+      maxLength: 20,
+      default: StaffTypes.inside,
+      enum: Object.values(StaffTypes),
     },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
