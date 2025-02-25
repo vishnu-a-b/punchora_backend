@@ -6,6 +6,10 @@ const locationSchema = new mongoose.Schema(
     staff: { type: mongoose.Schema.Types.ObjectId, ref: "Staff" },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+    date: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );
@@ -13,7 +17,7 @@ const locationSchema = new mongoose.Schema(
 export const locationDataFilterFields: ModelFilterInterface = {
   filterFields: ["staff"],
   searchFields: [],
-  sortFields: ["createdAt", "updatedAt"],
+  sortFields: ["createdAt", "updatedAt", "date"],
 };
 
 export const LocationData = mongoose.model("LocationData", locationSchema);
