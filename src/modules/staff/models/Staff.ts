@@ -8,6 +8,7 @@ const staffSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, maxLength: 200, required: true },
+    uid: { type: Number },
     department: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Department",
@@ -36,6 +37,10 @@ const staffSchema = new mongoose.Schema(
       default: StaffTypes.inside,
       enum: Object.values(StaffTypes),
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
@@ -47,6 +52,12 @@ staffSchema.pre("validate", async function (next) {
       const patient = await User.findById(this.user.toString());
       if (patient) this.name = patient?.name;
     }
+    const prevStaffs = await Staff.find().sort({ createdAt: -1 });
+    if (prevStaffs && prevStaffs.length > 0) {
+      this.uid = prevStaffs[0].uid ?? 100 + 1;
+    } else {
+      this.uid = 101;
+    }
     next();
   } catch (e: any) {
     next(e);
@@ -54,7 +65,14 @@ staffSchema.pre("validate", async function (next) {
 });
 
 export const staffFilterFields: ModelFilterInterface = {
-  filterFields: ["user", "department", "business", "designation"],
+  filterFields: [
+    "user",
+    "department",
+    "business",
+    "designation",
+    "uid",
+    "isActive",
+  ],
   searchFields: ["registrationNo", "name"],
   sortFields: ["createdAt", "updatedAt", "registrationDate"],
 };
