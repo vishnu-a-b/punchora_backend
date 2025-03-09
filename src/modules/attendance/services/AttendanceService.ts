@@ -66,17 +66,8 @@ export default class AttendanceService {
         error: "You have to check-in before check-out!",
       });
     }
-    if (attendance.status != AttendanceStatus.checkedIn) {
-      return attendance;
-    }
     attendance = await Attendance.findOneAndUpdate(
-      {
-        date: {
-          $gte: startOfDay,
-          $lte: endOfDay,
-        },
-        staff: data.staff,
-      },
+      attendance.id,
       {
         $set: {
           checkOutTime: data.checkOutTime,
@@ -87,6 +78,8 @@ export default class AttendanceService {
       },
       { new: true }
     );
+    console.log("updated attendance")
+    console.log(attendance)
     return attendance;
   };
 
