@@ -66,6 +66,9 @@ export default class AttendanceService {
         error: "You have to check-in before check-out!",
       });
     }
+    console.log("available attendance");
+    console.log(attendance);
+    console.log(attendance.id)
     attendance = await Attendance.findOneAndUpdate(
       { id: attendance.id },
       {
@@ -78,8 +81,7 @@ export default class AttendanceService {
       },
       { new: true }
     );
-    console.log("updated attendance");
-    console.log(attendance);
+    
     return attendance;
   };
 
