@@ -1,3 +1,4 @@
+import AttendanceError from "../../../errors/errorTypes/AttendanceError";
 import { AttendanceStatus } from "../../base/enums/attendanceStatus";
 import { Attendance } from "../models/Attendance";
 
@@ -34,10 +35,12 @@ export default class AttendanceService {
       staff: data.staff,
     });
     console.log("available attenfdance");
-    console.log(attendance)
-    console.log(attendance?.status == AttendanceStatus.checkedIn)
+    console.log(attendance);
+    console.log(attendance?.status == AttendanceStatus.checkedIn);
     if (attendance && attendance.status == AttendanceStatus.checkedIn) {
-      throw Error("You have to checkout before checking in again!");
+      throw new AttendanceError({
+        error: "You have to check-out before check-in in again!",
+      });
     }
 
     return await Attendance.create(data);
@@ -58,7 +61,9 @@ export default class AttendanceService {
       staff: data.staff,
     });
     if (!attendance) {
-      throw Error("Unable to check out");
+      throw new AttendanceError({
+        error: "You have to check-in before check-out!",
+      });
     }
     if (attendance.status != AttendanceStatus.checkedIn) {
       return attendance;

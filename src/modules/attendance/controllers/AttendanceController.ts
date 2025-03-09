@@ -6,6 +6,7 @@ import AttendanceService from "../services/AttendanceService";
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 import { Staff } from "../../staff/models/Staff";
 import Configs from "../../../configs/configs";
+import AttendanceError from "../../../errors/errorTypes/AttendanceError";
 
 export default class AttendanceController extends BaseController {
   service = new AttendanceService();
@@ -15,24 +16,24 @@ export default class AttendanceController extends BaseController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        next(new ValidationFailedError({ errors: errors.array() }));
-        return;
+        throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
       if (!body.checkOutTime && !body.checkInTime) {
-        throw new Error("checkOutTime or checkInTime required");
+        throw new ValidationFailedError({
+          error: "checkOutTime or checkInTime required",
+        });
       }
       if (!req.file) {
-        next(new ValidationFailedError({ errors: ["no photo provided"] }));
+        throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
       body.photo = Configs.domain + req.file!.filename;
       let data: any;
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
-          next(
-            new ValidationFailedError({ errors: ["checkOutLocation required"] })
-          );
-          return;
+          throw new ValidationFailedError({
+            errors: ["checkOutLocation required"],
+          });
         }
         data = await this.service.checkOut({
           date: body.date,
@@ -44,10 +45,9 @@ export default class AttendanceController extends BaseController {
       }
       if (body.checkIn === "true") {
         if (!body.checkInLocation) {
-          next(
-            new ValidationFailedError({ errors: ["checkInLocation required"] })
-          );
-          return;
+          throw new ValidationFailedError({
+            errors: ["checkInLocation required"],
+          });
         }
         data = await this.service.checkIn({
           date: body.date,
@@ -58,7 +58,6 @@ export default class AttendanceController extends BaseController {
           createdBy: req.user._id,
         });
       }
-
       this.sendSuccessResponse(res, 201, { data });
     } catch (e: any) {
       next(e);
@@ -73,33 +72,37 @@ export default class AttendanceController extends BaseController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        next(new ValidationFailedError({ errors: errors.array() }));
-        return;
+        throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
       if (!body.checkOutTime && !body.checkInTime) {
-        throw new Error("checkOutTime or checkInTime required");
+        throw new ValidationFailedError({
+          errors: ["checkOutTime or checkInTime required"],
+        });
       }
       if (!req.file) {
-        next(new ValidationFailedError({ errors: ["no photo provided"] }));
+        throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
       body.photo = Configs.domain + req.file!.filename;
       const user = await this.facialRecognitionService.recognizeUser(
         req.file!.path
       );
       if (!user) {
-        throw new Error("facial recognition failed. No user found");
+        throw new AttendanceError({
+          error: "facial recognition failed. No user found",
+        });
       }
       const staff = await Staff.findOne({ user: user.id });
       if (!staff) {
-        throw new Error("facial recognition failed. No staff found");
+        throw new AttendanceError({
+          error: "facial recognition failed. No staff found",
+        });
       }
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
-          next(
-            new ValidationFailedError({ errors: ["checkOutLocation required"] })
-          );
-          return;
+          throw new ValidationFailedError({
+            errors: ["checkOutLocation required"],
+          });
         }
         await this.service.checkOut({
           date: body.date,
@@ -111,10 +114,9 @@ export default class AttendanceController extends BaseController {
       }
       if (body.checkIn === "true") {
         if (!body.checkInLocation) {
-          next(
-            new ValidationFailedError({ errors: ["checkInLocation required"] })
-          );
-          return;
+          throw new ValidationFailedError({
+            errors: ["checkInLocation required"],
+          });
         }
         await this.service.checkIn({
           date: body.date,
@@ -140,7 +142,9 @@ export default class AttendanceController extends BaseController {
       const staffId = req.params.id;
       const { startDate, endDate } = req.query;
       if (!startDate || !endDate) {
-        throw Error("startDate & endDate required as query parameters");
+        throw new ValidationFailedError({
+          errors: ["startDate & endDate required as query parameters"],
+        });
       }
       const data = await this.service.filterByDate(
         new Date(startDate as string),

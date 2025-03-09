@@ -13,6 +13,7 @@ export default abstract class CustomError extends Error {
       | "BAD_REQUEST"
       | "PERMISSION_DENIED"
       | "OBJECT_RELATION_EXIST"
+      | "ATTENDANCE_ERROR"
   ) {
     super(message);
     Object.setPrototypeOf(this, Error.prototype);
