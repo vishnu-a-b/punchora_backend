@@ -67,7 +67,7 @@ export default class AttendanceService {
       });
     }
     attendance = await Attendance.findOneAndUpdate(
-      attendance.id,
+      { id: attendance.id },
       {
         $set: {
           checkOutTime: data.checkOutTime,
@@ -78,8 +78,8 @@ export default class AttendanceService {
       },
       { new: true }
     );
-    console.log("updated attendance")
-    console.log(attendance)
+    console.log("updated attendance");
+    console.log(attendance);
     return attendance;
   };
 
