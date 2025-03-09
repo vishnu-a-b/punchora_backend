@@ -5,6 +5,7 @@ const faceapi = require("@vladmandic/face-api");
 import { FaceDescriptor } from "../modules/faceDescriptor/models/FaceDescriptor";
 import { User } from "../modules/user/models/User";
 import path from "path";
+import AttendanceError from "../errors/errorTypes/AttendanceError";
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({
   Canvas,
@@ -57,7 +58,7 @@ export class FaceRecognitionService {
         .withFaceDescriptor();
 
       if (!detection) {
-        console.log("No face detected in the image")
+        console.log("No face detected in the image");
         throw new Error("No face detected in the image");
       }
 
@@ -70,7 +71,6 @@ export class FaceRecognitionService {
         user: "",
         distance: Infinity,
       };
-
 
       for (const { user, descriptor } of values) {
         const distance = faceapi.euclideanDistance(
@@ -86,18 +86,18 @@ export class FaceRecognitionService {
       console.log(bestMatch.distance);
 
       if (bestMatch.distance > this.faceMatchingThreshold) {
-        console.log("No matching face found")
+        console.log("No matching face found");
         throw new Error("No matching face found");
       }
       const user = await User.findById(bestMatch.user);
-      if (!user) {
-        throw new Error();
-      }
 
       return user;
     } catch (error) {
       console.error("Face recognition failed:", error);
-      throw new Error("unable to detect face");
+      throw new AttendanceError({
+        error:
+          "Unable to detect face. Please position your face in front of the device",
+      });
     }
   };
 }
