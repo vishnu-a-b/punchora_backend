@@ -59,6 +59,7 @@ export default class AttendanceService {
         $lte: endOfDay,
       },
       staff: data.staff,
+      status: AttendanceStatus.checkedIn,
     }).sort({ createdAt: -1 });
     if (!attendance) {
       throw new AttendanceError({
