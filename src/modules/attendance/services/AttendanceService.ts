@@ -23,8 +23,7 @@ export default class AttendanceService {
     console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setHours(0, 0, 0, 0);
-    endOfDay.setHours(23, 59, 59, 999);
+    startOfDay.setDate(startOfDay.getDate() - 1);
     console.log(startOfDay);
     console.log(endOfDay);
     let attendance = await Attendance.findOne({
@@ -34,18 +33,18 @@ export default class AttendanceService {
       },
       staff: data.staff,
     });
-    if (!attendance) {
-      attendance = await Attendance.create(data);
+    if (attendance && attendance.status == AttendanceStatus.checkedIn) {
+      throw Error("You have to checkout before checking in again!");
     }
-    return attendance;
+
+    return await Attendance.create(data);
   };
 
   checkOut = async (data: AttendanceCheckOut) => {
     console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setHours(0, 0, 0, 0);
-    endOfDay.setHours(23, 59, 59, 999);
+    startOfDay.setDate(startOfDay.getDate() - 1);
     console.log(startOfDay);
     console.log(endOfDay);
     let attendance = await Attendance.findOne({
