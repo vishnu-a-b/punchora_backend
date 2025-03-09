@@ -33,13 +33,13 @@ export default class AttendanceService {
         $lte: endOfDay,
       },
       staff: data.staff,
-    });
+    }).sort({ createdAt: -1 });
     console.log("available attenfdance");
     console.log(attendance);
     console.log(attendance?.status == AttendanceStatus.checkedIn);
     if (attendance && attendance.status == AttendanceStatus.checkedIn) {
       throw new AttendanceError({
-        error: "You have to check-out before check-in in again!",
+        error: "You have to check-out before check-in again!",
       });
     }
 
@@ -59,7 +59,7 @@ export default class AttendanceService {
         $lte: endOfDay,
       },
       staff: data.staff,
-    });
+    }).sort({ createdAt: -1 });
     if (!attendance) {
       throw new AttendanceError({
         error: "You have to check-in before check-out!",
