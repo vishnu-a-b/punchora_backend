@@ -20,6 +20,9 @@ interface AttendanceCheckOut {
 }
 
 export default class AttendanceService {
+  create = async (data: any) => {
+    return await Attendance.create(data);
+  };
   checkIn = async (data: AttendanceCheckIn) => {
     console.log(data);
     const startOfDay = new Date(data.date);
@@ -100,6 +103,10 @@ export default class AttendanceService {
       staff: staff,
     });
     return attendances;
+  };
+
+  update = async (id: string, attendance: any) => {
+    return await Attendance.findByIdAndUpdate(id, attendance);
   };
 
   delete = async (id: any) => {

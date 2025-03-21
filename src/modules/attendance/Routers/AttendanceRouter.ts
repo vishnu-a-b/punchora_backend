@@ -10,6 +10,11 @@ import multer from "multer";
 import { multerFileStorage } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
+import authorizeUser from "../../../middlewares/authorizeUser";
+import { attendanceCreateValidator } from "../validators/attendanceCreateValidator";
+import { createAttendanceDoc } from "../docs/createAttendanceDoc";
+import { attendanceUpdateValidator } from "../validators/attendanceUpdateValidator";
+import { updateAttendanceDoc } from "../docs/updateAttendanceDoc";
 
 const router = express.Router();
 const controller = new AttendanceController();
@@ -31,6 +36,32 @@ const singleUploadMethod = (
     next();
   });
 };
+
+const multiUpload = multer({
+  storage: multerFileStorage,
+  fileFilter: multerImageFilter,
+}).fields([
+  { name: "checkInPhoto", maxCount: 1 },
+  { name: "checkOutPhoto", maxCount: 1 },
+]);
+
+const multiUploadMethod = (req: Request, res: Response, next: NextFunction) => {
+  return multiUpload(req, res, function (err) {
+    if (err) {
+      return next(new BadRequestError({ error: "invalid file type" }));
+    }
+    next();
+  });
+};
+
+router.post(
+  "/",
+  multiUploadMethod,
+  authorizeUser({ allowedRoles: [] }),
+  attendanceCreateValidator,
+  createAttendanceDoc,
+  controller.create
+);
 
 router.get(
   "/:id",
@@ -54,6 +85,14 @@ router.post(
   singleUploadMethod,
   markAttendanceViaPhotoValidator,
   controller.markAttendanceViaRecognition
+);
+router.put(
+  "/:id",
+  multiUploadMethod,
+  authorizeUser({ allowedRoles: [] }),
+  attendanceUpdateValidator,
+  updateAttendanceDoc,
+  controller.update
 );
 
 export default router;

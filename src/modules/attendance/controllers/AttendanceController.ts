@@ -7,10 +7,75 @@ import { FaceRecognitionService } from "../../../services/facialRecognitionservi
 import { Staff } from "../../staff/models/Staff";
 import Configs from "../../../configs/configs";
 import AttendanceError from "../../../errors/errorTypes/AttendanceError";
+import BadRequestError from "../../../errors/errorTypes/BadRequestError";
+import mongoose from "mongoose";
+import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 
 export default class AttendanceController extends BaseController {
   service = new AttendanceService();
   facialRecognitionService = new FaceRecognitionService();
+
+  create = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      let body = req.body;
+      if (req.files) {
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        if (files.checkInPhoto?.[0]) {
+          body.checkInPhoto = files.checkInPhoto?.[0];
+        }
+        if (files.checkOutPhoto?.[0]) {
+          body.checkOutPhoto = files.checkOutPhoto?.[0];
+        }
+      }
+      const attendance = await this.service.create(req.body);
+
+      this.sendSuccessResponse(res, 201, { data: attendance });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid data" }));
+      }
+      next(e);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        next(new ValidationFailedError({ errors: errors.array() }));
+        return;
+      }
+      let body = req.body;
+      if (req.files) {
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        if (files.checkInPhoto?.[0]) {
+          body.checkInPhoto = files.checkInPhoto?.[0];
+        }
+        if (files.checkOutPhoto?.[0]) {
+          body.checkOutPhoto = files.checkOutPhoto?.[0];
+        }
+      }
+      const attendance = await this.service.update(req.params.id, body);
+      if (!attendance) {
+        throw new NotFoundError({ error: "attendance not found" });
+      }
+      this.sendSuccessResponse(res, 200, { data: { _id: attendance!._id } });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid attendance_id" }));
+      }
+      next(e);
+    }
+  };
 
   markAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {

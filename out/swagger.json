@@ -2809,6 +2809,77 @@
         ]
       }
     },
+    "/v1/attendance/": {
+      "post": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "staff",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "checkInTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkOutTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkInPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "checkOutPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "sttaus",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "present",
+              "absent",
+              "leave",
+              "checkedIn"
+            ]
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/v1/attendance/{id}": {
       "get": {
         "tags": [
@@ -2888,6 +2959,81 @@
                 "name": "main"
               }
             }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "staff",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkInTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkOutTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkInPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "checkOutPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "sttaus",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "present",
+              "absent",
+              "leave",
+              "checkedIn"
+            ]
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         },
         "security": [
