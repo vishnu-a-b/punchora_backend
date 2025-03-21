@@ -24,13 +24,13 @@ const controller = new UserController();
 
 router.use(authenticateUser);
 
-const upload = multer({
+const multiUpload = multer({
   storage: multerFileStorage,
   fileFilter: multerImageFilter,
-}).any();
+}).fields([{ name: "photos" }, { name: "profilePicture", maxCount: 1 }]);
 
 const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
-  return upload(req, res, function (err) {
+  return multiUpload(req, res, function (err) {
     if (err) {
       return next(new BadRequestError({ error: "invalid file type" }));
     }

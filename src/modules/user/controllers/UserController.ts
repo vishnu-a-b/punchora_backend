@@ -56,11 +56,21 @@ export default class UserController extends BaseController {
       }
       let photoUrls: any[] = [];
       if (req.files) {
-        (req.files as Express.Multer.File[])!.forEach((file) => {
-          photoUrls.push(Configs.domain + file.filename);
-        });
-        req.body.photos = photoUrls;
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        if (files.photos) {
+          files.photos.forEach((file) => {
+            photoUrls.push(Configs.domain + file.filename);
+          });
+          req.body.photos = photoUrls;
+        }
+        if (files.profilePicture?.[0]) {
+          req.body.profilePicture =
+            Configs.domain + files.profilePicture?.[0].filename;
+        }
       }
+
       const user = await this.service.create(req.body);
       if (req.files) {
         (req.files as Express.Multer.File[])!.forEach((file) => {
@@ -100,10 +110,19 @@ export default class UserController extends BaseController {
       }
       let photoUrls: any[] = [];
       if (req.files) {
-        (req.files as Express.Multer.File[])!.forEach((file) => {
-          photoUrls.push(Configs.domain + file.filename);
-        });
-        req.body.photos = photoUrls;
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        if (files.photos) {
+          files.photos.forEach((file) => {
+            photoUrls.push(Configs.domain + file.filename);
+          });
+          req.body.photos = photoUrls;
+        }
+        if (files.profilePicture?.[0]) {
+          req.body.profilePicture =
+            Configs.domain + files.profilePicture?.[0].filename;
+        }
       }
       if (req.body.mobileNo) {
         const availableUser = await User.findOne({

@@ -57,10 +57,19 @@ const multiUploadMethod = (req: Request, res: Response, next: NextFunction) => {
 router.post(
   "/",
   multiUploadMethod,
+  authenticateUser,
   authorizeUser({ allowedRoles: [] }),
   attendanceCreateValidator,
   createAttendanceDoc,
   controller.create
+);
+
+router.get(
+  "/all-staffs",
+  authenticateUser,
+  authorizeUser({ allowedRoles: [] }),
+  attendanceListDoc,
+  controller.getDatewiseAttendanceForAllStaffs
 );
 
 router.get(
@@ -89,6 +98,7 @@ router.post(
 router.put(
   "/:id",
   multiUploadMethod,
+  authenticateUser,
   authorizeUser({ allowedRoles: [] }),
   attendanceUpdateValidator,
   updateAttendanceDoc,

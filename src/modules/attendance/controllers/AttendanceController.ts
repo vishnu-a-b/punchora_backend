@@ -28,10 +28,11 @@ export default class AttendanceController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.checkInPhoto?.[0]) {
-          body.checkInPhoto = files.checkInPhoto?.[0];
+          body.checkInPhoto = Configs.domain + files.checkInPhoto?.[0].filename;
         }
         if (files.checkOutPhoto?.[0]) {
-          body.checkOutPhoto = files.checkOutPhoto?.[0];
+          body.checkOutPhoto =
+            Configs.domain + files.checkOutPhoto?.[0].filename;
         }
       }
       const attendance = await this.service.create(req.body);
@@ -58,10 +59,11 @@ export default class AttendanceController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.checkInPhoto?.[0]) {
-          body.checkInPhoto = files.checkInPhoto?.[0];
+          body.checkInPhoto = Configs.domain + files.checkInPhoto?.[0].filename;
         }
         if (files.checkOutPhoto?.[0]) {
-          body.checkOutPhoto = files.checkOutPhoto?.[0];
+          body.checkOutPhoto =
+            Configs.domain + files.checkOutPhoto?.[0].filename;
         }
       }
       const attendance = await this.service.update(req.params.id, body);
@@ -215,6 +217,30 @@ export default class AttendanceController extends BaseController {
         new Date(startDate as string),
         new Date(endDate as string),
         staffId
+      );
+
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getDatewiseAttendanceForAllStaffs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { startDate, endDate, status } = req.query;
+      if (!startDate || !endDate || !status) {
+        throw new ValidationFailedError({
+          errors: ["startDate, endDate & status required as query parameters"],
+        });
+      }
+      const data = await this.service.filterAllStaffsByDate(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        status as string
       );
 
       this.sendSuccessResponse(res, 200, { data });

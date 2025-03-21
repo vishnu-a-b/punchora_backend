@@ -105,6 +105,25 @@ export default class AttendanceService {
     return attendances;
   };
 
+  filterAllStaffsByDate = async (
+    startDate: Date,
+    endDate: Date,
+    status: string
+  ) => {
+    const startOfStartDate = new Date(startDate);
+    const endOfEndDate = new Date(endDate);
+    startOfStartDate.setHours(0, 0, 0, 0);
+    endOfEndDate.setHours(23, 59, 59, 999);
+    const attendances = await Attendance.find({
+      date: {
+        $gte: startOfStartDate,
+        $lte: endOfEndDate,
+      },
+      status: status,
+    }).populate("staff");
+    return attendances;
+  };
+
   update = async (id: string, attendance: any) => {
     return await Attendance.findByIdAndUpdate(id, attendance);
   };
