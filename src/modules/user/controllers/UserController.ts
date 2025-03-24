@@ -79,9 +79,14 @@ export default class UserController extends BaseController {
 
       const user = await this.service.create(req.body);
       if (req.files) {
-        (req.files as Express.Multer.File[])!.forEach((file) => {
-          this.facialRecognitionService.createDescriptor(user.id, file.path);
-        });
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+        if (files.photos) {
+          files.photos.forEach((file) => {
+            this.facialRecognitionService.createDescriptor(user.id, file.path);
+          });
+        }
       }
       this.sendSuccessResponse(res, 201, { data: user });
     } catch (e: any) {
