@@ -41,6 +41,7 @@ const staffSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    salary: { type: Number },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
