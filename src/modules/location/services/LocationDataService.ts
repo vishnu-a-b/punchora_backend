@@ -33,4 +33,21 @@ export default class LocationDataService {
   delete = async (id: any) => {
     return await LocationData.findByIdAndDelete(id);
   };
+
+  insertMany = async (data: any[]) => {
+    return await LocationData.insertMany(data);
+  };
+  filterByDate = async (date: Date) => {
+    const startOfStartDate = new Date(date);
+    const endOfEndDate = new Date(date);
+    startOfStartDate.setHours(0, 0, 0, 0);
+    endOfEndDate.setHours(23, 59, 59, 999);
+    const locations = await LocationData.find({
+      date: {
+        $gte: startOfStartDate,
+        $lte: endOfEndDate,
+      },
+    }).populate("staff");
+    return locations;
+  };
 }

@@ -8,7 +8,19 @@ import { createLocationDataValidator } from "../validators/createLocationDataVal
 const router = express.Router();
 const controller = new LocationDataController();
 
+router.get(
+  "/by-date",
+  authenticateUser,
+  locationDataListDoc,
+  controller.filterByDate
+);
 router.get("/:id", authenticateUser, locationDataListDoc, controller.list);
+router.post(
+  "/bulk",
+  authenticateUser,
+  locationDataCreateDoc,
+  controller.insertMany
+);
 
 router.post(
   "/",

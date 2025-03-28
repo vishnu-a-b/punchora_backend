@@ -40,6 +40,30 @@ export default class LocationDataController extends BaseController {
     }
   };
 
+  insertMany = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.insertMany(req.body);
+      this.sendSuccessResponse(res, 201, { data: data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  filterByDate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        throw new ValidationFailedError({
+          errors: ["date required as query parameters"],
+        });
+      }
+      const data = await this.service.filterByDate(new Date(date as string));
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
   getOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const location = await this.service.findOne(req.params.id);
