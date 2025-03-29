@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Genders } from "../../base/enums/genders";
 import { MaritalStatuses } from "../../base/enums/maritalStatuses";
 import ModelFilterInterface from "../../../interfaces/ModelFilterInterface";
+import { FaceDescriptor } from "../../faceDescriptor/models/FaceDescriptor";
 
 const userSchema = new mongoose.Schema(
   {
@@ -48,6 +49,19 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  const filter = this.getFilter();
+  if (!update) return next();
+  if ("photos" in update) {
+    console.log(
+      "there is photos field in update body. deleting all descriptors available"
+    );
+    await FaceDescriptor.deleteMany({ user: filter._id });
+  }
+  next();
+});
 
 export const userFilterFields: ModelFilterInterface = {
   filterFields: [
