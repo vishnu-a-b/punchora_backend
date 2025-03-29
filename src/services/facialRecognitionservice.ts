@@ -14,7 +14,7 @@ faceapi.env.monkeyPatch({
 } as any);
 
 export class FaceRecognitionService {
-  private faceMatchingThreshold = 0.5;
+  private faceMatchingThreshold = 0.45;
 
   constructor() {
     this.initializeFaceAPI();
