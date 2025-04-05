@@ -75,8 +75,6 @@ export default class UserService {
       throw new NotFoundError({ error: "user not found" });
     }
     const newPasswordHash = await createPasswordHash(newPassword);
-    console.log("new password hash");
-    console.log(newPasswordHash);
     const result = await bcrypt.compare(oldPassword, user.password);
     if (!result) {
       throw new ValidationFailedError({ error: "incorrect password" });

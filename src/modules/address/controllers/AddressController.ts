@@ -81,7 +81,6 @@ export default class AddressController extends BaseController {
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const address = await this.service.delete(req.params.id);
-      console.log(address);
       if (!address) {
         throw new NotFoundError({ error: "address not found" });
       }

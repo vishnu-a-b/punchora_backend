@@ -24,12 +24,9 @@ export default class AttendanceService {
     return await Attendance.create(data);
   };
   checkIn = async (data: AttendanceCheckIn) => {
-    console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
     startOfDay.setDate(startOfDay.getHours() - 18);
-    console.log(startOfDay);
-    console.log(endOfDay);
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
@@ -37,9 +34,6 @@ export default class AttendanceService {
       },
       staff: data.staff,
     }).sort({ createdAt: -1 });
-    console.log("available attenfdance");
-    console.log(attendance);
-    console.log(attendance?.status == AttendanceStatus.checkedIn);
     if (attendance && attendance.status == AttendanceStatus.checkedIn) {
       throw new AttendanceError({
         error: "You have to check-out before check-in again!",
@@ -50,12 +44,11 @@ export default class AttendanceService {
   };
 
   checkOut = async (data: AttendanceCheckOut) => {
-    console.log(data);
+    
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
     startOfDay.setDate(startOfDay.getDate() - 1);
-    console.log(startOfDay);
-    console.log(endOfDay);
+   
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
@@ -69,9 +62,7 @@ export default class AttendanceService {
         error: "You have to check-in before check-out!",
       });
     }
-    console.log("available attendance");
-    console.log(attendance);
-    console.log(attendance.id);
+   
     attendance = await Attendance.findByIdAndUpdate(
       attendance.id,
       {
@@ -89,8 +80,6 @@ export default class AttendanceService {
   };
 
   filterByDate = async (startDate: Date, endDate: Date, staff: string) => {
-    console.log(startDate);
-    console.log(endDate);
     const startOfStartDate = new Date(startDate);
     const endOfEndDate = new Date(endDate);
     startOfStartDate.setHours(0, 0, 0, 0);

@@ -40,7 +40,6 @@ export default class LeaveRequestController extends BaseController {
 
       this.sendSuccessResponseList(res, 200, { data });
     } catch (e: any) {
-      console.log(e);
       next(e);
     }
   };

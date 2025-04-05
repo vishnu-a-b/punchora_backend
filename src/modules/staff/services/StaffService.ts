@@ -56,8 +56,6 @@ export default class StaffService {
         },
         staff: staff,
       });
-      console.log("attendance=========")
-      console.log(attendance)
       let data = staff;
       data.attendance = attendance;
       staffData.push(data);

@@ -6,7 +6,6 @@ export const attendanceCreateValidator = [
   body("staff").custom(async (staffId: any) => {
     try {
       const staff = await Staff.findById(staffId);
-      console.log(staff);
       if (!staff) {
         return Promise.reject("staff not found");
       }

@@ -56,22 +56,16 @@ export default class UserController extends BaseController {
       }
       let photoUrls: any[] = [];
       if (req.files) {
-        console.log("files===");
-        console.log(req.files);
         const files = req.files as {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.photos) {
-          console.log("photos exist");
-          console.log(files.photos);
           files.photos.forEach((file) => {
             photoUrls.push(Configs.domain + file.filename);
           });
           req.body.photos = photoUrls;
         }
         if (files.profilePicture?.[0]) {
-          console.log("profilePicture exist");
-          console.log(files.profilePicture);
           req.body.profilePicture =
             Configs.domain + files.profilePicture?.[0].filename;
         }
