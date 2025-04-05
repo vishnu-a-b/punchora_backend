@@ -27,6 +27,9 @@ export default class AttendanceService {
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
     startOfDay.setDate(startOfDay.getHours() - 18);
+
+    console.log("startOfDay", startOfDay);
+    console.log("endOfDay", endOfDay);
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
@@ -39,16 +42,15 @@ export default class AttendanceService {
         error: "You have to check-out before check-in again!",
       });
     }
-
     return await Attendance.create(data);
   };
 
   checkOut = async (data: AttendanceCheckOut) => {
-    
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setDate(startOfDay.getDate() - 1);
-   
+    startOfDay.setDate(startOfDay.getHours() - 18);
+    console.log("startOfDay", startOfDay);
+    console.log("endOfDay", endOfDay);
     let attendance = await Attendance.findOne({
       date: {
         $gte: startOfDay,
@@ -62,7 +64,7 @@ export default class AttendanceService {
         error: "You have to check-in before check-out!",
       });
     }
-   
+
     attendance = await Attendance.findByIdAndUpdate(
       attendance.id,
       {
