@@ -37,17 +37,23 @@ export default class LocationDataService {
   insertMany = async (data: any[]) => {
     return await LocationData.insertMany(data);
   };
-  filterByDate = async (date: Date) => {
-    const startOfStartDate = new Date(date);
-    const endOfEndDate = new Date(date);
-    startOfStartDate.setHours(0, 0, 0, 0);
-    endOfEndDate.setHours(23, 59, 59, 999);
-    const locations = await LocationData.find({
+  filterByDate = async (
+    startDate: Date,
+    endDate: Date,
+    staffId: string | undefined
+  ) => {
+    const startOfStartDate = new Date(startDate);
+    const endOfEndDate = new Date(endDate);
+    let query: any = {
       date: {
         $gte: startOfStartDate,
         $lte: endOfEndDate,
       },
-    }).populate("staff");
+    };
+    if (staffId) {
+      query.staff = staffId;
+    }
+    const locations = await LocationData.find(query).populate("staff");
     return locations;
   };
 }

@@ -14,7 +14,7 @@ router.get(
   locationDataListDoc,
   controller.filterByDate
 );
-router.get("/:id", authenticateUser, locationDataListDoc, controller.list);
+router.get("/", authenticateUser, locationDataListDoc, controller.list);
 router.post(
   "/bulk",
   authenticateUser,

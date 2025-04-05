@@ -51,13 +51,17 @@ export default class LocationDataController extends BaseController {
 
   filterByDate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { date } = req.query;
-      if (!date) {
+      const { startDate, endDate, staff } = req.query;
+      if (!(startDate && endDate)) {
         throw new ValidationFailedError({
-          errors: ["date required as query parameters"],
+          errors: ["startDate & endDate required as query parameters"],
         });
       }
-      const data = await this.service.filterByDate(new Date(date as string));
+      const data = await this.service.filterByDate(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        staff as string | undefined
+      );
       this.sendSuccessResponse(res, 200, { data });
     } catch (e: any) {
       next(e);

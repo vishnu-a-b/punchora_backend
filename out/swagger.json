@@ -3519,7 +3519,17 @@
         "description": "",
         "parameters": [
           {
-            "name": "date",
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "staff",
             "in": "query",
             "type": "string"
           }
@@ -3584,19 +3594,13 @@
         ]
       }
     },
-    "/v1/location-data/{id}": {
+    "/v1/location-data/": {
       "get": {
         "tags": [
           "LocationData"
         ],
         "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "limit",
             "in": "query",
@@ -3671,9 +3675,7 @@
             "JWT": []
           }
         ]
-      }
-    },
-    "/v1/location-data/bulk": {
+      },
       "post": {
         "tags": [
           "LocationData"
@@ -3715,7 +3717,7 @@
         ]
       }
     },
-    "/v1/location-data/": {
+    "/v1/location-data/bulk": {
       "post": {
         "tags": [
           "LocationData"
