@@ -26,7 +26,7 @@ export default class AttendanceService {
   checkIn = async (data: AttendanceCheckIn) => {
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setDate(startOfDay.getHours() - 18);
+    startOfDay.setHours(startOfDay.getHours() - 18);
 
     console.log("startOfDay", startOfDay);
     console.log("endOfDay", endOfDay);
@@ -48,7 +48,7 @@ export default class AttendanceService {
   checkOut = async (data: AttendanceCheckOut) => {
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setDate(startOfDay.getHours() - 18);
+    startOfDay.setHours(startOfDay.getHours() - 18);
     console.log("startOfDay", startOfDay);
     console.log("endOfDay", endOfDay);
     let attendance = await Attendance.findOne({
