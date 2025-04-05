@@ -89,7 +89,7 @@ router.post(
 );
 
 router.post(
-  "/mark-via-photo",
+  "/mark-via-recogntion",
   markAttendanceViaImageDoc,
   singleUploadMethod,
   markAttendanceViaPhotoValidator,

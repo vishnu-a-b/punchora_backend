@@ -27,7 +27,7 @@ export default class AttendanceService {
     console.log(data);
     const startOfDay = new Date(data.date);
     const endOfDay = new Date(data.date);
-    startOfDay.setDate(startOfDay.getDate() - 1);
+    startOfDay.setDate(startOfDay.getHours() - 18);
     console.log(startOfDay);
     console.log(endOfDay);
     let attendance = await Attendance.findOne({
