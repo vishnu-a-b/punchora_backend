@@ -142,11 +142,6 @@ export default class AttendanceController extends BaseController {
         throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
-      if (!body.checkOutTime && !body.checkInTime) {
-        throw new ValidationFailedError({
-          errors: ["checkOutTime or checkInTime required"],
-        });
-      }
       if (!req.file) {
         throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
