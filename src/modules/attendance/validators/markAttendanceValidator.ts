@@ -14,8 +14,6 @@ export const markAttendanceValidator = [
     }
   }),
   body("date").isISO8601(),
-  body("checkInTime").optional().isISO8601(),
-  body("checkOutTime").optional().isISO8601(),
   body("checkInLocation").optional(),
   body("checkInLocation.latitude").optional().isNumeric(),
   body("checkInLocation.longitude").optional().isNumeric(),

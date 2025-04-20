@@ -104,7 +104,7 @@ export default class AttendanceController extends BaseController {
         }
         data = await this.service.checkOut({
           date: body.date,
-          checkOutTime: body.checkOutTime,
+          checkOutTime: new Date(),
           staff: body.staff,
           checkOutPhoto: body.photo,
           checkOutLocation: JSON.parse(body.checkOutLocation),
@@ -118,7 +118,7 @@ export default class AttendanceController extends BaseController {
         }
         data = await this.service.checkIn({
           date: body.date,
-          checkInTime: body.checkInTime,
+          checkInTime: new Date(),
           staff: body.staff,
           checkInPhoto: body.photo,
           checkInLocation: JSON.parse(body.checkInLocation),
