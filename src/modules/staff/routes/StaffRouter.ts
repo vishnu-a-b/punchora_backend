@@ -12,6 +12,7 @@ import { staffUpdateDoc } from "../docs/staffUpdateDoc";
 import { staffUpdateValidator } from "../validators/staffUpdateValidator";
 import StaffController from "../controllers/StaffController";
 import { staffDeleteDoc } from "../docs/staffDeleteDoc";
+import RolesEnum from "../../base/enums/roles";
 
 const router = express.Router();
 const controller = new StaffController();
@@ -40,7 +41,7 @@ router.post(
 router.put(
   "/:id",
   staffUpdateDoc,
-  authorization,
+  authorizeUser({ allowedRoles: [RolesEnum.staff] }),
   staffUpdateValidator,
   controller.update
 );
