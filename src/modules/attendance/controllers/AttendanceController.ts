@@ -165,34 +165,11 @@ export default class AttendanceController extends BaseController {
           error: "facial recognition failed. No staff found",
         });
       }
-      if (body.checkIn === "false") {
-        if (!body.checkOutLocation) {
-          throw new ValidationFailedError({
-            errors: ["checkOutLocation required"],
-          });
-        }
-        await this.service.checkOut({
-          date: body.date,
-          checkOutTime: body.checkOutTime,
-          staff: staff.id,
-          checkOutPhoto: body.photo,
-          checkOutLocation: JSON.parse(body.checkOutLocation),
-        });
-      }
-      if (body.checkIn === "true") {
-        if (!body.checkInLocation) {
-          throw new ValidationFailedError({
-            errors: ["checkInLocation required"],
-          });
-        }
-        await this.service.checkIn({
-          date: body.date,
-          checkInTime: body.checkInTime,
-          staff: staff.id,
-          checkInPhoto: body.photo,
-          checkInLocation: JSON.parse(body.checkInLocation),
-        });
-      }
+      await this.service.mark({
+        staff: staff.id,
+        photo: body.photo,
+        location: JSON.parse(body.location),
+      });
 
       this.sendSuccessResponse(res, 201, { data: staff });
     } catch (e: any) {

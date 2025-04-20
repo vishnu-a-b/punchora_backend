@@ -19,9 +19,73 @@ interface AttendanceCheckOut {
   checkOutLocation?: { latitude: number; longitude: number } | undefined;
 }
 
+interface AttendanceData {
+  staff: string;
+  photo: string | undefined;
+  location?: { latitude: number; longitude: number } | undefined;
+}
+
 export default class AttendanceService {
   create = async (data: any) => {
     return await Attendance.create(data);
+  };
+
+  mark = async (data: AttendanceData) => {
+    //checking for 2 minutes gap within recent markings
+    const time = new Date();
+
+    let startTime = new Date();
+    const endTime = new Date();
+    startTime.setMinutes(startTime.getMinutes() - 2);
+
+    let attendance = await Attendance.findOne({
+      date: {
+        $gte: startTime,
+        $lte: endTime,
+      },
+      staff: data.staff,
+    }).sort({ createdAt: -1 });
+
+    if (attendance) {
+      throw new AttendanceError({
+        error: "You have a recent marking. Wait for some time and try again!",
+      });
+    }
+
+    //checking for marking withing 18 hrs
+    startTime = new Date();
+    startTime.setHours(startTime.getHours() - 18);
+
+    attendance = await Attendance.findOne({
+      date: {
+        $gte: startTime,
+        $lte: endTime,
+      },
+      staff: data.staff,
+    }).sort({ createdAt: -1 });
+
+    if (attendance && attendance.status == AttendanceStatus.checkedIn) {
+      return await Attendance.findByIdAndUpdate(
+        attendance.id,
+        {
+          $set: {
+            checkOutTime: time,
+            status: AttendanceStatus.present,
+            checkOutLocation: data.location,
+            checkOutPhoto: data.photo,
+          },
+        },
+        { new: true }
+      );
+    }
+
+    return await Attendance.create({
+      staff: data.staff,
+      date: time,
+      checkInTime: time,
+      checkInPhoto: data.photo,
+      checkInLocation: data.location,
+    });
   };
   checkIn = async (data: AttendanceCheckIn) => {
     const startOfDay = new Date(data.date);
