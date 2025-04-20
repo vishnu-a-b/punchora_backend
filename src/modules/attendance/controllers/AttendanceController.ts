@@ -225,4 +225,19 @@ export default class AttendanceController extends BaseController {
       next(e);
     }
   };
+
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const attendance = await this.service.delete(req.params.id);
+      if (!attendance) {
+        throw new NotFoundError({ error: "attendance not found" });
+      }
+      this.sendSuccessResponse(res, 204, { data: {} });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid attendance_id" }));
+      }
+      next(e);
+    }
+  };
 }

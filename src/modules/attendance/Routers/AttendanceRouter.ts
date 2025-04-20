@@ -104,5 +104,6 @@ router.put(
   updateAttendanceDoc,
   controller.update
 );
+router.delete("/:id", authenticateUser, controller.delete);
 
 export default router;
