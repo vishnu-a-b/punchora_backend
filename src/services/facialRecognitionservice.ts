@@ -2,7 +2,6 @@ import * as canvas from "canvas";
 const tf = require("@tensorflow/tfjs-node");
 const faceapi = require("@vladmandic/face-api");
 
-import { FaceDescriptor } from "../modules/faceDescriptor/models/FaceDescriptor";
 import { User } from "../modules/user/models/User";
 import path from "path";
 import AttendanceError from "../errors/errorTypes/AttendanceError";
@@ -29,20 +28,26 @@ export class FaceRecognitionService {
     await faceapi.nets.ssdMobilenetv1.loadFromDisk(MODEL_PATH);
   }
 
-  createDescriptor = async (user: string, image: string) => {
+  createDescriptor = async (user: string, images: string[]) => {
     try {
-      const img = await canvas.loadImage(image);
-      const detection = await faceapi
-        .detectSingleFace(img as any)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      const descriptors = [];
+      for (const image of images) {
+        const img = await canvas.loadImage(image);
+        const detection = await faceapi
+          .detectSingleFace(img as any)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
 
-      if (!detection) {
-        throw new Error("No face detected in the image");
+        if (!detection) {
+          throw new Error("No face detected in the image");
+        }
+        descriptors.push(detection.descriptor);
       }
-      await FaceDescriptor.create({
+      const averageDescriptor = this.averageDescriptors(descriptors);
+
+      await AverageFaceDescriptor.create({
         user,
-        descriptor: Array.from(detection.descriptor),
+        descriptor: averageDescriptor,
       });
     } catch (error) {
       console.log("Face registration failed:", error);
@@ -100,5 +105,23 @@ export class FaceRecognitionService {
           "Unable to detect face. Please position your face in front of the device",
       });
     }
+  };
+
+  averageDescriptors = (descriptors: Float32Array[]): Float32Array => {
+    const avg = new Float32Array(128);
+    descriptors.forEach((desc) => {
+      if (desc.length === 128) {
+        desc.forEach((val, i) => {
+          avg[i] += val;
+        });
+      }
+    });
+    if (avg.length === 128) {
+      for (let i = 0; i < 128; i++) {
+        avg[i] /= descriptors.length;
+      }
+    }
+
+    return avg;
   };
 }

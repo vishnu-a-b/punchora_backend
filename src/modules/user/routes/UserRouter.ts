@@ -39,8 +39,6 @@ const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-router.get("/create-average", controller.createAverageFaceDescriptors);
-
 router.get(
   "/",
   setFilterParams(userFilterFields),

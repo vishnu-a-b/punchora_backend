@@ -79,9 +79,7 @@ export default class UserController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.photos) {
-          files.photos.forEach((file) => {
-            this.facialRecognitionService.createDescriptor(user.id, file.path);
-          });
+          this.facialRecognitionService.createDescriptor(user.id, files.photos.map((photo)=>photo.path));
         }
       }
       this.sendSuccessResponse(res, 201, { data: user });
@@ -220,61 +218,40 @@ export default class UserController extends BaseController {
     }
   };
 
-  createAverageFaceDescriptors = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const users = await User.find().limit(1000);
-      let completedUsers = 0;
-      for (const user of users) {
-        console.log("user", user.name);
-        const descriptors = await FaceDescriptor.find({ user: user.id });
-        if(descriptors.length>0) {
-          console.log("got descriptors", descriptors.length);
-          const averageDescriptor = this.averageDescriptors(
-            descriptors.map((des) => new Float32Array(des.descriptor))
-          );
-          console.log("average descriptor");
-          console.log(averageDescriptor);
-          try {
-            await AverageFaceDescriptor.create({
-              user: user.id,
-              descriptor: [...averageDescriptor],
-            });
-            console.log("average descriptor created");
-            completedUsers = completedUsers + 1;
-          } catch (e) {
-            console.log("creation error");
-          }
-        }
+  // createAverageFaceDescriptors = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const users = await User.find().limit(1000);
+  //     let completedUsers = 0;
+  //     for (const user of users) {
+  //       console.log("user", user.name);
+  //       const descriptors = await FaceDescriptor.find({ user: user.id });
+  //       if(descriptors.length>0) {
+  //         console.log("got descriptors", descriptors.length);
+  //         const averageDescriptor = this.averageDescriptors(
+  //           descriptors.map((des) => new Float32Array(des.descriptor))
+  //         );
+  //         console.log("average descriptor");
+  //         console.log(averageDescriptor);
+  //         try {
+  //           await AverageFaceDescriptor.create({
+  //             user: user.id,
+  //             descriptor: [...averageDescriptor],
+  //           });
+  //           console.log("average descriptor created");
+  //           completedUsers = completedUsers + 1;
+  //         } catch (e) {
+  //           console.log("creation error");
+  //         }
+  //       }
        
-      }
-      this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
-    } catch (e: any) {
-      next(e);
-    }
-  };
-
-  averageDescriptors = (descriptors: Float32Array[]): Float32Array => {
-    const avg = new Float32Array(128);
-    descriptors.forEach((desc) => {
-      if (desc.length === 128) {
-        console.log("inside descriptors");
-        console.log(desc);
-        desc.forEach((val, i) => {
-          avg[i] += val;
-        });
-      }
-    });
-    console.log("average inside", avg);
-    if (avg.length === 128) {
-      for (let i = 0; i < 128; i++) {
-        avg[i] /= descriptors.length;
-      }
-    }
-
-    return avg;
-  };
+  //     }
+  //     this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
+  //   } catch (e: any) {
+  //     next(e);
+  //   }
+  // };
 }
