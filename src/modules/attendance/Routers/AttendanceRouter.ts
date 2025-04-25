@@ -7,7 +7,7 @@ import { markAttendanceValidator } from "../validators/markAttendanceValidator";
 import { markAttendanceViaPhotoValidator } from "../validators/markAttendanceViaPhotoValidator";
 import { markAttendanceViaImageDoc } from "../docs/markAttendanceViaImageDoc";
 import multer from "multer";
-import { multerFileStorage } from "../../../multer/multerConfig";
+import { multerFileStorageForAttendance } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import authorizeUser from "../../../middlewares/authorizeUser";
@@ -20,7 +20,7 @@ const router = express.Router();
 const controller = new AttendanceController();
 
 const singleUpload = multer({
-  storage: multerFileStorage,
+  storage: multerFileStorageForAttendance,
   fileFilter: multerImageFilter,
 }).single("photo");
 
@@ -38,7 +38,7 @@ const singleUploadMethod = (
 };
 
 const multiUpload = multer({
-  storage: multerFileStorage,
+  storage: multerFileStorageForAttendance,
   fileFilter: multerImageFilter,
 }).fields([
   { name: "checkInPhoto", maxCount: 1 },

@@ -4,7 +4,7 @@ import { userCreateValidator } from "../validators/UserCreateValidator";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
 import authorizeUser from "../../../middlewares/authorizeUser";
 import multer from "multer";
-import { multerFileStorage } from "../../../multer/multerConfig";
+import { multerFileStorageForUserData } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import setFilterParams from "../../../middlewares/setFilterParams";
@@ -25,7 +25,7 @@ const controller = new UserController();
 router.use(authenticateUser);
 
 const multiUpload = multer({
-  storage: multerFileStorage,
+  storage: multerFileStorageForUserData,
   fileFilter: multerImageFilter,
 }).fields([{ name: "photos" }, { name: "profilePicture", maxCount: 1 }]);
 
