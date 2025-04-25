@@ -32,12 +32,14 @@ const multiUpload = multer({
 const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
   return multiUpload(req, res, function (err) {
     if (err) {
-      console.log("upload error", err)
+      console.log("upload error", err);
       return next(new BadRequestError({ error: "invalid file type" }));
     }
     next();
   });
 };
+
+router.get("/create-average", controller.createAverageFaceDescriptors);
 
 router.get(
   "/",

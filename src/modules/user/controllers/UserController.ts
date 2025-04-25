@@ -10,6 +10,8 @@ import Configs from "../../../configs/configs";
 import { User } from "../models/User";
 import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
+import { FaceDescriptor } from "../../faceDescriptor/models/FaceDescriptor";
+import { AverageFaceDescriptor } from "../../faceDescriptor/models/AverageFaceDescriptor";
 
 export default class UserController extends BaseController {
   service = new UserService();
@@ -216,5 +218,48 @@ export default class UserController extends BaseController {
       }
       next(e);
     }
+  };
+
+  createAverageFaceDescriptors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const users = await User.find().limit(300);
+      let completedUsers = 0;
+      for (const user of users) {
+        console.log("user", user.name);
+        const descriptors = await FaceDescriptor.find({ user: user.id });
+        const averageDescriptor = this.averageDescriptors(
+          descriptors.map((des) => des.descriptor)
+        );
+        await AverageFaceDescriptor.create({
+          user: user.id,
+          descriptor: averageDescriptor,
+        });
+        console.log("average descriptor created");
+        completedUsers = completedUsers + 1;
+      }
+      this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  averageDescriptors = (descriptors: Array<Array<number>>): number[] => {
+    const avg: Array<number> = [];
+
+    descriptors.forEach((desc) => {
+      desc.forEach((val, i) => {
+        avg[i] += val;
+      });
+    });
+
+    for (let i = 0; i < 128; i++) {
+      avg[i] /= descriptors.length;
+    }
+
+    return avg;
   };
 }

@@ -6,6 +6,7 @@ import { FaceDescriptor } from "../modules/faceDescriptor/models/FaceDescriptor"
 import { User } from "../modules/user/models/User";
 import path from "path";
 import AttendanceError from "../errors/errorTypes/AttendanceError";
+import { AverageFaceDescriptor } from "../modules/faceDescriptor/models/AverageFaceDescriptor";
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({
   Canvas,
@@ -62,7 +63,7 @@ export class FaceRecognitionService {
         throw new Error("No face detected in the image");
       }
 
-      const records = await FaceDescriptor.find();
+      const records = await AverageFaceDescriptor.find();
       const values = records.map((record) => {
         return { user: record.user, descriptor: record.descriptor };
       });
