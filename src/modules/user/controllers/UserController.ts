@@ -233,7 +233,7 @@ export default class UserController extends BaseController {
         const descriptors = await FaceDescriptor.find({ user: user.id });
         console.log("got descriptors", descriptors.length);
         const averageDescriptor = this.averageDescriptors(
-          descriptors.map((des) => des.descriptor)
+          descriptors.map((des) => new Float32Array(des.descriptor))
         );
         await AverageFaceDescriptor.create({
           user: user.id,
@@ -248,7 +248,7 @@ export default class UserController extends BaseController {
     }
   };
 
-  averageDescriptors = (descriptors: Array<Array<number>>): number[] => {
+  averageDescriptors = (descriptors: Array<Float32Array>): number[] => {
     const avg: Array<number> = [];
     descriptors.forEach((desc) => {
       if (desc.length === 128) {
