@@ -226,7 +226,7 @@ export default class UserController extends BaseController {
     next: NextFunction
   ) => {
     try {
-      const users = await User.find().limit(2);
+      const users = await User.find().limit(1000);
       let completedUsers = 0;
       for (const user of users) {
         console.log("user", user.name);
