@@ -232,9 +232,12 @@ export default class UserController extends BaseController {
         console.log("user", user.name);
         const descriptors = await FaceDescriptor.find({ user: user.id });
         console.log("got descriptors", descriptors.length);
+        if(descriptors.length>0)console.log(descriptors[0])
         const averageDescriptor = this.averageDescriptors(
           descriptors.map((des) => new Float32Array(des.descriptor))
         );
+        console.log("average descriptor")
+        console.log(averageDescriptor)
         await AverageFaceDescriptor.create({
           user: user.id,
           descriptor: averageDescriptor,
