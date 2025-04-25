@@ -231,22 +231,25 @@ export default class UserController extends BaseController {
       for (const user of users) {
         console.log("user", user.name);
         const descriptors = await FaceDescriptor.find({ user: user.id });
-        console.log("got descriptors", descriptors.length);
-        const averageDescriptor = this.averageDescriptors(
-          descriptors.map((des) => new Float32Array(des.descriptor))
-        );
-        console.log("average descriptor");
-        console.log(averageDescriptor);
-        try {
-          await AverageFaceDescriptor.create({
-            user: user.id,
-            descriptor: averageDescriptor,
-          });
-          console.log("average descriptor created");
-          completedUsers = completedUsers + 1;
-        } catch (e) {
-          console.log("creation error");
+        if(descriptors.length>0) {
+          console.log("got descriptors", descriptors.length);
+          const averageDescriptor = this.averageDescriptors(
+            descriptors.map((des) => new Float32Array(des.descriptor))
+          );
+          console.log("average descriptor");
+          console.log(averageDescriptor);
+          try {
+            await AverageFaceDescriptor.create({
+              user: user.id,
+              descriptor: [...averageDescriptor],
+            });
+            console.log("average descriptor created");
+            completedUsers = completedUsers + 1;
+          } catch (e) {
+            console.log("creation error");
+          }
         }
+       
       }
       this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
     } catch (e: any) {
