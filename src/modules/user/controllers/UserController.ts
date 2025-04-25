@@ -231,17 +231,15 @@ export default class UserController extends BaseController {
       for (const user of users) {
         console.log("user", user.name);
         const descriptors = await FaceDescriptor.find({ user: user.id });
-        if (descriptors.length === 128) {
-          const averageDescriptor = this.averageDescriptors(
-            descriptors.map((des) => des.descriptor)
-          );
-          await AverageFaceDescriptor.create({
-            user: user.id,
-            descriptor: averageDescriptor,
-          });
-          console.log("average descriptor created");
-        }
-
+        console.log("got descriptors", descriptors.length);
+        const averageDescriptor = this.averageDescriptors(
+          descriptors.map((des) => des.descriptor)
+        );
+        await AverageFaceDescriptor.create({
+          user: user.id,
+          descriptor: averageDescriptor,
+        });
+        console.log("average descriptor created");
         completedUsers = completedUsers + 1;
       }
       this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
@@ -252,15 +250,17 @@ export default class UserController extends BaseController {
 
   averageDescriptors = (descriptors: Array<Array<number>>): number[] => {
     const avg: Array<number> = [];
-
     descriptors.forEach((desc) => {
-      desc.forEach((val, i) => {
-        avg[i] += val;
-      });
+      if (desc.length === 128) {
+        desc.forEach((val, i) => {
+          avg[i] += val;
+        });
+      }
     });
-
-    for (let i = 0; i < 128; i++) {
-      avg[i] /= descriptors.length;
+    if (avg.length === 128) {
+      for (let i = 0; i < 128; i++) {
+        avg[i] /= descriptors.length;
+      }
     }
 
     return avg;
