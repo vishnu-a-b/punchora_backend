@@ -251,8 +251,8 @@ export default class UserController extends BaseController {
     }
   };
 
-  averageDescriptors = (descriptors: Float32Array[]): number[] => {
-    const avg: Array<number> = [];
+  averageDescriptors = (descriptors: Float32Array[]): Float32Array => {
+    const avg= new Float32Array(128);
     descriptors.forEach((desc) => {
       if (desc.length === 128) {
         desc.forEach((val, i) => {
