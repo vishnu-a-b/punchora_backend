@@ -63,13 +63,13 @@ export default class UserController extends BaseController {
         };
         if (files.photos) {
           files.photos.forEach((file) => {
-            photoUrls.push(Configs.domain + file.filename);
+            photoUrls.push(Configs.domain + "users/" + file.filename);
           });
           req.body.photos = photoUrls;
         }
         if (files.profilePicture?.[0]) {
           req.body.profilePicture =
-            Configs.domain + files.profilePicture?.[0].filename;
+            Configs.domain + "users/" + files.profilePicture?.[0].filename;
         }
       }
 
@@ -79,7 +79,10 @@ export default class UserController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.photos) {
-          this.facialRecognitionService.createDescriptor(user.id, files.photos.map((photo)=>photo.path));
+          this.facialRecognitionService.createDescriptor(
+            user.id,
+            files.photos.map((photo) => photo.path)
+          );
         }
       }
       this.sendSuccessResponse(res, 201, { data: user });
@@ -120,13 +123,13 @@ export default class UserController extends BaseController {
         };
         if (files.photos) {
           files.photos.forEach((file) => {
-            photoUrls.push(Configs.domain + file.filename);
+            photoUrls.push(Configs.domain + "users/" + file.filename);
           });
           req.body.photos = photoUrls;
         }
         if (files.profilePicture?.[0]) {
           req.body.profilePicture =
-            Configs.domain + files.profilePicture?.[0].filename;
+            Configs.domain + "users/" + files.profilePicture?.[0].filename;
         }
       }
       if (req.body.mobileNo) {
@@ -247,7 +250,7 @@ export default class UserController extends BaseController {
   //           console.log("creation error");
   //         }
   //       }
-       
+
   //     }
   //     this.sendSuccessResponse(res, 204, { data: { total: completedUsers } });
   //   } catch (e: any) {

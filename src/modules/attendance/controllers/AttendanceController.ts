@@ -28,11 +28,12 @@ export default class AttendanceController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.checkInPhoto?.[0]) {
-          body.checkInPhoto = Configs.domain + files.checkInPhoto?.[0].filename;
+          body.checkInPhoto =
+            Configs.domain + "attendance/" + files.checkInPhoto?.[0].filename;
         }
         if (files.checkOutPhoto?.[0]) {
           body.checkOutPhoto =
-            Configs.domain + files.checkOutPhoto?.[0].filename;
+            Configs.domain + "attendance/" + files.checkOutPhoto?.[0].filename;
         }
       }
       const attendance = await this.service.create(req.body);
@@ -59,11 +60,12 @@ export default class AttendanceController extends BaseController {
           [fieldname: string]: Express.Multer.File[];
         };
         if (files.checkInPhoto?.[0]) {
-          body.checkInPhoto = Configs.domain + files.checkInPhoto?.[0].filename;
+          body.checkInPhoto =
+            Configs.domain + "attendance/" + files.checkInPhoto?.[0].filename;
         }
         if (files.checkOutPhoto?.[0]) {
           body.checkOutPhoto =
-            Configs.domain + files.checkOutPhoto?.[0].filename;
+            Configs.domain + "attendance/" + files.checkOutPhoto?.[0].filename;
         }
       }
       const attendance = await this.service.update(req.params.id, body);
@@ -94,7 +96,7 @@ export default class AttendanceController extends BaseController {
       if (!req.file) {
         throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
-      body.photo = Configs.domain + req.file!.filename;
+      body.photo = Configs.domain + "attendance/" + req.file!.filename;
       let data: any;
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
@@ -145,7 +147,7 @@ export default class AttendanceController extends BaseController {
       if (!req.file) {
         throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
-      body.photo = Configs.domain + req.file!.filename;
+      body.photo = Configs.domain + "attendance/" + req.file!.filename;
       const user = await this.facialRecognitionService.recognizeUser(
         req.file!.path
       );
