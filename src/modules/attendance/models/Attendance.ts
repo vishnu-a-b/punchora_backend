@@ -37,7 +37,7 @@ const attendanceSchema = new mongoose.Schema(
 export const attendanceFilterFields: ModelFilterInterface = {
   filterFields: ["staff", "status"],
   searchFields: [],
-  sortFields: ["createdAt", "updatedAt"],
+  sortFields: ["createdAt", "updatedAt", "checkInTime"],
 };
 
 export const Attendance = mongoose.model("Attendance", attendanceSchema);

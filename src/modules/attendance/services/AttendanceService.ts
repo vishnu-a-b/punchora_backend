@@ -156,7 +156,7 @@ export default class AttendanceService {
         $lte: endOfEndDate,
       },
       staff: staff,
-    });
+    }).sort({ checkInTime: 'asc' });
     return attendances;
   };
 

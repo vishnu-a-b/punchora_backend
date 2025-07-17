@@ -180,6 +180,8 @@ export default class AttendanceController extends BaseController {
     next: NextFunction
   ) => {
     try {
+      const { limit, skip } = req.query;
+      const { filterQuery, sort } = req;
       const staffId = req.params.id;
       const { startDate, endDate } = req.query;
       if (!startDate || !endDate) {
@@ -190,7 +192,7 @@ export default class AttendanceController extends BaseController {
       const data = await this.service.filterByDate(
         new Date(startDate as string),
         new Date(endDate as string),
-        staffId
+        staffId,
       );
 
       this.sendSuccessResponse(res, 200, { data });

@@ -2981,6 +2981,16 @@
             "type": "string"
           },
           {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "startDate",
             "in": "query",
             "type": "string"
@@ -3128,6 +3138,22 @@
             "JWT": []
           }
         ]
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/v1/attendance/mark": {
@@ -3177,7 +3203,7 @@
         ]
       }
     },
-    "/v1/attendance/mark-via-photo": {
+    "/v1/attendance/mark-via-recogntion": {
       "post": {
         "tags": [
           "Attendance"

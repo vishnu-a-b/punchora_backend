@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const authenticateUser_1 = require("../../../authentication/middlewares/authenticateUser");
+const authorizeUser_1 = __importDefault(require("../../../../middlewares/authorizeUser"));
+const talukCreateValidator_1 = require("../validators/talukCreateValidator");
+const TalukController_1 = __importDefault(require("../controllers/TalukController"));
+const Taluk_1 = require("../models/Taluk");
+const setFilterParams_1 = __importDefault(require("../../../../middlewares/setFilterParams"));
+const talukListDoc_1 = require("../docs/talukListDoc");
+const talukCreateDoc_1 = require("../docs/talukCreateDoc");
+const talukDeleteDoc_1 = require("../docs/talukDeleteDoc");
+const router = express_1.default.Router();
+const controller = new TalukController_1.default();
+router.use(authenticateUser_1.authenticateUser);
+router.get("/", talukListDoc_1.talukListDoc, (0, setFilterParams_1.default)(Taluk_1.talukFilterFields), controller.list);
+router.post("/", talukCreateDoc_1.talukCreateDoc, (0, authorizeUser_1.default)({ allowedRoles: [] }), talukCreateValidator_1.talukCreateValidator, controller.create);
+router.delete("/:id", talukDeleteDoc_1.talukDeleteDoc, (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.delete);
+exports.default = router;
