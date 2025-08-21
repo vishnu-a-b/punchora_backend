@@ -4,6 +4,22 @@ import { StaffRoles } from "../../base/enums/staffRoles";
 import { User } from "../../user/models/User";
 import { StaffTypes } from "../../base/enums/staffTypes";
 
+export const StaffShiftTypes = {
+  HOUR_BASE: "hour base",
+  SINGLE_SHIFT: "single shift",
+  MULTI_SHIFT: "multi shift",
+  NO_TIMING: "no timing",
+} as const;
+export type StaffShiftTypes = typeof StaffShiftTypes[keyof typeof StaffShiftTypes];
+
+// Define interface for shift entry
+
+const shiftEntrySchema = new mongoose.Schema({
+  startTime: { type: Date, required: true },
+  minutesWorked: { type: Number, required: true, min: 0 },
+});
+
+
 const staffSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -43,6 +59,21 @@ const staffSchema = new mongoose.Schema(
     },
     salary: { type: Number },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    shiftType: {
+      type: String,
+      enum: Object.values(StaffShiftTypes),
+      default: StaffShiftTypes.SINGLE_SHIFT,
+    },
+    hoursWorked: {
+      type: Number,
+      default: 0,
+      min: 0,
+      description: "Total minutes worked",
+    },
+    shifts: {
+      type: [shiftEntrySchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );
