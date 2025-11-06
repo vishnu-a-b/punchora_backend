@@ -12,11 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Staff = exports.staffFilterFields = void 0;
+exports.Staff = exports.staffFilterFields = exports.StaffShiftTypes = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const staffRoles_1 = require("../../base/enums/staffRoles");
 const User_1 = require("../../user/models/User");
 const staffTypes_1 = require("../../base/enums/staffTypes");
+exports.StaffShiftTypes = {
+    HOUR_BASE: "hour base",
+    SINGLE_SHIFT: "single shift",
+    MULTI_SHIFT: "multi shift",
+    NO_TIMING: "no timing",
+};
+// Define interface for shift entry
+const shiftEntrySchema = new mongoose_1.default.Schema({
+    startTime: { type: Date, required: true },
+    minutesWorked: { type: Number, required: true, min: 0 },
+});
 const staffSchema = new mongoose_1.default.Schema({
     user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, maxLength: 200, required: true },
@@ -55,6 +66,21 @@ const staffSchema = new mongoose_1.default.Schema({
     },
     salary: { type: Number },
     createdBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+    shiftType: {
+        type: String,
+        enum: Object.values(exports.StaffShiftTypes),
+        default: exports.StaffShiftTypes.SINGLE_SHIFT,
+    },
+    hoursWorked: {
+        type: Number,
+        default: 0,
+        min: 0,
+        description: "Total minutes worked",
+    },
+    shifts: {
+        type: [shiftEntrySchema],
+        default: [],
+    },
 }, { timestamps: true });
 staffSchema.pre("validate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {

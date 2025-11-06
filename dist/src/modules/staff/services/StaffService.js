@@ -23,6 +23,7 @@ class StaffService {
         this.find = (_a) => __awaiter(this, [_a], void 0, function* ({ limit, skip, filterQuery, sort }) {
             limit = limit ? limit : 10;
             skip = skip ? skip : 0;
+            console.log("hai", sort);
             const staffs = yield Staff_1.Staff.find(filterQuery)
                 .populate(["user", "department"])
                 .sort(sort)

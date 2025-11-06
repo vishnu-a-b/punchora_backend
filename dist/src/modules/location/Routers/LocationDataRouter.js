@@ -11,6 +11,7 @@ const locationDataCreateDoc_1 = require("../docs/locationDataCreateDoc");
 const createLocationDataValidator_1 = require("../validators/createLocationDataValidator");
 const router = express_1.default.Router();
 const controller = new LocationDataController_1.default();
+router.get("/last-seen", authenticateUser_1.authenticateUser, locationDataListDoc_1.locationDataListDoc, controller.getLastSeenLocations);
 router.get("/by-date", authenticateUser_1.authenticateUser, locationDataListDoc_1.locationDataListDoc, controller.filterByDate);
 router.get("/", authenticateUser_1.authenticateUser, locationDataListDoc_1.locationDataListDoc, controller.list);
 router.post("/bulk", authenticateUser_1.authenticateUser, locationDataCreateDoc_1.locationDataCreateDoc, controller.insertMany);

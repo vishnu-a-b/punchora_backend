@@ -56,4 +56,81 @@ export default class LocationDataService {
     const locations = await LocationData.find(query).populate("staff");
     return locations;
   };
+
+  getLastSeenLocations = async (
+    startDate: Date,
+    endDate: Date,
+    businessId?: string
+  ) => {
+    const startOfStartDate = new Date(startDate);
+    const endOfEndDate = new Date(endDate);
+
+    const pipeline: any[] = [
+      {
+        $match: {
+          date: {
+            $gte: startOfStartDate,
+            $lte: endOfEndDate,
+          },
+        },
+      },
+      {
+        $sort: { date: -1 },
+      },
+      {
+        $group: {
+          _id: "$staff",
+          lastLocation: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$lastLocation" },
+      },
+      {
+        $lookup: {
+          from: "staffs",
+          localField: "staff",
+          foreignField: "_id",
+          as: "staff",
+        },
+      },
+      {
+        $unwind: {
+          path: "$staff",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ];
+
+    // Add business filter if provided
+    if (businessId) {
+      pipeline.push({
+        $match: {
+          "staff.business": businessId,
+        },
+      });
+    }
+
+    pipeline.push(
+      {
+        $project: {
+          _id: 1,
+          latitude: 1,
+          longitude: 1,
+          date: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "staff._id": 1,
+          "staff.name": 1,
+          "staff.email": 1,
+        },
+      },
+      {
+        $sort: { "staff.name": 1 },
+      }
+    );
+
+    const lastSeenLocations = await LocationData.aggregate(pipeline);
+    return lastSeenLocations;
+  };
 }

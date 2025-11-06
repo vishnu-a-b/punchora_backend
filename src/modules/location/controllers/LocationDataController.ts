@@ -68,6 +68,25 @@ export default class LocationDataController extends BaseController {
     }
   };
 
+  getLastSeenLocations = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { startDate, endDate, business } = req.query;
+      if (!(startDate && endDate)) {
+        throw new ValidationFailedError({
+          errors: ["startDate & endDate required as query parameters"],
+        });
+      }
+      const data = await this.service.getLastSeenLocations(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        business as string | undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
   getOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const location = await this.service.findOne(req.params.id);

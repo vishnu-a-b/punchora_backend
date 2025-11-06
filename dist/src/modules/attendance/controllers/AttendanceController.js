@@ -179,6 +179,8 @@ class AttendanceController extends BaseController_1.default {
         });
         this.getAttendanceForStaff = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
+                const { limit, skip } = req.query;
+                const { filterQuery, sort } = req;
                 const staffId = req.params.id;
                 const { startDate, endDate } = req.query;
                 if (!startDate || !endDate) {

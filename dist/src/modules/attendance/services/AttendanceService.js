@@ -126,7 +126,7 @@ class AttendanceService {
                     $lte: endOfEndDate,
                 },
                 staff: staff,
-            });
+            }).sort({ checkInTime: 'asc' });
             return attendances;
         });
         this.filterAllStaffsByDate = (startDate, endDate, status) => __awaiter(this, void 0, void 0, function* () {

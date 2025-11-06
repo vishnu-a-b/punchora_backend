@@ -9,6 +9,12 @@ const router = express.Router();
 const controller = new LocationDataController();
 
 router.get(
+  "/last-seen",
+  authenticateUser,
+  locationDataListDoc,
+  controller.getLastSeenLocations
+);
+router.get(
   "/by-date",
   authenticateUser,
   locationDataListDoc,

@@ -77,6 +77,21 @@ class LocationDataController extends BaseController_1.default {
                 next(e);
             }
         });
+        this.getLastSeenLocations = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, business } = req.query;
+                if (!(startDate && endDate)) {
+                    throw new ValidationFailedError_1.default({
+                        errors: ["startDate & endDate required as query parameters"],
+                    });
+                }
+                const data = yield this.service.getLastSeenLocations(new Date(startDate), new Date(endDate), business);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
         this.getOne = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const location = yield this.service.findOne(req.params.id);
