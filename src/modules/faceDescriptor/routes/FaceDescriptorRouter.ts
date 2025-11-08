@@ -1,6 +1,6 @@
 import { Router } from "express";
 import FaceDescriptorController from "../controllers/FaceDescriptorController";
-import { authenticateUser } from "../../authentication/middleware/jwt";
+import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
 
 const router = Router();
 

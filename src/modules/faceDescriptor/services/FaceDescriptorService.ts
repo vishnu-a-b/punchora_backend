@@ -8,16 +8,16 @@ export class FaceDescriptorService {
   getAllDescriptors = async (
     businessId: string,
     activeOnly: boolean = true
-  ): Promise<IFaceDescriptor[]> => {
+  ): Promise<any[]> => {
     const query: any = { business: businessId };
-    
+
     if (activeOnly) {
       query.isActive = true;
     }
 
     return await FaceDescriptor.find(query)
       .sort({ updatedAt: -1 })
-      .lean();
+      .lean() as any[];
   };
 
   /**
@@ -26,16 +26,16 @@ export class FaceDescriptorService {
   getDescriptorsByStaffId = async (
     staffId: string,
     activeOnly: boolean = true
-  ): Promise<IFaceDescriptor[]> => {
+  ): Promise<any[]> => {
     const query: any = { staffId };
-    
+
     if (activeOnly) {
       query.isActive = true;
     }
 
     return await FaceDescriptor.find(query)
       .sort({ createdAt: -1 })
-      .lean();
+      .lean() as any[];
   };
 
   /**
@@ -100,13 +100,13 @@ export class FaceDescriptorService {
   getDescriptorsUpdatedAfter = async (
     businessId: string,
     afterTimestamp: Date
-  ): Promise<IFaceDescriptor[]> => {
+  ): Promise<any[]> => {
     return await FaceDescriptor.find({
       business: businessId,
       updatedAt: { $gte: afterTimestamp },
     })
       .sort({ updatedAt: -1 })
-      .lean();
+      .lean() as any[];
   };
 
   /**

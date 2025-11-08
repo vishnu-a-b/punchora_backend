@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BaseController } from "../../../common/BaseController";
+import BaseController from "../../base/controllers.ts/BaseController";
 import FaceDescriptorService from "../services/FaceDescriptorService";
 
 export class FaceDescriptorController extends BaseController {
@@ -31,7 +31,7 @@ export class FaceDescriptorController extends BaseController {
       );
 
       // Transform to API format
-      const data = descriptors.map((d) => ({
+      const data = descriptors.map((d: any) => ({
         id: d._id.toString(),
         staffId: d.staffId.toString(),
         staffName: d.staffName,
@@ -86,8 +86,8 @@ export class FaceDescriptorController extends BaseController {
 
       this.sendSuccessResponse(res, id ? 200 : 201, {
         data: {
-          id: result._id.toString(),
-          staffId: result.staffId.toString(),
+          id: (result._id as any).toString(),
+          staffId: (result.staffId as any).toString(),
           staffName: result.staffName,
           photoUrl: result.photoUrl,
           createdAt: result.createdAt.getTime(),

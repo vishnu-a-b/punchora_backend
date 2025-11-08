@@ -58,7 +58,10 @@ const FaceDescriptorSchema: Schema = new Schema(
 FaceDescriptorSchema.index({ business: 1, isActive: 1, updatedAt: -1 });
 FaceDescriptorSchema.index({ staffId: 1, isActive: 1 });
 
-export default mongoose.model<IFaceDescriptor>(
+const FaceDescriptor = mongoose.model<IFaceDescriptor>(
   "FaceDescriptor",
   FaceDescriptorSchema
 );
+
+export { FaceDescriptor };
+export default FaceDescriptor;
