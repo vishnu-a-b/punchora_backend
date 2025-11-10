@@ -26,10 +26,40 @@ exports.markAttendanceValidator = [
         }
     })),
     (0, express_validator_1.body)("date").isISO8601(),
-    (0, express_validator_1.body)("checkInLocation").optional(),
-    (0, express_validator_1.body)("checkInLocation.latitude").optional().isNumeric(),
-    (0, express_validator_1.body)("checkInLocation.longitude").optional().isNumeric(),
-    (0, express_validator_1.body)("checkOutLocation").optional(),
-    (0, express_validator_1.body)("checkOutLocation.latitude").optional().isNumeric(),
-    (0, express_validator_1.body)("checkOutLocation.longitude").optional().isNumeric(),
+    (0, express_validator_1.body)("checkInLocation").optional().custom((value) => {
+        // Accept either JSON string or object
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                if (typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
+                    return true;
+                }
+            }
+            catch (e) {
+                throw new Error('checkInLocation must be valid JSON with latitude and longitude');
+            }
+        }
+        else if (typeof value === 'object' && value.latitude && value.longitude) {
+            return true;
+        }
+        throw new Error('checkInLocation must contain latitude and longitude');
+    }),
+    (0, express_validator_1.body)("checkOutLocation").optional().custom((value) => {
+        // Accept either JSON string or object
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                if (typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
+                    return true;
+                }
+            }
+            catch (e) {
+                throw new Error('checkOutLocation must be valid JSON with latitude and longitude');
+            }
+        }
+        else if (typeof value === 'object' && value.latitude && value.longitude) {
+            return true;
+        }
+        throw new Error('checkOutLocation must contain latitude and longitude');
+    }),
 ];
