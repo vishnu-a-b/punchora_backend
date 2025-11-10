@@ -27,10 +27,16 @@ const singleUpload = (0, multer_1.default)({
     fileFilter: multerFileFilters_1.multerImageFilter,
 }).single("photo");
 const singleUploadMethod = (req, res, next) => {
+    console.log("=== MULTER UPLOAD MIDDLEWARE ===");
+    console.log("Content-Type:", req.headers['content-type']);
+    console.log("Request method:", req.method);
+    console.log("Request URL:", req.url);
     return singleUpload(req, res, function (err) {
         if (err) {
+            console.error("Multer error:", err);
             return next(new BadRequestError_1.default({ error: "invalid file type" }));
         }
+        console.log("Multer success - File uploaded:", req.file ? req.file.filename : "NO FILE");
         next();
     });
 };
@@ -52,7 +58,11 @@ const multiUploadMethod = (req, res, next) => {
 router.post("/", multiUploadMethod, authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), attendanceCreateValidator_1.attendanceCreateValidator, createAttendanceDoc_1.createAttendanceDoc, controller.create);
 router.get("/all-staffs", authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), attendanceListDoc_1.attendanceListDoc, controller.getDatewiseAttendanceForAllStaffs);
 router.get("/:id", authenticateUser_1.authenticateUser, attendanceListDoc_1.attendanceListDoc, controller.getAttendanceForStaff);
-router.post("/mark", authenticateUser_1.authenticateUser, markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAttendance);
+router.post("/mark", (req, res, next) => {
+    console.log("=== /mark ROUTE HIT ===");
+    console.log("Headers:", req.headers);
+    next();
+}, authenticateUser_1.authenticateUser, markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAttendance);
 router.post("/mark-via-recogntion", markAttendanceViaImageDoc_1.markAttendanceViaImageDoc, singleUploadMethod, markAttendanceViaPhotoValidator_1.markAttendanceViaPhotoValidator, controller.markAttendanceViaRecognition);
 router.put("/:id", multiUploadMethod, authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), attendanceUpdateValidator_1.attendanceUpdateValidator, updateAttendanceDoc_1.updateAttendanceDoc, controller.update);
 router.delete("/:id", authenticateUser_1.authenticateUser, controller.delete);

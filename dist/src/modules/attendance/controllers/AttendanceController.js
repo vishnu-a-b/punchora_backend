@@ -93,20 +93,28 @@ class AttendanceController extends BaseController_1.default {
         });
         this.markAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
+                console.log("Request body:", req.body);
+                console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
+                console.log("Content-Type:", req.headers['content-type']);
                 const errors = (0, express_validator_1.validationResult)(req);
                 if (!errors.isEmpty()) {
+                    console.error("Validation errors:", errors.array());
                     throw new ValidationFailedError_1.default({ errors: errors.array() });
                 }
                 const body = req.body;
                 if (!body.checkOutTime && !body.checkInTime) {
+                    console.error("Missing checkOutTime and checkInTime");
                     throw new ValidationFailedError_1.default({
                         error: "checkOutTime or checkInTime required",
                     });
                 }
                 if (!req.file) {
+                    console.error("No photo provided");
                     throw new ValidationFailedError_1.default({ errors: ["no photo provided"] });
                 }
                 body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
+                console.log("Photo URL:", body.photo);
                 let data;
                 if (body.checkIn === "false") {
                     if (!body.checkOutLocation) {
