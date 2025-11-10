@@ -29,10 +29,17 @@ const singleUploadMethod = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("=== MULTER UPLOAD MIDDLEWARE ===");
+  console.log("Content-Type:", req.headers['content-type']);
+  console.log("Request method:", req.method);
+  console.log("Request URL:", req.url);
+
   return singleUpload(req, res, function (err) {
     if (err) {
+      console.error("Multer error:", err);
       return next(new BadRequestError({ error: "invalid file type" }));
     }
+    console.log("Multer success - File uploaded:", req.file ? req.file.filename : "NO FILE");
     next();
   });
 };
@@ -81,6 +88,11 @@ router.get(
 
 router.post(
   "/mark",
+  (req: Request, res: Response, next: NextFunction) => {
+    console.log("=== /mark ROUTE HIT ===");
+    console.log("Headers:", req.headers);
+    next();
+  },
   authenticateUser,
   markAttendanceDoc,
   singleUploadMethod,

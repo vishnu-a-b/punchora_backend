@@ -83,20 +83,29 @@ export default class AttendanceController extends BaseController {
 
   markAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
+      console.log("Request body:", req.body);
+      console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
+      console.log("Content-Type:", req.headers['content-type']);
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.error("Validation errors:", errors.array());
         throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
       if (!body.checkOutTime && !body.checkInTime) {
+        console.error("Missing checkOutTime and checkInTime");
         throw new ValidationFailedError({
           error: "checkOutTime or checkInTime required",
         });
       }
       if (!req.file) {
+        console.error("No photo provided");
         throw new ValidationFailedError({ errors: ["no photo provided"] });
       }
       body.photo = Configs.domain + "attendance/" + req.file!.filename;
+      console.log("Photo URL:", body.photo);
       let data: any;
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {

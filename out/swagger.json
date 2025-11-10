@@ -3189,6 +3189,11 @@
             "in": "formData",
             "required": true,
             "type": "file"
+          },
+          {
+            "name": "content-type",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -3537,6 +3542,89 @@
         ]
       }
     },
+    "/v1/location-data/last-seen": {
+      "get": {
+        "tags": [
+          "LocationData"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "business",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Location Data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "staff": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "checkInTime": {
+                        "type": "number",
+                        "example": 231323
+                      },
+                      "checkOutTime": {
+                        "type": "number",
+                        "example": 1232131.3
+                      },
+                      "createdBy": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae4ffc348ed682"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/v1/location-data/by-date": {
       "get": {
         "tags": [
@@ -3783,6 +3871,73 @@
             "JWT": []
           }
         ]
+      }
+    },
+    "/v1/face-descriptors/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "business",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "business",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/v1/face-descriptors/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/v1/face-descriptors/count": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "business",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
       }
     }
   }
