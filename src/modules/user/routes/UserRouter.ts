@@ -93,4 +93,27 @@ router.delete(
   controller.delete
 );
 
+/**
+ * @route PUT /users/:id/photos
+ * @desc Update user photos and regenerate face descriptors
+ * @access Admin
+ */
+router.put(
+  "/:id/photos",
+  uploadMethod,
+  authorizeUser({ allowedRoles: [] }),
+  controller.updatePhotos
+);
+
+/**
+ * @route DELETE /users/:id/photos
+ * @desc Delete user photos and face descriptors
+ * @access Admin
+ */
+router.delete(
+  "/:id/photos",
+  authorizeUser({ allowedRoles: [] }),
+  controller.deletePhotos
+);
+
 export default router;

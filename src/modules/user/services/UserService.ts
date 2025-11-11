@@ -2,7 +2,6 @@ import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedError";
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { createPasswordHash } from "../../authentication/utils/createPasswordHash";
-import { FaceDescriptor } from "../../faceDescriptor/models/FaceDescriptor";
 import { Role } from "../../role/models/Role";
 import { User } from "../models/User";
 const bcrypt = require("bcryptjs");
@@ -83,7 +82,9 @@ export default class UserService {
     return await User.findByIdAndUpdate(id, { password: newPasswordHash });
   };
   delete = async (id: any) => {
-    await FaceDescriptor.deleteMany({ user: id });
+    // Delete face descriptors (using correct model - AverageFaceDescriptor, not FaceDescriptor)
+    const { AverageFaceDescriptor } = require("../../faceDescriptor/models/AverageFaceDescriptor");
+    await AverageFaceDescriptor.deleteMany({ user: id });
     return await User.findByIdAndDelete(id);
   };
 }

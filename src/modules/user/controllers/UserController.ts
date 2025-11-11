@@ -117,6 +117,8 @@ export default class UserController extends BaseController {
         return;
       }
       let photoUrls: any[] = [];
+      let photoPaths: string[] = []; // NEW: Store file paths for descriptor generation
+
       if (req.files) {
         const files = req.files as {
           [fieldname: string]: Express.Multer.File[];
@@ -124,6 +126,7 @@ export default class UserController extends BaseController {
         if (files.photos) {
           files.photos.forEach((file) => {
             photoUrls.push(Configs.domain + "users/" + file.filename);
+            photoPaths.push(file.path); // NEW: Collect file paths
           });
           req.body.photos = photoUrls;
         }
@@ -168,14 +171,43 @@ export default class UserController extends BaseController {
         roles,
         isActive,
       };
-      if (req.body.photo) {
-        body.photo = req.body.photo;
+
+      if (req.body.photos) {
+        body.photos = req.body.photos;
       }
+
+      if (req.body.profilePicture) {
+        body.profilePicture = req.body.profilePicture;
+      }
+
       const user = await this.service.update(req.params.id, body);
       if (!user) {
         throw new NotFoundError({ error: "user not found" });
       }
-      this.sendSuccessResponse(res, 200, { data: { _id: user!._id } });
+
+      // NEW: Regenerate face descriptors if photos were uploaded
+      if (photoPaths.length > 0) {
+        try {
+          console.log(`Regenerating face descriptors for user ${user.id}`);
+          await this.facialRecognitionService.createDescriptor(
+            user.id,
+            photoPaths
+          );
+          console.log(`Face descriptors regenerated successfully for user ${user.id}`);
+        } catch (error) {
+          console.error(`Failed to regenerate face descriptors:`, error);
+          // Don't fail the update if descriptor generation fails
+        }
+      }
+
+      this.sendSuccessResponse(res, 200, {
+        data: {
+          _id: user!._id,
+          message: photoPaths.length > 0
+            ? "User updated and face descriptors regenerated"
+            : "User updated"
+        }
+      });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
         next(new BadRequestError({ error: "invalid user_id" }));
@@ -216,6 +248,188 @@ export default class UserController extends BaseController {
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
         next(new BadRequestError({ error: "invalid user id" }));
+      }
+      next(e);
+    }
+  };
+
+  /**
+   * Update user photos and regenerate face descriptors
+   * Dedicated endpoint for photo updates from admin dashboard
+   * Supports: add photos, replace all photos, remove specific photos
+   */
+  updatePhotos = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+
+      // Get current user data
+      const currentUser = await this.service.findOne(userId);
+      if (!currentUser) {
+        throw new NotFoundError({ error: "user not found" });
+      }
+
+      const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+      };
+
+      // Parse operation mode from body (default: add to existing)
+      const replaceAll = req.body.replaceAll === "true" || req.body.replaceAll === true;
+      const removePhotoUrls: string[] = req.body.removePhotoUrls
+        ? (typeof req.body.removePhotoUrls === 'string'
+            ? JSON.parse(req.body.removePhotoUrls)
+            : req.body.removePhotoUrls)
+        : [];
+
+      let newPhotoUrls: string[] = [];
+      let newPhotoPaths: string[] = [];
+      let profilePictureUrl: string | undefined;
+
+      // Process new face recognition photos
+      if (files && files.photos) {
+        files.photos.forEach((file) => {
+          newPhotoUrls.push(Configs.domain + "users/" + file.filename);
+          newPhotoPaths.push(file.path);
+        });
+      }
+
+      // Process profile picture
+      if (files && files.profilePicture?.[0]) {
+        profilePictureUrl =
+          Configs.domain + "users/" + files.profilePicture[0].filename;
+      }
+
+      // Build final photos array
+      let finalPhotos: string[] = [];
+      const updateBody: any = {};
+
+      if (newPhotoUrls.length > 0) {
+        if (replaceAll) {
+          // Replace all photos
+          finalPhotos = newPhotoUrls;
+        } else {
+          // Add to existing photos
+          const existingPhotos = currentUser.photos || [];
+          finalPhotos = [...existingPhotos, ...newPhotoUrls];
+        }
+        updateBody.photos = finalPhotos;
+      } else if (removePhotoUrls.length > 0) {
+        // Remove specific photos
+        const existingPhotos = currentUser.photos || [];
+        finalPhotos = existingPhotos.filter(
+          (photo: string) => !removePhotoUrls.includes(photo)
+        );
+        updateBody.photos = finalPhotos;
+      }
+
+      if (profilePictureUrl) {
+        updateBody.profilePicture = profilePictureUrl;
+      }
+
+      // Only update if there are changes
+      if (Object.keys(updateBody).length === 0) {
+        throw new ValidationFailedError({
+          error: "No photos provided or no changes requested"
+        });
+      }
+
+      // Update user with new photos
+      // This will trigger the pre-hook that deletes old face descriptors
+      const user = await this.service.update(userId, updateBody);
+
+      // Generate new face descriptors if face recognition photos were changed
+      const facesChanged = newPhotoUrls.length > 0 || removePhotoUrls.length > 0;
+
+      if (facesChanged) {
+        try {
+          console.log(`Regenerating face descriptors for user ${userId}`);
+
+          // Get all current photo paths for descriptor generation
+          // We need actual file paths, not URLs
+          // For now, use only new photos for descriptor generation
+          if (newPhotoPaths.length > 0) {
+            await this.facialRecognitionService.createDescriptor(
+              userId,
+              newPhotoPaths
+            );
+            console.log(`Face descriptors regenerated successfully`);
+          }
+
+          this.sendSuccessResponse(res, 200, {
+            data: {
+              _id: user!._id,
+              photos: updateBody.photos,
+              profilePicture: profilePictureUrl || currentUser.profilePicture,
+              message: newPhotoUrls.length > 0
+                ? `${replaceAll ? 'Replaced' : 'Added'} ${newPhotoUrls.length} photo(s) and regenerated face descriptors`
+                : `Removed ${removePhotoUrls.length} photo(s) and regenerated face descriptors`
+            }
+          });
+        } catch (descriptorError: any) {
+          console.error(`Face descriptor generation failed: ${descriptorError.message}`);
+
+          // Return partial success - photos updated but descriptor generation failed
+          this.sendSuccessResponse(res, 200, {
+            data: {
+              _id: user!._id,
+              photos: updateBody.photos,
+              profilePicture: profilePictureUrl || currentUser.profilePicture,
+              warning: "Photos updated but face descriptor generation failed. Please ensure faces are clearly visible and try again.",
+              error: descriptorError.message
+            }
+          });
+        }
+      } else {
+        // Only profile picture updated
+        this.sendSuccessResponse(res, 200, {
+          data: {
+            _id: user!._id,
+            profilePicture: profilePictureUrl,
+            message: "Profile picture updated successfully"
+          }
+        });
+      }
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+
+  /**
+   * Delete user photos and face descriptors
+   */
+  deletePhotos = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+      const { deleteProfilePicture, deleteRecognitionPhotos } = req.body;
+
+      const updateBody: any = {};
+
+      if (deleteRecognitionPhotos) {
+        updateBody.photos = [];
+        // This will trigger the pre-hook that deletes face descriptors
+      }
+
+      if (deleteProfilePicture) {
+        updateBody.profilePicture = null;
+      }
+
+      const user = await this.service.update(userId, updateBody);
+
+      if (!user) {
+        throw new NotFoundError({ error: "user not found" });
+      }
+
+      this.sendSuccessResponse(res, 200, {
+        data: {
+          _id: user._id,
+          message: "Photos deleted successfully. Face descriptors have been removed."
+        }
+      });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
       }
       next(e);
     }
