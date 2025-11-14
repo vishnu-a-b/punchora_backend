@@ -17,28 +17,28 @@ export class FaceDescriptorController extends BaseController {
   ) => {
     try {
       const { business } = req.query;
-      
-      if (!business) {
-        return res.status(400).json({
-          success: false,
-          error: "Business ID is required",
-        });
-      }
+
+      // if (!business) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     error: "Business ID is required",
+      //   });
+      // }
 
       const descriptors = await this.service.getAllDescriptors(
-        business as string,
-        true
+        // business as string,
+        false  // Return all descriptors, not just active ones
       );
 
       // Transform to API format
       const data = descriptors.map((d: any) => ({
-        id: d._id.toString(),
-        staffId: d.staffId.toString(),
-        staffName: d.staffName,
-        descriptor: d.descriptor,
-        photoUrl: d.photoUrl,
-        createdAt: d.createdAt.getTime(),
-        updatedAt: d.updatedAt.getTime(),
+        id: d._id ? d._id.toString() : '',
+        staffId: d.staffId ? d.staffId.toString() : '',
+        staffName: d.staffName || '',
+        descriptor: d.descriptor || [],
+        photoUrl: d.photoUrl || '',
+        createdAt: d.createdAt ? new Date(d.createdAt).getTime() : Date.now(),
+        updatedAt: d.updatedAt ? new Date(d.updatedAt).getTime() : Date.now(),
       }));
 
       this.sendSuccessResponse(res, 200, { data });

@@ -6,10 +6,10 @@ export class FaceDescriptorService {
    * Get all face descriptors for a business
    */
   getAllDescriptors = async (
-    businessId: string,
+    // businessId: string,
     activeOnly: boolean = true
   ): Promise<any[]> => {
-    const query: any = { business: businessId };
+    const query: any = { };
 
     if (activeOnly) {
       query.isActive = true;

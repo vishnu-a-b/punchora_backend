@@ -11,7 +11,7 @@ const router = Router();
  */
 router.get(
   "/",
-  authenticateUser,
+  
   FaceDescriptorController.getAllDescriptors
 );
 
