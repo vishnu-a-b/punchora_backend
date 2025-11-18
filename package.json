@@ -7,12 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "migrate:onnx": "ts-node src/scripts/migrateToOnnxEmbeddings.ts",
-    "migrate:onnx:dry-run": "DRY_RUN=true ts-node src/scripts/migrateToOnnxEmbeddings.ts"
+    "migrate:onnx:dry-run": "DRY_RUN=true ts-node src/scripts/migrateToOnnxEmbeddings.ts",
+    "migrate:onnx-standalone": "ts-node src/scripts/migrateImagesWithoutStaff.ts",
+    "migrate:onnx-standalone:dry-run": "DRY_RUN=true ts-node src/scripts/migrateImagesWithoutStaff.ts",
+    "test:onnx-sync": "ts-node src/scripts/testOnnxSync.ts"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.7",

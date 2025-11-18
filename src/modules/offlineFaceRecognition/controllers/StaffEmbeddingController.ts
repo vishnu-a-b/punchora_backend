@@ -130,7 +130,7 @@ export class StaffEmbeddingController {
 
       // Get embeddings with pagination
       const embeddings = await StaffFaceEmbedding.find(query)
-        .populate("staffId", "name employeeId") // Populate staff details
+        .populate("staffId", "name uid") // Populate staff details (uid is the employee ID)
         .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -141,9 +141,9 @@ export class StaffEmbeddingController {
       // Transform response
       const data = embeddings.map((e: any) => ({
         id: e._id.toString(),
-        staffId: e.staffId._id.toString(),
-        staffName: e.staffId.name,
-        employeeId: e.staffId.employeeId,
+        staffId: e.staffId?._id?.toString() || "",
+        staffName: e.staffId?.name || "Unknown",
+        employeeId: e.staffId?.uid?.toString() || "",
         embedding: e.embedding,
         photoUrl: e.photoUrl,
         modelName: e.modelName,
@@ -175,14 +175,14 @@ export class StaffEmbeddingController {
   getStaffList = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const embeddings = await StaffFaceEmbedding.find({})
-        .populate("staffId", "name employeeId")
+        .populate("staffId", "name uid")
         .sort({ updatedAt: -1 })
         .lean();
 
       const data = embeddings.map((e: any) => ({
-        staffId: e.staffId._id.toString(),
-        staffName: e.staffId.name,
-        employeeId: e.staffId.employeeId,
+        staffId: e.staffId?._id?.toString() || "",
+        staffName: e.staffId?.name || "Unknown",
+        employeeId: e.staffId?.uid?.toString() || "",
         photoUrl: e.photoUrl,
         updatedAt: e.updatedAt.getTime(),
       }));

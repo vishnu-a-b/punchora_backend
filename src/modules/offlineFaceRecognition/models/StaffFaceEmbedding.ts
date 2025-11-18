@@ -34,9 +34,10 @@ const StaffFaceEmbeddingSchema: Schema = new Schema(
       required: true,
       validate: {
         validator: function (v: number[]) {
-          return v.length === 128; // MobileFaceNet uses 128-dim embeddings
+          // Support both MobileFaceNet (128-dim) and ArcFace (512-dim)
+          return v.length === 128 || v.length === 512;
         },
-        message: "Embedding must be 128-dimensional for MobileFaceNet",
+        message: "Embedding must be either 128-dimensional (MobileFaceNet) or 512-dimensional (ArcFace)",
       },
     },
     embeddingVersion: {

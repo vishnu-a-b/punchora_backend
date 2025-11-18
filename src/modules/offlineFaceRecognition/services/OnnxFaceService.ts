@@ -15,8 +15,8 @@ export class OnnxFaceService {
   private static instance: OnnxFaceService;
   private session: ort.InferenceSession | null = null;
   private modelPath: string;
-  private readonly INPUT_SIZE = 112; // MobileFaceNet input size
-  private readonly EMBEDDING_SIZE = 128;
+  private readonly INPUT_SIZE = 112; // MobileFaceNet/ArcFace input size
+  private readonly EMBEDDING_SIZE = 512; // ArcFace: 512, MobileFaceNet: 128
 
   private constructor() {
     // Path to ONNX model file (you'll need to download MobileFaceNet.onnx)
@@ -119,8 +119,28 @@ export class OnnxFaceService {
       ]);
 
       // Run inference
-      const feeds = { input: inputTensor }; // Adjust key based on model
-      const results = await this.session.run(feeds);
+      // Try common input names: 'input', 'data', 'images'
+      let feeds: any = null;
+      let results: any = null;
+
+      const inputNames = ['input', 'data', 'images', 'input.1'];
+
+      for (const inputName of inputNames) {
+        try {
+          feeds = { [inputName]: inputTensor };
+          results = await this.session.run(feeds);
+          break; // Success, exit loop
+        } catch (error: any) {
+          if (error.message.includes('missing in')) {
+            continue; // Try next input name
+          }
+          throw error; // Different error, throw it
+        }
+      }
+
+      if (!results) {
+        throw new Error('Could not find correct input name for ONNX model');
+      }
 
       // Extract embedding (output name may vary, check your model)
       const outputTensor = results.output || results[Object.keys(results)[0]];
