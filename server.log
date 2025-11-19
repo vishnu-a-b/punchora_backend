@@ -1,0 +1,13 @@
+
+> shanthibhavan-staff-portal@1.0.0 dev
+> node swagger-autogen.js && nodemon src/server.ts
+
+Swagger-autogen: [32m Success ✔ [0m
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[35027]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12584c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x129af5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
