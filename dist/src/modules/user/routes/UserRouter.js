@@ -46,4 +46,16 @@ router.get("/:id", (0, authorizeUser_1.default)({ allowedRoles: [] }), userDetai
 router.put("/:id", (0, authorizeUser_1.default)({ allowedRoles: [] }), userUpdateDoc_1.userUpdateDoc, uploadMethod, UserUpdateValidator_1.userUpdateValidator, controller.update);
 router.put("/update-password/:id", (0, authorizeUser_1.default)({ allowedRoles: [roles_1.default.staff] }), updatePasswordDoc_1.updatePasswordDoc, updatePasswordValidator_1.updatePasswordValidator, controller.updatePassword);
 router.delete("/:id", authenticateUser_1.authenticateUser, userDeleteDoc_1.userDeleteDoc, (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.delete);
+/**
+ * @route PUT /users/:id/photos
+ * @desc Update user photos and regenerate face descriptors
+ * @access Admin
+ */
+router.put("/:id/photos", uploadMethod, (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.updatePhotos);
+/**
+ * @route DELETE /users/:id/photos
+ * @desc Delete user photos and face descriptors
+ * @access Admin
+ */
+router.delete("/:id/photos", (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.deletePhotos);
 exports.default = router;

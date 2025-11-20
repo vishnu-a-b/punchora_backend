@@ -20,8 +20,10 @@ class FaceDescriptorService {
         /**
          * Get all face descriptors for a business
          */
-        this.getAllDescriptors = (businessId_1, ...args_1) => __awaiter(this, [businessId_1, ...args_1], void 0, function* (businessId, activeOnly = true) {
-            const query = { business: businessId };
+        this.getAllDescriptors = (...args_1) => __awaiter(this, [...args_1], void 0, function* (
+        // businessId: string,
+        activeOnly = true) {
+            const query = {};
             if (activeOnly) {
                 query.isActive = true;
             }

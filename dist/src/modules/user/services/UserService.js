@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const NotFoundError_1 = __importDefault(require("../../../errors/errorTypes/NotFoundError"));
 const ValidationFailedError_1 = __importDefault(require("../../../errors/errorTypes/ValidationFailedError"));
 const createPasswordHash_1 = require("../../authentication/utils/createPasswordHash");
-const FaceDescriptor_1 = require("../../faceDescriptor/models/FaceDescriptor");
 const Role_1 = require("../../role/models/Role");
 const User_1 = require("../models/User");
 const bcrypt = require("bcryptjs");
@@ -83,7 +82,9 @@ class UserService {
             return yield User_1.User.findByIdAndUpdate(id, { password: newPasswordHash });
         });
         this.delete = (id) => __awaiter(this, void 0, void 0, function* () {
-            yield FaceDescriptor_1.FaceDescriptor.deleteMany({ user: id });
+            // Delete face descriptors (using correct model - AverageFaceDescriptor, not FaceDescriptor)
+            const { AverageFaceDescriptor } = require("../../faceDescriptor/models/AverageFaceDescriptor");
+            yield AverageFaceDescriptor.deleteMany({ user: id });
             return yield User_1.User.findByIdAndDelete(id);
         });
     }

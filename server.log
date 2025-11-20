@@ -11,3 +11,21 @@ Swagger-autogen: [32m Success ✔ [0m
 objc[35027]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12584c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x129af5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
 Mongo connected
 Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[42885]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x124ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x129085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

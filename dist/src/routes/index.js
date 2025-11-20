@@ -17,6 +17,7 @@ const LeaveRequestRouter_1 = __importDefault(require("../modules/leaveRequest/ro
 const BusinessRouter_1 = __importDefault(require("../modules/business/routes/BusinessRouter"));
 const LocationDataRouter_1 = __importDefault(require("../modules/location/Routers/LocationDataRouter"));
 const FaceDescriptorRouter_1 = __importDefault(require("../modules/faceDescriptor/routes/FaceDescriptorRouter"));
+const OfflineFaceRouter_1 = __importDefault(require("../modules/offlineFaceRecognition/routes/OfflineFaceRouter"));
 const router = express_1.default.Router();
 router.use("/", IndexRouter_1.default);
 router.use("/v1/auth/", AuthenticationRouter_1.default);
@@ -31,4 +32,5 @@ router.use("/v1/attendance/", AttendanceRouter_1.default);
 router.use("/v1/leave-request/", LeaveRequestRouter_1.default);
 router.use("/v1/location-data/", LocationDataRouter_1.default);
 router.use("/v1/face-descriptors/", FaceDescriptorRouter_1.default);
+router.use("/v1/offline-face/", OfflineFaceRouter_1.default);
 exports.default = router;

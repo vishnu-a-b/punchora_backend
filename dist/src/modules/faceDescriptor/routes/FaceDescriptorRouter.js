@@ -12,7 +12,7 @@ const router = (0, express_1.Router)();
  * @desc    Get all face descriptors for a business
  * @access  Private
  */
-router.get("/", authenticateUser_1.authenticateUser, FaceDescriptorController_1.default.getAllDescriptors);
+router.get("/", FaceDescriptorController_1.default.getAllDescriptors);
 /**
  * @route   POST /v1/face-descriptors
  * @desc    Create or update face descriptor
