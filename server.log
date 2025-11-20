@@ -34,3 +34,27 @@ Error: listen EADDRINUSE: address already in use :::3002
 objc[52483]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122a8c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x126d35978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
 Mongo connected
 Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[55813]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1238344b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127add978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
