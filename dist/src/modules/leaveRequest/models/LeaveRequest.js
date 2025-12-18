@@ -18,8 +18,30 @@ const leaveRequestSchema = new mongoose_1.default.Schema({
     status: {
         type: String,
         required: true,
-        maxLength: 20,
+        maxLength: 30,
         default: leaveStatus_1.LeaveStatus.pending,
+    },
+    // Department Head Approval (Level 1)
+    departmentHeadApproval: {
+        approvedBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+        approvedAt: { type: Date },
+        status: {
+            type: String,
+            enum: ["approved", "rejected", "pending"],
+            default: "pending",
+        },
+        comments: { type: String },
+    },
+    // HR Approval (Level 2)
+    hrApproval: {
+        approvedBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+        approvedAt: { type: Date },
+        status: {
+            type: String,
+            enum: ["approved", "rejected", "pending"],
+            default: "pending",
+        },
+        comments: { type: String },
     },
 }, { timestamps: true });
 exports.leaveRequestFilterFields = {

@@ -12,6 +12,8 @@ import { leaveRequestAcceptorRejectDoc } from "../docs/leaveRequestAcceptorRejec
 import LeaveRequestController from "../controllers/LeaveRequestController";
 import { leaveRequestDeleteDoc } from "../docs/leaveRequestDeleteDoc";
 import RolesEnum from "../../base/enums/roles";
+import { checkRole, checkLeaveApprovalPermission, applyDataFilters } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
 
 const router = express.Router();
 const controller = new LeaveRequestController();
@@ -52,5 +54,44 @@ router.put(
 );
 
 router.delete("/:id", leaveRequestDeleteDoc, authorization, controller.delete);
+
+// Get pending approvals (filtered by role)
+router.get(
+  "/pending-approvals",
+  checkRole([
+    UserRole.DEPARTMENT_HEAD,
+    UserRole.HR_ADMIN,
+    UserRole.BUSINESS_ADMIN,
+    UserRole.SUPER_ADMIN
+  ]),
+  applyDataFilters,
+  controller.getPendingApprovals
+);
+
+// Department Head approval routes
+router.post(
+  "/:id/approve-dept-head",
+  checkLeaveApprovalPermission(1),
+  controller.approveLeaveDeptHead
+);
+
+router.post(
+  "/:id/reject-dept-head",
+  checkLeaveApprovalPermission(1),
+  controller.rejectLeaveDeptHead
+);
+
+// HR approval routes
+router.post(
+  "/:id/approve-hr",
+  checkLeaveApprovalPermission(2),
+  controller.approveLeaveHR
+);
+
+router.post(
+  "/:id/reject-hr",
+  checkLeaveApprovalPermission(2),
+  controller.rejectLeaveHR
+);
 
 export default router;

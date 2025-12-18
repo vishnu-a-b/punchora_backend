@@ -17,6 +17,8 @@ const leaveRequestAcceptorRejectDoc_1 = require("../docs/leaveRequestAcceptorRej
 const LeaveRequestController_1 = __importDefault(require("../controllers/LeaveRequestController"));
 const leaveRequestDeleteDoc_1 = require("../docs/leaveRequestDeleteDoc");
 const roles_1 = __importDefault(require("../../base/enums/roles"));
+const checkPermission_1 = require("../../../middlewares/checkPermission");
+const roles_2 = require("../../../constants/roles");
 const router = express_1.default.Router();
 const controller = new LeaveRequestController_1.default();
 router.use(authenticateUser_1.authenticateUser);
@@ -28,4 +30,17 @@ router.post("/", authorization, leaveRequestCreateDoc_1.leaveRequestCreateDoc, l
 router.put("/accept-or-reject/:id", authorization, leaveRequestAcceptorRejectDoc_1.leaveRequestAcceptorRejectDoc, leaveRequestUpdateValidator_1.leaveRequestUpdateValidator, controller.accept);
 router.put("/:id", authorization, leaveRequestUpdateDoc_1.leaveRequestUpdateDoc, leaveRequestUpdateValidator_1.leaveRequestUpdateValidator, controller.update);
 router.delete("/:id", leaveRequestDeleteDoc_1.leaveRequestDeleteDoc, authorization, controller.delete);
+// Get pending approvals (filtered by role)
+router.get("/pending-approvals", (0, checkPermission_1.checkRole)([
+    roles_2.UserRole.DEPARTMENT_HEAD,
+    roles_2.UserRole.HR_ADMIN,
+    roles_2.UserRole.BUSINESS_ADMIN,
+    roles_2.UserRole.SUPER_ADMIN
+]), checkPermission_1.applyDataFilters, controller.getPendingApprovals);
+// Department Head approval routes
+router.post("/:id/approve-dept-head", (0, checkPermission_1.checkLeaveApprovalPermission)(1), controller.approveLeaveDeptHead);
+router.post("/:id/reject-dept-head", (0, checkPermission_1.checkLeaveApprovalPermission)(1), controller.rejectLeaveDeptHead);
+// HR approval routes
+router.post("/:id/approve-hr", (0, checkPermission_1.checkLeaveApprovalPermission)(2), controller.approveLeaveHR);
+router.post("/:id/reject-hr", (0, checkPermission_1.checkLeaveApprovalPermission)(2), controller.rejectLeaveHR);
 exports.default = router;

@@ -21,11 +21,23 @@ class AttendanceService {
             return yield Attendance_1.Attendance.create(data);
         });
         this.mark = (data) => __awaiter(this, void 0, void 0, function* () {
-            //checking for 2 minutes gap within recent markings
+            var _a, _b, _c;
             const time = new Date();
+            // ===== NEW: Check idempotency key first =====
+            if (data.idempotencyKey) {
+                const existingPunch = yield Attendance_1.Attendance.findOne({
+                    idempotencyKey: data.idempotencyKey,
+                });
+                if (existingPunch) {
+                    // Request already processed - return existing record (idempotent)
+                    console.log(`Duplicate request detected: ${data.idempotencyKey}`);
+                    return existingPunch;
+                }
+            }
+            // ===== UPDATED: Changed from 2 minutes to 1 minute =====
             let startTime = new Date();
             const endTime = new Date();
-            startTime.setMinutes(startTime.getMinutes() - 2);
+            startTime.setMinutes(startTime.getMinutes() - 1); // CHANGED FROM 2 to 1
             let attendance = yield Attendance_1.Attendance.findOne({
                 date: {
                     $gte: startTime,
@@ -35,8 +47,27 @@ class AttendanceService {
             }).sort({ createdAt: -1 });
             if (attendance) {
                 throw new AttendanceError_1.default({
-                    error: "You have a recent marking. Wait for some time and try again!",
+                    error: "You have a recent marking. Wait for 1 minute and try again!",
                 });
+            }
+            // ===== NEW: Flag suspicious locations =====
+            let flagged = false;
+            let flagReason = "";
+            if (((_a = data.location) === null || _a === void 0 ? void 0 : _a.mocked) === true) {
+                flagged = true;
+                flagReason = "Mocked GPS detected - possible location spoofing";
+            }
+            if (((_b = data.location) === null || _b === void 0 ? void 0 : _b.accuracy) && data.location.accuracy > 100) {
+                flagged = true;
+                flagReason = flagReason
+                    ? `${flagReason}; Low GPS accuracy (${data.location.accuracy}m)`
+                    : `Low GPS accuracy (${data.location.accuracy}m)`;
+            }
+            if (((_c = data.location) === null || _c === void 0 ? void 0 : _c.speed) && data.location.speed > 5) {
+                flagged = true;
+                flagReason = flagReason
+                    ? `${flagReason}; User in motion (${data.location.speed.toFixed(1)} m/s)`
+                    : `User in motion (${data.location.speed.toFixed(1)} m/s)`;
             }
             //checking for marking withing 18 hrs
             startTime = new Date();
@@ -49,21 +80,29 @@ class AttendanceService {
                 staff: data.staff,
             }).sort({ createdAt: -1 });
             if (attendance && attendance.status == attendanceStatus_1.AttendanceStatus.checkedIn) {
+                // Check-out
                 return yield Attendance_1.Attendance.findByIdAndUpdate(attendance.id, {
                     $set: {
                         checkOutTime: time,
                         status: attendanceStatus_1.AttendanceStatus.present,
                         checkOutLocation: data.location,
                         checkOutPhoto: data.photo,
+                        idempotencyKey: data.idempotencyKey, // NEW
+                        flagged: flagged, // NEW
+                        flagReason: flagReason || undefined, // NEW
                     },
                 }, { new: true });
             }
+            // Check-in
             return yield Attendance_1.Attendance.create({
                 staff: data.staff,
                 date: time,
                 checkInTime: time,
                 checkInPhoto: data.photo,
                 checkInLocation: data.location,
+                idempotencyKey: data.idempotencyKey, // NEW
+                flagged: flagged, // NEW
+                flagReason: flagReason || undefined, // NEW
             });
         });
         this.checkIn = (data) => __awaiter(this, void 0, void 0, function* () {
@@ -148,6 +187,25 @@ class AttendanceService {
         });
         this.delete = (id) => __awaiter(this, void 0, void 0, function* () {
             return yield Attendance_1.Attendance.findByIdAndDelete(id);
+        });
+        // NEW: Get all flagged attendance records
+        this.getFlaggedAttendance = (startDate, endDate) => __awaiter(this, void 0, void 0, function* () {
+            const query = { flagged: true };
+            if (startDate && endDate) {
+                query.date = { $gte: startDate, $lte: endDate };
+            }
+            return yield Attendance_1.Attendance.find(query)
+                .populate('staff', 'name email')
+                .sort({ createdAt: -1 });
+        });
+        // NEW: Clear flag after review
+        this.clearFlag = (attendanceId, note) => __awaiter(this, void 0, void 0, function* () {
+            return yield Attendance_1.Attendance.findByIdAndUpdate(attendanceId, {
+                $set: {
+                    flagged: false,
+                    flagReason: note || "Reviewed and cleared",
+                },
+            }, { new: true });
         });
     }
 }

@@ -21,6 +21,7 @@ const BadRequestError_1 = __importDefault(require("../../../errors/errorTypes/Ba
 const LeaveRequestService_1 = __importDefault(require("../services/LeaveRequestService"));
 const LeaveRequest_1 = require("../models/LeaveRequest");
 const leaveStatus_1 = require("../../base/enums/leaveStatus");
+const roles_1 = require("../../../constants/roles");
 class LeaveRequestController extends BaseController_1.default {
     constructor() {
         super(...arguments);
@@ -137,6 +138,190 @@ class LeaveRequestController extends BaseController_1.default {
                     next(new BadRequestError_1.default({ error: "invalid leave_request_id" }));
                 }
                 next(e);
+            }
+        });
+        /**
+         * Get pending approvals filtered by role
+         */
+        this.getPendingApprovals = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                let query = {};
+                if (user.role === roles_1.UserRole.DEPARTMENT_HEAD) {
+                    // Get staff IDs in this department
+                    const Staff = mongoose_1.default.model('Staff');
+                    const staffInDept = yield Staff.find({ department: user.department }).select('_id');
+                    const staffIds = staffInDept.map((s) => s._id);
+                    query = {
+                        staff: { $in: staffIds },
+                        status: leaveStatus_1.LeaveStatus.pending
+                    };
+                }
+                else if (user.role === roles_1.UserRole.HR_ADMIN) {
+                    // Get leaves pending HR approval
+                    query = {
+                        status: leaveStatus_1.LeaveStatus.pending_hr_approval
+                    };
+                }
+                else {
+                    // Business/Super admin can see all
+                    query = {
+                        status: { $in: [leaveStatus_1.LeaveStatus.pending, leaveStatus_1.LeaveStatus.pending_hr_approval] }
+                    };
+                }
+                const leaves = yield LeaveRequest_1.LeaveRequest.find(query)
+                    .populate('staff', 'name email')
+                    .populate('department', 'name')
+                    .sort({ createdAt: -1 })
+                    .limit(100);
+                this.sendSuccessResponse(res, 200, { data: leaves });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        /**
+         * Department Head approves leave (Level 1)
+         */
+        this.approveLeaveDeptHead = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { id } = req.params;
+                const { comments } = req.body;
+                const user = req.user;
+                const leave = yield LeaveRequest_1.LeaveRequest.findById(id).populate('staff');
+                if (!leave) {
+                    throw new NotFoundError_1.default({ error: 'Leave request not found' });
+                }
+                if (leave.status !== leaveStatus_1.LeaveStatus.pending) {
+                    throw new BadRequestError_1.default({ error: 'Leave is not in pending status' });
+                }
+                // Check department access for dept heads
+                if (user.role === roles_1.UserRole.DEPARTMENT_HEAD) {
+                    const staff = leave.staff;
+                    if (((_a = staff.department) === null || _a === void 0 ? void 0 : _a.toString()) !== ((_b = user.department) === null || _b === void 0 ? void 0 : _b.toString())) {
+                        throw new BadRequestError_1.default({ error: 'You can only approve leaves for your department' });
+                    }
+                }
+                leave.departmentHeadApproval = {
+                    approvedBy: user._id,
+                    approvedAt: new Date(),
+                    status: 'approved',
+                    comments: comments || ''
+                };
+                leave.status = leaveStatus_1.LeaveStatus.pending_hr_approval;
+                yield leave.save();
+                this.sendSuccessResponse(res, 200, {
+                    message: 'Leave approved by department head, pending HR approval',
+                    data: leave
+                });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        /**
+         * Department Head rejects leave (Level 1)
+         */
+        this.rejectLeaveDeptHead = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { id } = req.params;
+                const { comments } = req.body;
+                const user = req.user;
+                const leave = yield LeaveRequest_1.LeaveRequest.findById(id).populate('staff');
+                if (!leave) {
+                    throw new NotFoundError_1.default({ error: 'Leave request not found' });
+                }
+                if (leave.status !== leaveStatus_1.LeaveStatus.pending) {
+                    throw new BadRequestError_1.default({ error: 'Leave is not in pending status' });
+                }
+                // Check department access for dept heads
+                if (user.role === roles_1.UserRole.DEPARTMENT_HEAD) {
+                    const staff = leave.staff;
+                    if (((_a = staff.department) === null || _a === void 0 ? void 0 : _a.toString()) !== ((_b = user.department) === null || _b === void 0 ? void 0 : _b.toString())) {
+                        throw new BadRequestError_1.default({ error: 'You can only reject leaves for your department' });
+                    }
+                }
+                leave.departmentHeadApproval = {
+                    approvedBy: user._id,
+                    approvedAt: new Date(),
+                    status: 'rejected',
+                    comments: comments || ''
+                };
+                leave.status = leaveStatus_1.LeaveStatus.rejected_by_dept_head;
+                yield leave.save();
+                this.sendSuccessResponse(res, 200, {
+                    message: 'Leave rejected by department head',
+                    data: leave
+                });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        /**
+         * HR approves leave (Level 2)
+         */
+        this.approveLeaveHR = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const { comments } = req.body;
+                const user = req.user;
+                const leave = yield LeaveRequest_1.LeaveRequest.findById(id);
+                if (!leave) {
+                    throw new NotFoundError_1.default({ error: 'Leave request not found' });
+                }
+                if (leave.status !== leaveStatus_1.LeaveStatus.pending_hr_approval) {
+                    throw new BadRequestError_1.default({ error: 'Leave is not pending HR approval' });
+                }
+                leave.hrApproval = {
+                    approvedBy: user._id,
+                    approvedAt: new Date(),
+                    status: 'approved',
+                    comments: comments || ''
+                };
+                leave.status = leaveStatus_1.LeaveStatus.approved;
+                yield leave.save();
+                this.sendSuccessResponse(res, 200, {
+                    message: 'Leave approved by HR',
+                    data: leave
+                });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        /**
+         * HR rejects leave (Level 2)
+         */
+        this.rejectLeaveHR = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const { comments } = req.body;
+                const user = req.user;
+                const leave = yield LeaveRequest_1.LeaveRequest.findById(id);
+                if (!leave) {
+                    throw new NotFoundError_1.default({ error: 'Leave request not found' });
+                }
+                if (leave.status !== leaveStatus_1.LeaveStatus.pending_hr_approval) {
+                    throw new BadRequestError_1.default({ error: 'Leave is not pending HR approval' });
+                }
+                leave.hrApproval = {
+                    approvedBy: user._id,
+                    approvedAt: new Date(),
+                    status: 'rejected',
+                    comments: comments || ''
+                };
+                leave.status = leaveStatus_1.LeaveStatus.rejected_by_hr;
+                yield leave.save();
+                this.sendSuccessResponse(res, 200, {
+                    message: 'Leave rejected by HR',
+                    data: leave
+                });
+            }
+            catch (error) {
+                next(error);
             }
         });
     }

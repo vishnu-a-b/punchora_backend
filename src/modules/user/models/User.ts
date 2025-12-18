@@ -38,6 +38,35 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(MaritalStatuses),
     },
     roles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
+    // RBAC fields for new permission system
+    role: {
+      type: String,
+      enum: [
+        'super-admin',
+        'business-admin',
+        'hr-admin',
+        'department-head',
+        'control-room',
+        'staff'
+      ],
+      default: 'staff'
+    },
+    business: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Business",
+      required: function(this: any) {
+        // Business is required for all roles except super-admin and control-room
+        return this.role && this.role !== 'super-admin' && this.role !== 'control-room';
+      }
+    },
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: function(this: any) {
+        // Department is required only for department-head role
+        return this.role === 'department-head';
+      }
+    },
     isActive: {
       type: Boolean,
       default: true,

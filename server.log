@@ -58,3 +58,438 @@ Require stack:
   ]
 }
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[20339]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12333c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1275e5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[20802]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1214684b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x125711978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[22337]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12533c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1295e5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[22499]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x11ca684b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1235dd978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[26032]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122b3c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x126de5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[26712]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Error: Cannot find module '/Users/vishnuab/Official/myProjects/Punchora-Updated/out/swagger.json'
+Require stack:
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts
+- /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1249:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue [as _resolveFilename] (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Function._load (node:internal/modules/cjs/loader:1075:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:315:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:218:24)
+    at Module.require (node:internal/modules/cjs/loader:1340:12)
+    at require (node:internal/modules/helpers:141:16)
+    at Object.<anonymous> (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts:11:25)
+    at Module._compile (node:internal/modules/cjs/loader:1546:14)
+    at Module.m._compile (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/ts-node/src/index.ts:1618:23) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/app.ts',
+    '/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts'
+  ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[28727]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x114dc44b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x11906d978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[29506]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x120ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x125085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[32968]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1234684b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127711978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[33239]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x120ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x125085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[33470]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1253284b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1295d1978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[33748]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12504c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1292f5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[37461]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12384c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127af5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[40528]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1257144b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1299bd978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[40799]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[40979]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12104c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1252f5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[41519]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x127085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[41826]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12104c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1252f5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[43007]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x122c684b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x126f11978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[43534]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12484c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x128af5978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Server started on port 3002
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[44023]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1253284b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x1295d1978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[52104]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x124ddc4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x129085978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[59120]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x124dc44b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x12906d978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[59479]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x124a8c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x128d35978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[59655]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x1256e44b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x129a1d978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[59901]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x12384c4b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x128299978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node src/server.ts`[39m
+objc[61741]: Class GNotificationCenterDelegate is implemented in both /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/canvas/build/Release/libgio-2.0.0.dylib (0x124bc84b8) and /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x128e71978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Mongo connected
+Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1907:16)
+    at listenInCluster (node:net:1964:12)
+    at Server.listen (node:net:2066:7)
+    at Function.listen (/Users/vishnuab/Official/myProjects/Punchora-Updated/backend/node_modules/express/lib/application.js:635:24)
+    at /Users/vishnuab/Official/myProjects/Punchora-Updated/backend/src/server.ts:11:9
+    at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

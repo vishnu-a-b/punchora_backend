@@ -119,6 +119,7 @@ export default class AttendanceController extends BaseController {
           staff: body.staff,
           checkOutPhoto: body.photo,
           checkOutLocation: JSON.parse(body.checkOutLocation),
+          idempotencyKey: body.idempotencyKey,  // NEW
         });
       }
       if (body.checkIn === "true") {
@@ -134,6 +135,7 @@ export default class AttendanceController extends BaseController {
           checkInPhoto: body.photo,
           checkInLocation: JSON.parse(body.checkInLocation),
           createdBy: req.user._id,
+          idempotencyKey: body.idempotencyKey,  // NEW
         });
       }
       this.sendSuccessResponse(res, 201, { data });
@@ -171,10 +173,17 @@ export default class AttendanceController extends BaseController {
           error: "facial recognition failed. No staff found",
         });
       }
+      // Parse location if it's a string (from FormData)
+      let parsedLocation = body.location;
+      if (typeof body.location === 'string') {
+        parsedLocation = JSON.parse(body.location);
+      }
+
       await this.service.mark({
         staff: staff.id,
         photo: body.photo,
-        location: JSON.parse(body.location),
+        location: parsedLocation,
+        idempotencyKey: body.idempotencyKey,  // NEW
       });
 
       this.sendSuccessResponse(res, 201, { data: staff });
@@ -241,6 +250,46 @@ export default class AttendanceController extends BaseController {
         throw new NotFoundError({ error: "attendance not found" });
       }
       this.sendSuccessResponse(res, 204, { data: {} });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid attendance_id" }));
+      }
+      next(e);
+    }
+  };
+
+  // NEW: Get flagged attendance records
+  getFlaggedAttendance = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { startDate, endDate } = req.query;
+      const data = await this.service.getFlaggedAttendance(
+        startDate ? new Date(startDate as string) : undefined,
+        endDate ? new Date(endDate as string) : undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  // NEW: Clear flag from attendance record
+  clearAttendanceFlag = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { id } = req.params;
+      const { note } = req.body;
+      const attendance = await this.service.clearFlag(id, note);
+      if (!attendance) {
+        throw new NotFoundError({ error: "attendance not found" });
+      }
+      this.sendSuccessResponse(res, 200, { data: attendance });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {
         next(new BadRequestError({ error: "invalid attendance_id" }));

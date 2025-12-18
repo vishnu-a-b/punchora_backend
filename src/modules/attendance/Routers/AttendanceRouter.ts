@@ -118,4 +118,19 @@ router.put(
 );
 router.delete("/:id", authenticateUser, controller.delete);
 
+// NEW: Routes for flagged attendance
+router.get(
+  "/flagged/list",
+  authenticateUser,
+  authorizeUser({ allowedRoles: [] }),
+  controller.getFlaggedAttendance
+);
+
+router.put(
+  "/flagged/:id/clear",
+  authenticateUser,
+  authorizeUser({ allowedRoles: [] }),
+  controller.clearAttendanceFlag
+);
+
 export default router;

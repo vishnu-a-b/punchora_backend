@@ -8,7 +8,7 @@ import helmet from "helmet";
 import path from "path";
 
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require(path.join(__dirname, "../../out/swagger.json"));
+const swaggerDocument = require(path.join(__dirname, "../out/swagger.json"));
 const cors = require("cors");
 
 const app = express();

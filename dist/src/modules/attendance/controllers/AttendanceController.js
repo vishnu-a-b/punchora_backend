@@ -128,6 +128,7 @@ class AttendanceController extends BaseController_1.default {
                         staff: body.staff,
                         checkOutPhoto: body.photo,
                         checkOutLocation: JSON.parse(body.checkOutLocation),
+                        idempotencyKey: body.idempotencyKey, // NEW
                     });
                 }
                 if (body.checkIn === "true") {
@@ -143,6 +144,7 @@ class AttendanceController extends BaseController_1.default {
                         checkInPhoto: body.photo,
                         checkInLocation: JSON.parse(body.checkInLocation),
                         createdBy: req.user._id,
+                        idempotencyKey: body.idempotencyKey, // NEW
                     });
                 }
                 this.sendSuccessResponse(res, 201, { data });
@@ -174,10 +176,16 @@ class AttendanceController extends BaseController_1.default {
                         error: "facial recognition failed. No staff found",
                     });
                 }
+                // Parse location if it's a string (from FormData)
+                let parsedLocation = body.location;
+                if (typeof body.location === 'string') {
+                    parsedLocation = JSON.parse(body.location);
+                }
                 yield this.service.mark({
                     staff: staff.id,
                     photo: body.photo,
-                    location: JSON.parse(body.location),
+                    location: parsedLocation,
+                    idempotencyKey: body.idempotencyKey, // NEW
                 });
                 this.sendSuccessResponse(res, 201, { data: staff });
             }
@@ -225,6 +233,35 @@ class AttendanceController extends BaseController_1.default {
                     throw new NotFoundError_1.default({ error: "attendance not found" });
                 }
                 this.sendSuccessResponse(res, 204, { data: {} });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "invalid attendance_id" }));
+                }
+                next(e);
+            }
+        });
+        // NEW: Get flagged attendance records
+        this.getFlaggedAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate } = req.query;
+                const data = yield this.service.getFlaggedAttendance(startDate ? new Date(startDate) : undefined, endDate ? new Date(endDate) : undefined);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        // NEW: Clear flag from attendance record
+        this.clearAttendanceFlag = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const { note } = req.body;
+                const attendance = yield this.service.clearFlag(id, note);
+                if (!attendance) {
+                    throw new NotFoundError_1.default({ error: "attendance not found" });
+                }
+                this.sendSuccessResponse(res, 200, { data: attendance });
             }
             catch (e) {
                 if (e instanceof mongoose_1.default.Error.CastError) {

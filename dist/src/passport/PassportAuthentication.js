@@ -36,7 +36,9 @@ PassportAuthentication.initialise = (app) => {
 PassportAuthentication.localAuthentication = (username, password, done) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.User.findOne({ mobileNo: username, isActive: true })
         .select("+password")
-        .populate("roles");
+        .populate("roles")
+        .populate("business")
+        .populate("department");
     if (!user) {
         return done(null, false);
     }
@@ -51,7 +53,10 @@ PassportAuthentication.jwtAuthentication = (jwt_payload, done) => __awaiter(void
         const user = yield User_1.User.findOne({
             _id: jwt_payload.id,
             isActive: true,
-        }).populate("roles");
+        })
+            .populate("roles")
+            .populate("business")
+            .populate("department");
         if (!user) {
             return done(null, false);
         }

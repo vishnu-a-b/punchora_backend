@@ -66,4 +66,7 @@ router.post("/mark", (req, res, next) => {
 router.post("/mark-via-recogntion", markAttendanceViaImageDoc_1.markAttendanceViaImageDoc, singleUploadMethod, markAttendanceViaPhotoValidator_1.markAttendanceViaPhotoValidator, controller.markAttendanceViaRecognition);
 router.put("/:id", multiUploadMethod, authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), attendanceUpdateValidator_1.attendanceUpdateValidator, updateAttendanceDoc_1.updateAttendanceDoc, controller.update);
 router.delete("/:id", authenticateUser_1.authenticateUser, controller.delete);
+// NEW: Routes for flagged attendance
+router.get("/flagged/list", authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.getFlaggedAttendance);
+router.put("/flagged/:id/clear", authenticateUser_1.authenticateUser, (0, authorizeUser_1.default)({ allowedRoles: [] }), controller.clearAttendanceFlag);
 exports.default = router;

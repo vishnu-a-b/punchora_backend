@@ -10,6 +10,9 @@ const locationSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    mocked: { type: Boolean, default: false }, // Flag for fake/mocked GPS locations
+    accuracy: { type: Number }, // Location accuracy in meters
+    altitude: { type: Number }, // Altitude if available
   },
   { timestamps: true }
 );

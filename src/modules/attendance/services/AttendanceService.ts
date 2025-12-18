@@ -2,13 +2,25 @@ import AttendanceError from "../../../errors/errorTypes/AttendanceError";
 import { AttendanceStatus } from "../../base/enums/attendanceStatus";
 import { Attendance } from "../models/Attendance";
 
+interface LocationData {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  altitude?: number;
+  heading?: number;
+  speed?: number;
+  timestamp?: number;
+  mocked?: boolean;
+}
+
 interface AttendanceCheckIn {
   staff: string;
   date: Date;
   checkInTime: Date;
   checkInPhoto: string | undefined;
-  checkInLocation?: { latitude: number; longitude: number } | undefined;
+  checkInLocation?: LocationData | undefined;
   createdBy?: string | undefined;
+  idempotencyKey?: string;
 }
 
 interface AttendanceCheckOut {
@@ -16,13 +28,15 @@ interface AttendanceCheckOut {
   date: Date;
   checkOutTime: Date;
   checkOutPhoto: string | undefined;
-  checkOutLocation?: { latitude: number; longitude: number } | undefined;
+  checkOutLocation?: LocationData | undefined;
+  idempotencyKey?: string;
 }
 
 interface AttendanceData {
   staff: string;
   photo: string | undefined;
-  location?: { latitude: number; longitude: number } | undefined;
+  location?: LocationData | undefined;
+  idempotencyKey?: string;
 }
 
 export default class AttendanceService {
@@ -31,12 +45,25 @@ export default class AttendanceService {
   };
 
   mark = async (data: AttendanceData) => {
-    //checking for 2 minutes gap within recent markings
     const time = new Date();
 
+    // ===== NEW: Check idempotency key first =====
+    if (data.idempotencyKey) {
+      const existingPunch = await Attendance.findOne({
+        idempotencyKey: data.idempotencyKey,
+      });
+
+      if (existingPunch) {
+        // Request already processed - return existing record (idempotent)
+        console.log(`Duplicate request detected: ${data.idempotencyKey}`);
+        return existingPunch;
+      }
+    }
+
+    // ===== UPDATED: Changed from 2 minutes to 1 minute =====
     let startTime = new Date();
     const endTime = new Date();
-    startTime.setMinutes(startTime.getMinutes() - 2);
+    startTime.setMinutes(startTime.getMinutes() - 1);  // CHANGED FROM 2 to 1
 
     let attendance = await Attendance.findOne({
       date: {
@@ -48,8 +75,31 @@ export default class AttendanceService {
 
     if (attendance) {
       throw new AttendanceError({
-        error: "You have a recent marking. Wait for some time and try again!",
+        error: "You have a recent marking. Wait for 1 minute and try again!",
       });
+    }
+
+    // ===== NEW: Flag suspicious locations =====
+    let flagged = false;
+    let flagReason = "";
+
+    if (data.location?.mocked === true) {
+      flagged = true;
+      flagReason = "Mocked GPS detected - possible location spoofing";
+    }
+
+    if (data.location?.accuracy && data.location.accuracy > 100) {
+      flagged = true;
+      flagReason = flagReason
+        ? `${flagReason}; Low GPS accuracy (${data.location.accuracy}m)`
+        : `Low GPS accuracy (${data.location.accuracy}m)`;
+    }
+
+    if (data.location?.speed && data.location.speed > 5) {
+      flagged = true;
+      flagReason = flagReason
+        ? `${flagReason}; User in motion (${data.location.speed.toFixed(1)} m/s)`
+        : `User in motion (${data.location.speed.toFixed(1)} m/s)`;
     }
 
     //checking for marking withing 18 hrs
@@ -65,6 +115,7 @@ export default class AttendanceService {
     }).sort({ createdAt: -1 });
 
     if (attendance && attendance.status == AttendanceStatus.checkedIn) {
+      // Check-out
       return await Attendance.findByIdAndUpdate(
         attendance.id,
         {
@@ -73,18 +124,25 @@ export default class AttendanceService {
             status: AttendanceStatus.present,
             checkOutLocation: data.location,
             checkOutPhoto: data.photo,
+            idempotencyKey: data.idempotencyKey,  // NEW
+            flagged: flagged,                      // NEW
+            flagReason: flagReason || undefined,   // NEW
           },
         },
         { new: true }
       );
     }
 
+    // Check-in
     return await Attendance.create({
       staff: data.staff,
       date: time,
       checkInTime: time,
       checkInPhoto: data.photo,
       checkInLocation: data.location,
+      idempotencyKey: data.idempotencyKey,  // NEW
+      flagged: flagged,                      // NEW
+      flagReason: flagReason || undefined,   // NEW
     });
   };
   checkIn = async (data: AttendanceCheckIn) => {
@@ -185,5 +243,32 @@ export default class AttendanceService {
 
   delete = async (id: any) => {
     return await Attendance.findByIdAndDelete(id);
+  };
+
+  // NEW: Get all flagged attendance records
+  getFlaggedAttendance = async (startDate?: Date, endDate?: Date) => {
+    const query: any = { flagged: true };
+
+    if (startDate && endDate) {
+      query.date = { $gte: startDate, $lte: endDate };
+    }
+
+    return await Attendance.find(query)
+      .populate('staff', 'name email')
+      .sort({ createdAt: -1 });
+  };
+
+  // NEW: Clear flag after review
+  clearFlag = async (attendanceId: string, note?: string) => {
+    return await Attendance.findByIdAndUpdate(
+      attendanceId,
+      {
+        $set: {
+          flagged: false,
+          flagReason: note || "Reviewed and cleared",
+        },
+      },
+      { new: true }
+    );
   };
 }

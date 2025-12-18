@@ -12,7 +12,7 @@ require("express-async-errors");
 const helmet_1 = __importDefault(require("helmet"));
 const path_1 = __importDefault(require("path"));
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require(path_1.default.join(__dirname, "../../out/swagger.json"));
+const swaggerDocument = require(path_1.default.join(__dirname, "../out/swagger.json"));
 const cors = require("cors");
 const app = (0, express_1.default)();
 app.use(cors());

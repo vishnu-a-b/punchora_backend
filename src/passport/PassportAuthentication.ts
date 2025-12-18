@@ -34,7 +34,9 @@ export class PassportAuthentication {
   ) => {
     const user = await User.findOne({ mobileNo: username, isActive: true })
       .select("+password")
-      .populate("roles");
+      .populate("roles")
+      .populate("business")
+      .populate("department");
     if (!user) {
       return done(null, false);
     }
@@ -50,7 +52,10 @@ export class PassportAuthentication {
       const user = await User.findOne({
         _id: jwt_payload.id,
         isActive: true,
-      }).populate("roles");
+      })
+        .populate("roles")
+        .populate("business")
+        .populate("department");
 
       if (!user) {
         return done(null, false);
