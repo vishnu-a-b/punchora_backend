@@ -76,19 +76,31 @@ export default class ActivityController extends BaseController {
       const { id } = req.params;
       const user = (req as any).user;
 
+      console.log(`[EndActivity] User ID: ${user._id}, Activity ID: ${id}`);
+
       const activity = await this.service.getActivityById(id);
 
       if (!activity) {
         throw new NotFoundError({ error: "Activity not found" });
       }
 
+      console.log(`[EndActivity] Activity found - Staff: ${activity.staff}, Status: ${activity.status}`);
+
       // Verify this activity belongs to the user
       const { Staff } = await import("../../staff/models/Staff");
       const staff = await Staff.findOne({ user: user._id });
 
-      if (!staff || activity.staff.toString() !== staff._id.toString()) {
+      console.log(`[EndActivity] Current user's staff ID: ${staff?._id}`);
+
+      // Handle both populated and non-populated staff field
+      const activityStaffId = (activity.staff as any)?._id || activity.staff;
+
+      if (!staff || activityStaffId.toString() !== staff._id.toString()) {
+        console.log(`[EndActivity] Authorization failed - Activity staff: ${activityStaffId}, User staff: ${staff?._id}`);
         throw new BadRequestError({ error: "Unauthorized" });
       }
+
+      console.log(`[EndActivity] Authorization successful, proceeding to end activity`);
 
       const endData = {
         endTime: req.body.endTime ? new Date(req.body.endTime) : undefined,
@@ -199,6 +211,8 @@ export default class ActivityController extends BaseController {
       const user = (req as any).user;
       const { skip, limit, startDate, endDate, type, departmentId } = req.query;
 
+      console.log(`[GetBusinessActivities] User role: ${user.role}, User business: ${user.business}, Query businessId: ${req.query.businessId}`);
+
       // Get business ID from user or query
       let businessId = user.business;
 
@@ -207,7 +221,10 @@ export default class ActivityController extends BaseController {
         businessId = req.query.businessId;
       }
 
+      console.log(`[GetBusinessActivities] Final businessId: ${businessId}`);
+
       if (!businessId) {
+        console.log(`[GetBusinessActivities] No businessId found - throwing error`);
         throw new BadRequestError({ error: "Business ID required" });
       }
 

@@ -6,6 +6,7 @@ import expressMongoSanitize from "express-mongo-sanitize";
 import "express-async-errors";
 import helmet from "helmet";
 import path from "path";
+import { requestLogger } from "./middlewares/requestLogger";
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require(path.join(__dirname, "../out/swagger.json"));
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(expressMongoSanitize());
+app.use(requestLogger);
 app.use(routes);
 
 // to serve static files

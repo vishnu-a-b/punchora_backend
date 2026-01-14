@@ -8,3 +8,7 @@ src/models/*.onnx
 
 # Database exports
 exports/
+
+# Log files
+logs/
+*.log

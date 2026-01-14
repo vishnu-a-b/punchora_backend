@@ -114,7 +114,7 @@ export default class AttendanceController extends BaseController {
           });
         }
         data = await this.service.checkOut({
-          date: body.date,
+          date: new Date(),
           checkOutTime: new Date(),
           staff: body.staff,
           checkOutPhoto: body.photo,
@@ -129,7 +129,7 @@ export default class AttendanceController extends BaseController {
           });
         }
         data = await this.service.checkIn({
-          date: body.date,
+          date: new Date(),
           checkInTime: new Date(),
           staff: body.staff,
           checkInPhoto: body.photo,
@@ -143,6 +143,70 @@ export default class AttendanceController extends BaseController {
       next(e);
     }
   };
+
+  markAndEditAttendance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
+      console.log("Request body:", req.body);
+      console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
+      console.log("Content-Type:", req.headers['content-type']);
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.error("Validation errors:", errors.array());
+        throw new ValidationFailedError({ errors: errors.array() });
+      }
+      const body = req.body;
+      if (!body.checkOutTime && !body.checkInTime) {
+        console.error("Missing checkOutTime and checkInTime");
+        throw new ValidationFailedError({
+          error: "checkOutTime or checkInTime required",
+        });
+      }
+      if (!req.file) {
+        console.error("No photo provided");
+        throw new ValidationFailedError({ errors: ["no photo provided"] });
+      }
+      body.photo = Configs.domain + "attendance/" + req.file!.filename;
+      console.log("Photo URL:", body.photo);
+      let data: any;
+      if (body.checkIn === "false") {
+        if (!body.checkOutLocation) {
+          throw new ValidationFailedError({
+            errors: ["checkOutLocation required"],
+          });
+        }
+        data = await this.service.checkOut({
+          date: new Date(),
+          checkOutTime: new Date(),
+          staff: body.staff,
+          checkOutPhoto: body.photo,
+          checkOutLocation: JSON.parse(body.checkOutLocation),
+          idempotencyKey: body.idempotencyKey,  // NEW
+        });
+      }
+      if (body.checkIn === "true") {
+        if (!body.checkInLocation) {
+          throw new ValidationFailedError({
+            errors: ["checkInLocation required"],
+          });
+        }
+        data = await this.service.checkIn({
+          date: new Date(),
+          checkInTime: new Date(),
+          staff: body.staff,
+          checkInPhoto: body.photo,
+          checkInLocation: JSON.parse(body.checkInLocation),
+          createdBy: req.user._id,
+          idempotencyKey: body.idempotencyKey,  // NEW
+        });
+      }
+      this.sendSuccessResponse(res, 201, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
 
   markAttendanceViaRecognition = async (
     req: Request,

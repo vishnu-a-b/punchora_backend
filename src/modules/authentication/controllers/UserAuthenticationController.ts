@@ -22,6 +22,7 @@ export default class UserAuthenticationController extends BaseController {
         message: "user authenticated successfully",
         data: {
           ...{
+            _id: user.id,
             id: user.id,
             isSuperAdmin: user.isSuperAdmin,
             roles: user.roles,
@@ -61,6 +62,7 @@ export default class UserAuthenticationController extends BaseController {
         message: "token refreshed successfully",
         data: {
           ...{
+            _id: user.id,
             id: user.id,
             isSuperAdmin: user.isSuperAdmin,
             roles: user.roles,

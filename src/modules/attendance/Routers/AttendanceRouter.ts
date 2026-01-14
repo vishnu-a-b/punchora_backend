@@ -101,6 +101,20 @@ router.post(
 );
 
 router.post(
+  "/mark-admin",
+  (req: Request, res: Response, next: NextFunction) => {
+    console.log("=== /mark ROUTE HIT ===");
+    console.log("Headers:", req.headers);
+    next();
+  },
+  authenticateUser,
+  markAttendanceDoc,
+  singleUploadMethod,
+  markAttendanceValidator,
+  controller.markAndEditAttendance
+);
+
+router.post(
   "/mark-via-recogntion",
   markAttendanceViaImageDoc,
   singleUploadMethod,
