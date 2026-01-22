@@ -127,13 +127,34 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   ],
 
   [UserRole.HR_ADMIN]: [
-    // HR admin - view all, approve leaves (level 2), no editing
+    // HR admin - PHASE 2 ENHANCED: Full staff management + payroll
+    // Staff management (full CRUD)
     Permission.VIEW_ALL_STAFF,
+    Permission.CREATE_STAFF,
+    Permission.EDIT_STAFF,
+    Permission.DELETE_STAFF,
+
+    // Leave management (Level 2 approval - final approval)
     Permission.VIEW_ALL_LEAVES,
     Permission.APPROVE_LEAVE_LEVEL_2,
     Permission.REJECT_LEAVE,
+
+    // Attendance (view only - cannot edit)
     Permission.VIEW_ALL_ATTENDANCE,
+
+    // Location tracking (view only)
     Permission.VIEW_ALL_LOCATIONS,
+
+    // Payroll management (full access)
+    Permission.VIEW_ALL_PAYROLL,
+    Permission.EDIT_PAYROLL,
+    Permission.PROCESS_PAYROLL,
+
+    // Settings (HR policies section)
+    Permission.VIEW_SETTINGS,
+
+    // NOTE: HR cannot manage departments - that's business admin only
+    // NOTE: HR cannot edit attendance - escalate to business admin
   ],
 
   [UserRole.DEPARTMENT_HEAD]: [

@@ -1,6 +1,9 @@
 import { Router } from "express";
 import ActivityController from "../controllers/ActivityController";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
+import { checkRole } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
+import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import {
   startActivityValidator,
   endActivityValidator
@@ -8,6 +11,8 @@ import {
 import multer from "multer";
 import { multerFileStorageForAttendance } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
+
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF } = UserRole;
 
 const router = Router();
 const controller = new ActivityController();
@@ -26,6 +31,7 @@ const uploadMiddleware = multer({
 router.post(
   "/start",
   authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   uploadMiddleware.fields([
     { name: "photo", maxCount: 1 },
     { name: "vehiclePhoto", maxCount: 1 }
@@ -42,6 +48,7 @@ router.post(
 router.put(
   "/:id/end",
   authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   endActivityValidator,
   controller.endActivity
 );
@@ -51,48 +58,87 @@ router.put(
  * @desc    Get my activities
  * @access  Private (Staff)
  */
-router.get("/my-activities", authenticateUser, controller.getMyActivities);
+router.get(
+  "/my-activities",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  controller.getMyActivities
+);
 
 /**
  * @route   GET /activity/ongoing
  * @desc    Get ongoing activities
- * @access  Private (Staff)
+ * @access  Private (Staff and Admins)
  */
-router.get("/ongoing", authenticateUser, controller.getOngoing);
+router.get(
+  "/ongoing",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  controller.getOngoing
+);
 
 /**
  * @route   GET /activity/stats
  * @desc    Get activity statistics
- * @access  Private (Staff)
+ * @access  Private (Staff and Admins)
  */
-router.get("/stats", authenticateUser, controller.getStats);
+router.get(
+  "/stats",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  controller.getStats
+);
 
 /**
  * @route   GET /activity/business
  * @desc    Get business activities (Admin)
- * @access  Private (Admin)
+ * @access  Private (Admin) - FIXED: Added authorization + business scoping
  */
-router.get("/business", authenticateUser, controller.getBusinessActivities);
+router.get(
+  "/business",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  controller.getBusinessActivities
+);
 
 /**
  * @route   GET /activity/business-stats
  * @desc    Get business activity statistics (Admin)
- * @access  Private (Admin)
+ * @access  Private (Admin) - FIXED: Added authorization + business scoping
  */
-router.get("/business-stats", authenticateUser, controller.getBusinessStats);
+router.get(
+  "/business-stats",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  controller.getBusinessStats
+);
 
 /**
  * @route   GET /activity/:id
  * @desc    Get activity by ID
- * @access  Private
+ * @access  Private (Self or Admin)
  */
-router.get("/:id", authenticateUser, controller.getById);
+router.get(
+  "/:id",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  controller.getById
+);
 
 /**
  * @route   DELETE /activity/:id
  * @desc    Delete activity
- * @access  Private
+ * @access  Private (Admin only)
  */
-router.delete("/:id", authenticateUser, controller.deleteActivity);
+router.delete(
+  "/:id",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  controller.deleteActivity
+);
 
 export default router;

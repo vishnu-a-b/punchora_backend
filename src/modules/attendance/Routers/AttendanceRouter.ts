@@ -1,5 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
+import { checkRole } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
+import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import AttendanceController from "../controllers/AttendanceController";
 import { attendanceListDoc } from "../docs/attendanceListDoc";
 import { markAttendanceDoc } from "../docs/markAttendanceDoc";
@@ -10,11 +13,12 @@ import multer from "multer";
 import { multerFileStorageForAttendance } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
-import authorizeUser from "../../../middlewares/authorizeUser";
 import { attendanceCreateValidator } from "../validators/attendanceCreateValidator";
 import { createAttendanceDoc } from "../docs/createAttendanceDoc";
 import { attendanceUpdateValidator } from "../validators/attendanceUpdateValidator";
 import { updateAttendanceDoc } from "../docs/updateAttendanceDoc";
+
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF, CONTROL_ROOM } = UserRole;
 
 const router = express.Router();
 const controller = new AttendanceController();
@@ -61,90 +65,131 @@ const multiUploadMethod = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+// Create attendance - Admin only
 router.post(
   "/",
-  multiUploadMethod,
   authenticateUser,
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  multiUploadMethod,
   attendanceCreateValidator,
   createAttendanceDoc,
   controller.create
 );
 
+// Get all staffs attendance - Admin and Department Head (with filtering)
 router.get(
   "/all-staffs",
   authenticateUser,
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
   attendanceListDoc,
   controller.getDatewiseAttendanceForAllStaffs
 );
 
+// Get attendance for specific staff - Admin, Department Head, or self
 router.get(
   "/:id",
   authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
+  applyBusinessScoping,
   attendanceListDoc,
   controller.getAttendanceForStaff
 );
 
+// Mark attendance - Staff marks own attendance
 router.post(
   "/mark",
-  (req: Request, res: Response, next: NextFunction) => {
-    console.log("=== /mark ROUTE HIT ===");
-    console.log("Headers:", req.headers);
-    next();
-  },
   authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   markAttendanceDoc,
   singleUploadMethod,
   markAttendanceValidator,
   controller.markAttendance
 );
 
+// Mark attendance as admin - Admin can mark/edit for staff
 router.post(
   "/mark-admin",
-  (req: Request, res: Response, next: NextFunction) => {
-    console.log("=== /mark ROUTE HIT ===");
-    console.log("Headers:", req.headers);
-    next();
-  },
   authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   markAttendanceDoc,
   singleUploadMethod,
   markAttendanceValidator,
   controller.markAndEditAttendance
 );
 
+// Mark attendance via face recognition - Staff or admin
 router.post(
   "/mark-via-recogntion",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   markAttendanceViaImageDoc,
   singleUploadMethod,
   markAttendanceViaPhotoValidator,
   controller.markAttendanceViaRecognition
 );
+
+// Update attendance - Admin only
 router.put(
   "/:id",
-  multiUploadMethod,
   authenticateUser,
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  multiUploadMethod,
   attendanceUpdateValidator,
   updateAttendanceDoc,
   controller.update
 );
-router.delete("/:id", authenticateUser, controller.delete);
 
-// NEW: Routes for flagged attendance
+// Delete attendance - Admin only
+router.delete(
+  "/:id",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  controller.delete
+);
+
+// Get flagged attendance - Admin only
 router.get(
   "/flagged/list",
   authenticateUser,
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   controller.getFlaggedAttendance
 );
 
+// Clear attendance flag - Admin only
 router.put(
   "/flagged/:id/clear",
   authenticateUser,
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   controller.clearAttendanceFlag
+);
+
+/**
+ * PHASE 3: Enhanced Flagging System
+ */
+
+// Flag an attendance record - Control Room, Business Admin, HR Admin
+router.post(
+  "/:id/flag",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, CONTROL_ROOM, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  controller.flagAttendance
+);
+
+// Review a flagged attendance record - Business Admin only
+router.post(
+  "/:id/review",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN]),
+  applyBusinessScoping,
+  controller.reviewFlag
 );
 
 export default router;

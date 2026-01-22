@@ -58,6 +58,138 @@ class FailedLocationAttemptService {
             const attempts = yield FailedLocationAttempt_1.FailedLocationAttempt.find(query).populate("staff");
             return attempts;
         });
+        // Get staff with location disabled (failed attempts in last X minutes)
+        this.getStaffWithLocationDisabled = (businessId_1, ...args_1) => __awaiter(this, [businessId_1, ...args_1], void 0, function* (businessId, lastMinutes = 10) {
+            const timeThreshold = new Date(Date.now() - lastMinutes * 60 * 1000);
+            const pipeline = [
+                {
+                    $match: {
+                        attemptTime: { $gte: timeThreshold },
+                        reason: { $in: ["location_off", "permission_denied"] },
+                    },
+                },
+                {
+                    $sort: { attemptTime: -1 },
+                },
+                {
+                    $group: {
+                        _id: "$staff",
+                        latestAttempt: { $first: "$$ROOT" },
+                        failureCount: { $sum: 1 },
+                    },
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: ["$latestAttempt", { failureCount: "$failureCount" }],
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "staffs",
+                        localField: "staff",
+                        foreignField: "_id",
+                        as: "staffInfo",
+                    },
+                },
+                {
+                    $unwind: {
+                        path: "$staffInfo",
+                        preserveNullAndEmptyArrays: false,
+                    },
+                },
+            ];
+            if (businessId) {
+                pipeline.push({
+                    $match: {
+                        "staffInfo.business": businessId,
+                    },
+                });
+            }
+            pipeline.push({
+                $project: {
+                    _id: 1,
+                    staff: "$staffInfo._id",
+                    staffName: "$staffInfo.name",
+                    staffEmail: "$staffInfo.email",
+                    staffType: "$staffInfo.staffType",
+                    attemptTime: 1,
+                    reason: 1,
+                    errorMessage: 1,
+                    lastKnownLatitude: 1,
+                    lastKnownLongitude: 1,
+                    lastKnownTime: 1,
+                    failureCount: 1,
+                },
+            });
+            const staffWithIssues = yield FailedLocationAttempt_1.FailedLocationAttempt.aggregate(pipeline);
+            return staffWithIssues;
+        });
+        // Get summary statistics for location failures
+        this.getLocationFailureSummary = (startDate, endDate, businessId) => __awaiter(this, void 0, void 0, function* () {
+            const pipeline = [
+                {
+                    $match: {
+                        attemptTime: {
+                            $gte: startDate,
+                            $lte: endDate,
+                        },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "staffs",
+                        localField: "staff",
+                        foreignField: "_id",
+                        as: "staffInfo",
+                    },
+                },
+                {
+                    $unwind: {
+                        path: "$staffInfo",
+                        preserveNullAndEmptyArrays: false,
+                    },
+                },
+            ];
+            if (businessId) {
+                pipeline.push({
+                    $match: {
+                        "staffInfo.business": businessId,
+                    },
+                });
+            }
+            pipeline.push({
+                $group: {
+                    _id: {
+                        staff: "$staff",
+                        reason: "$reason",
+                    },
+                    count: { $sum: 1 },
+                    staffName: { $first: "$staffInfo.name" },
+                    staffEmail: { $first: "$staffInfo.email" },
+                    lastAttemptTime: { $max: "$attemptTime" },
+                },
+            }, {
+                $group: {
+                    _id: "$_id.staff",
+                    staffName: { $first: "$staffName" },
+                    staffEmail: { $first: "$staffEmail" },
+                    reasons: {
+                        $push: {
+                            reason: "$_id.reason",
+                            count: "$count",
+                        },
+                    },
+                    totalFailures: { $sum: "$count" },
+                    lastFailureTime: { $max: "$lastAttemptTime" },
+                },
+            }, {
+                $sort: { totalFailures: -1 },
+            });
+            const summary = yield FailedLocationAttempt_1.FailedLocationAttempt.aggregate(pipeline);
+            return summary;
+        });
     }
 }
 exports.default = FailedLocationAttemptService;

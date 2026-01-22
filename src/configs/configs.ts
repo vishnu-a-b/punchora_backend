@@ -16,4 +16,7 @@ export default class Configs {
   static refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
   static accessTokenTimout = process.env.ACCESS_TOKEN_TIMOUT;
   static refreshTokenTimout = process.env.REFRESH_TOKEN_TIMOUT;
+
+  // Performance Monitoring
+  static sentryDsn = process.env.SENTRY_DSN;
 }

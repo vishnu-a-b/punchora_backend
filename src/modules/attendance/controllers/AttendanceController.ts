@@ -361,4 +361,94 @@ export default class AttendanceController extends BaseController {
       next(e);
     }
   };
+
+  /**
+   * PHASE 3: Enhanced Flagging System
+   */
+
+  /**
+   * Flag an attendance record for review
+   * POST /v1/attendance/:id/flag
+   */
+  flagAttendance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = (req as any).user;
+      const { reason, notes } = req.body;
+
+      // Get the attendance record
+      const attendance = await this.service.getById(id);
+      if (!attendance) {
+        throw new NotFoundError({ error: "Attendance record not found" });
+      }
+
+      // Flag the attendance
+      const flaggedAttendance = await this.service.flagAttendance(id, {
+        flaggedBy: user._id.toString(),
+        flaggedByName: user.name,
+        flagReason: reason || "other",
+        flagNotes: notes,
+      });
+
+      this.sendSuccessResponse(res, 200, {
+        message: "Attendance record flagged successfully",
+        data: flaggedAttendance,
+      });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "Invalid attendance ID" }));
+      } else {
+        next(e);
+      }
+    }
+  };
+
+  /**
+   * Review a flagged attendance record
+   * POST /v1/attendance/:id/review
+   */
+  reviewFlag = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = (req as any).user;
+      const { status, notes } = req.body;
+
+      // Validate status
+      if (!["cleared", "confirmed"].includes(status)) {
+        throw new BadRequestError({
+          error: "Invalid status. Must be 'cleared' or 'confirmed'",
+        });
+      }
+
+      // Get the attendance record
+      const attendance = await this.service.getById(id);
+      if (!attendance) {
+        throw new NotFoundError({ error: "Attendance record not found" });
+      }
+
+      if (!attendance.flagged) {
+        throw new BadRequestError({
+          error: "Attendance record is not flagged",
+        });
+      }
+
+      // Review the flag
+      const reviewedAttendance = await this.service.reviewFlag(id, {
+        reviewedBy: user._id.toString(),
+        flagStatus: status,
+        reviewNotes: notes,
+      });
+
+      this.sendSuccessResponse(res, 200, {
+        message: "Flag reviewed successfully",
+        data: reviewedAttendance,
+      });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "Invalid attendance ID" }));
+      } else {
+        next(e);
+      }
+    }
+  };
 }

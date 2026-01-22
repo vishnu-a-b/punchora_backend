@@ -121,11 +121,15 @@ const ActivitySchema = new mongoose_1.Schema({
 }, {
     timestamps: true
 });
-// Indexes for efficient queries
-ActivitySchema.index({ staff: 1, createdAt: -1 });
-ActivitySchema.index({ business: 1, createdAt: -1 });
+// PHASE 5: Optimized indexes based on actual query patterns
+// Staff activity queries with status filtering and time sorting
+ActivitySchema.index({ staff: 1, status: 1, startTime: -1 }); // getOngoingActivities
+ActivitySchema.index({ staff: 1, startTime: -1 }); // getStaffActivities sorted by time
+// Business activity queries with time sorting
+ActivitySchema.index({ business: 1, startTime: -1 }); // getBusinessActivities sorted by time
+ActivitySchema.index({ business: 1, department: 1 }); // Department filtering
+// Type and status filtering
 ActivitySchema.index({ type: 1, status: 1 });
-ActivitySchema.index({ startTime: 1 });
 // Calculate duration before saving
 ActivitySchema.pre("save", function (next) {
     if (this.endTime && this.startTime) {

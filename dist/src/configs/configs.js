@@ -16,4 +16,6 @@ Configs.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 Configs.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 Configs.accessTokenTimout = process.env.ACCESS_TOKEN_TIMOUT;
 Configs.refreshTokenTimout = process.env.REFRESH_TOKEN_TIMOUT;
+// Performance Monitoring
+Configs.sentryDsn = process.env.SENTRY_DSN;
 exports.default = Configs;

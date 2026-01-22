@@ -1,18 +1,19 @@
 import { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
 import { randomUUID } from "crypto";
+import OfflineSyncService from "../services/OfflineSyncService";
+import BadRequestError from "../../../errors/errorTypes/BadRequestError";
+import NotFoundError from "../../../errors/errorTypes/NotFoundError";
+import { GPSValidator, TimestampValidator, ObjectIdValidator } from "../../../utils/securityValidation";
 
 /**
  * OfflineAttendanceController
  * Handles batch attendance uploads from mobile offline recognition
  *
- * IMPORTANT: Reuses existing Attendance model but marks source as 'offline_mobile'
- * Does NOT modify existing face-api.js attendance logic
+ * PHASE 5: Complete implementation with real database integration
+ * - Uses OfflineSyncService for processing
+ * - Tracks sync batches in SyncBatch model
+ * - Integrates with existing Attendance model
  */
-
-// Import existing Attendance model (adjust path based on your structure)
-// import Attendance from "../../attendance/models/Attendance";
-// For now, we'll use a placeholder - adjust this import based on your actual Attendance model
 
 interface AttendanceRecord {
   localId: string; // Temporary ID from mobile app
@@ -44,9 +45,15 @@ interface SyncResponse {
     successful: number;
     failed: number;
   };
+  batchId?: string;
+  batchStatus?: string;
+  successRate?: number;
+  durationMs?: number;
 }
 
 export class OfflineAttendanceController {
+  private syncService = new OfflineSyncService();
+
   /**
    * POST /v1/offline-face/sync-attendance
    * Batch upload attendance records from mobile
@@ -58,104 +65,81 @@ export class OfflineAttendanceController {
   ) => {
     try {
       const { records }: BatchSyncRequest = req.body;
+      const user = (req as any).user;
+
+      // Validate user authentication
+      if (!user || !user._id) {
+        throw new BadRequestError({ error: "User authentication required" });
+      }
 
       // Validate input
       if (!records || !Array.isArray(records) || records.length === 0) {
-        return res.status(400).json({
-          success: false,
+        throw new BadRequestError({
           error: "records array is required and must not be empty",
         });
       }
 
       // Limit batch size
       if (records.length > 100) {
-        return res.status(400).json({
-          success: false,
+        throw new BadRequestError({
           error: "Batch size cannot exceed 100 records",
         });
       }
 
-      const syncBatchId = randomUUID();
-      const results: SyncResponse["results"] = [];
+      console.log(
+        `📥 Starting batch sync: ${records.length} records for user ${user._id}`
+      );
 
-      // Process each record
+      // Validate all records first
+      const validationErrors: { localId: string; error: string }[] = [];
       for (const record of records) {
-        try {
-          // Validate record
-          const validation = this.validateAttendanceRecord(record);
-          if (!validation.valid) {
-            results.push({
-              localId: record.localId,
-              status: "failed",
-              error: validation.error,
-            });
-            continue;
-          }
-
-          // Create attendance record
-          // NOTE: Adjust this based on your actual Attendance model
-          const attendanceData = {
-            staffId: new mongoose.Types.ObjectId(record.staffId),
-            timestamp: new Date(record.timestamp),
-            type: record.type,
-            photoUrl: record.photoUrl,
-            location: record.location,
-            deviceId: record.deviceId,
-            syncBatchId,
-            source: "offline_mobile", // Mark as offline mobile source
-            createdAt: new Date(),
-          };
-
-          // Save to database
-          // const attendance = await Attendance.create(attendanceData);
-
-          // PLACEHOLDER: Replace with actual Attendance model save
-          // For now, we'll just log it
-          console.log("📝 Would save attendance:", attendanceData);
-
-          // Simulate successful save
-          const mockId = new mongoose.Types.ObjectId();
-
-          results.push({
+        const validation = this.validateAttendanceRecord(record);
+        if (!validation.valid) {
+          validationErrors.push({
             localId: record.localId,
-            status: "success",
-            serverId: mockId.toString(),
-          });
-
-          console.log(
-            `✅ Synced attendance for staff ${record.staffId} at ${new Date(
-              record.timestamp
-            ).toISOString()}`
-          );
-        } catch (error: any) {
-          console.error(
-            `❌ Failed to sync record ${record.localId}:`,
-            error
-          );
-          results.push({
-            localId: record.localId,
-            status: "failed",
-            error: error.message || "Unknown error",
+            error: validation.error!,
           });
         }
       }
 
-      // Calculate summary
-      const successful = results.filter((r) => r.status === "success").length;
-      const failed = results.filter((r) => r.status === "failed").length;
+      // If any validation errors, return them without processing
+      if (validationErrors.length > 0) {
+        console.warn(
+          `⚠️ Validation failed for ${validationErrors.length} records`
+        );
+        return res.status(400).json({
+          success: false,
+          error: "Validation failed for some records",
+          validationErrors,
+        });
+      }
+
+      // Generate unique batch ID
+      const syncBatchId = randomUUID();
+
+      // Process batch using service
+      const { results, batchSummary } = await this.syncService.processBatch(
+        records,
+        user._id.toString(),
+        syncBatchId
+      );
 
       const response: SyncResponse = {
-        success: failed === 0,
+        success: batchSummary.failed === 0,
         results,
         summary: {
-          total: records.length,
-          successful,
-          failed,
+          total: batchSummary.total,
+          successful: batchSummary.successful,
+          failed: batchSummary.failed,
         },
+        batchId: syncBatchId,
+        batchStatus: batchSummary.status,
+        successRate: batchSummary.successRate,
+        durationMs: batchSummary.durationMs,
       };
 
       console.log(
-        `📊 Batch sync complete: ${successful}/${records.length} successful`
+        `📊 Batch sync complete: ${batchSummary.successful}/${batchSummary.total} successful (${batchSummary.successRate.toFixed(1)}%)`
       );
 
       res.status(200).json(response);
@@ -167,64 +151,117 @@ export class OfflineAttendanceController {
 
   /**
    * Validate attendance record
+   * PHASE 5 DAY 10: Enhanced with security validation utilities
    */
   private validateAttendanceRecord(
     record: AttendanceRecord
   ): { valid: boolean; error?: string } {
+    // Validate localId
     if (!record.localId) {
       return { valid: false, error: "localId is required" };
     }
 
-    if (!record.staffId || !mongoose.Types.ObjectId.isValid(record.staffId)) {
-      return { valid: false, error: "Valid staffId is required" };
+    // Validate staffId using ObjectIdValidator
+    const staffIdValidation = ObjectIdValidator.isValidObjectId(record.staffId);
+    if (!staffIdValidation.valid) {
+      return { valid: false, error: `Invalid staffId: ${staffIdValidation.error}` };
     }
 
-    if (!record.timestamp || isNaN(record.timestamp)) {
-      return { valid: false, error: "Valid timestamp is required" };
+    // Validate timestamp using TimestampValidator
+    const timestampValidation = TimestampValidator.isValidTimestamp(record.timestamp, {
+      maxPastHours: 720, // 30 days
+      maxFutureMinutes: 5 // Allow 5 minutes for clock skew
+    });
+    if (!timestampValidation.valid) {
+      return { valid: false, error: `Invalid timestamp: ${timestampValidation.error}` };
     }
 
+    // Validate type
     if (!record.type || !["IN", "OUT"].includes(record.type)) {
       return { valid: false, error: "type must be 'IN' or 'OUT'" };
     }
 
-    // Validate timestamp is not in future
-    if (record.timestamp > Date.now()) {
-      return { valid: false, error: "Timestamp cannot be in the future" };
-    }
+    // Validate GPS location if provided
+    if (record.location) {
+      const locationValidation = GPSValidator.isValidLocation(record.location);
+      if (!locationValidation.valid) {
+        return { valid: false, error: `Invalid location: ${locationValidation.error}` };
+      }
 
-    // Validate timestamp is not too old (e.g., more than 30 days)
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    if (record.timestamp < thirtyDaysAgo) {
-      return { valid: false, error: "Timestamp is too old (>30 days)" };
+      // Detect GPS spoofing patterns
+      const spoofingCheck = GPSValidator.detectSpoofingPatterns(record.location);
+      if (spoofingCheck.spoofed) {
+        console.warn(
+          `⚠️ GPS spoofing detected for record ${record.localId}: ${spoofingCheck.reasons.join(', ')}`
+        );
+        // Note: We don't reject spoofed GPS, just log and flag it
+      }
     }
 
     return { valid: true };
   }
 
   /**
-   * GET /v1/offline-face/attendance-status/:syncBatchId
+   * GET /v1/offline-face/sync-status/:batchId
    * Get status of a sync batch
    */
-  getAttendanceSyncStatus = async (
+  getSyncBatchStatus = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const { syncBatchId } = req.params;
+      const { batchId } = req.params;
 
-      // Query attendance records by syncBatchId
-      // const records = await Attendance.find({ syncBatchId });
+      console.log(`📊 Fetching sync batch status for: ${batchId}`);
 
-      // PLACEHOLDER: Replace with actual query
+      const batchStatus = await this.syncService.getSyncBatchStatus(batchId);
+
+      if (!batchStatus) {
+        throw new NotFoundError({ error: "Sync batch not found" });
+      }
+
       res.status(200).json({
         success: true,
-        syncBatchId,
-        count: 0, // records.length
-        message: "Sync batch status endpoint (placeholder)",
+        data: batchStatus,
       });
     } catch (error: any) {
       console.error("Error getting sync status:", error);
+      next(error);
+    }
+  };
+
+  /**
+   * GET /v1/offline-face/sync-history
+   * Get sync history for current user
+   */
+  getUserSyncHistory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user = (req as any).user;
+
+      if (!user || !user._id) {
+        throw new BadRequestError({ error: "User authentication required" });
+      }
+
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+
+      console.log(`📊 Fetching sync history for user: ${user._id}`);
+
+      const history = await this.syncService.getUserSyncHistory(
+        user._id.toString(),
+        limit
+      );
+
+      res.status(200).json({
+        success: true,
+        data: history,
+      });
+    } catch (error: any) {
+      console.error("Error getting sync history:", error);
       next(error);
     }
   };

@@ -145,6 +145,49 @@ class LocationDataController extends BaseController_1.default {
                 next(e);
             }
         });
+        // Get mocked GPS locations
+        this.getMockedLocations = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, businessId } = req.query;
+                if (!(startDate && endDate)) {
+                    throw new ValidationFailedError_1.default({
+                        errors: ["startDate & endDate required as query parameters"],
+                    });
+                }
+                const data = yield this.service.getMockedLocations(new Date(startDate), new Date(endDate), businessId);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        // Get mocked GPS summary
+        this.getMockedGPSSummary = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, businessId } = req.query;
+                if (!(startDate && endDate)) {
+                    throw new ValidationFailedError_1.default({
+                        errors: ["startDate & endDate required as query parameters"],
+                    });
+                }
+                const data = yield this.service.getMockedGPSSummary(new Date(startDate), new Date(endDate), businessId);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        // Get location tracking status for all staff
+        this.getLocationTrackingStatus = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { businessId } = req.query;
+                const data = yield this.service.getLocationTrackingStatus(businessId);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
     }
 }
 exports.default = LocationDataController;

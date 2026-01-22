@@ -32,10 +32,20 @@ const staffSchema = new mongoose_1.default.Schema({
     user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, maxLength: 200, required: true },
     uid: { type: Number },
+    // PHASE 4: Multi-Department Support
+    // Primary department (required for backward compatibility)
     department: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Department",
         required: true,
+        description: "Primary department - staff's main department",
+    },
+    // Additional departments (optional - Phase 4 enhancement)
+    additionalDepartments: {
+        type: [mongoose_1.default.Schema.Types.ObjectId],
+        ref: "Department",
+        default: [],
+        description: "Secondary departments staff can work in",
     },
     business: {
         type: mongoose_1.default.Schema.Types.ObjectId,
@@ -82,6 +92,68 @@ const staffSchema = new mongoose_1.default.Schema({
         default: [],
     },
 }, { timestamps: true });
+// PHASE 4: Virtual field for all departments
+staffSchema.virtual("allDepartments").get(function () {
+    // Combine primary department with additional departments
+    const primary = this.department;
+    const additional = this.additionalDepartments || [];
+    // Return array with primary first, then additional (no duplicates)
+    const allDepts = [primary];
+    additional.forEach((dept) => {
+        if (dept && dept.toString() !== primary.toString()) {
+            allDepts.push(dept);
+        }
+    });
+    return allDepts;
+});
+// PHASE 4: Helper method to check if staff belongs to a department
+staffSchema.methods.belongsToDepartment = function (departmentId) {
+    const deptIdStr = departmentId.toString();
+    // Check primary department
+    if (this.department && this.department.toString() === deptIdStr) {
+        return true;
+    }
+    // Check additional departments
+    if (this.additionalDepartments && this.additionalDepartments.length > 0) {
+        return this.additionalDepartments.some((dept) => dept && dept.toString() === deptIdStr);
+    }
+    return false;
+};
+// PHASE 4: Helper method to add staff to a department
+staffSchema.methods.addToDepartment = function (departmentId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const deptIdStr = departmentId.toString();
+        // Don't add if already primary
+        if (this.department && this.department.toString() === deptIdStr) {
+            return;
+        }
+        // Don't add if already in additional
+        if (this.additionalDepartments && this.additionalDepartments.some((dept) => dept && dept.toString() === deptIdStr)) {
+            return;
+        }
+        // Add to additional departments
+        if (!this.additionalDepartments) {
+            this.additionalDepartments = [];
+        }
+        this.additionalDepartments.push(new mongoose_1.default.Types.ObjectId(deptIdStr));
+        yield this.save();
+    });
+};
+// PHASE 4: Helper method to remove staff from a department
+staffSchema.methods.removeFromDepartment = function (departmentId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const deptIdStr = departmentId.toString();
+        // Cannot remove primary department
+        if (this.department && this.department.toString() === deptIdStr) {
+            throw new Error("Cannot remove staff from primary department. Change primary department first.");
+        }
+        // Remove from additional departments
+        if (this.additionalDepartments && this.additionalDepartments.length > 0) {
+            this.additionalDepartments = this.additionalDepartments.filter((dept) => dept && dept.toString() !== deptIdStr);
+            yield this.save();
+        }
+    });
+};
 staffSchema.pre("validate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
@@ -105,6 +177,11 @@ staffSchema.pre("validate", function (next) {
         }
     });
 });
+// PHASE 4: Add index for additional departments
+staffSchema.index({ additionalDepartments: 1 });
+// Ensure virtuals are included in JSON/Object output
+staffSchema.set("toJSON", { virtuals: true });
+staffSchema.set("toObject", { virtuals: true });
 exports.staffFilterFields = {
     filterFields: [
         "user",

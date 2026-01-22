@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
-import authorizeUser from "../../../middlewares/authorizeUser";
+import { checkRole } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
+import { validateBusinessParam, applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import multer from "multer";
 import { multerFileStorage } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
@@ -17,7 +19,8 @@ import { businessCreateValidator } from "../validators/businessCreateValidator";
 import { businessUpdateDoc } from "../docs/businessUpdateDoc";
 import { businessDeleteDoc } from "../docs/businessDeleteDoc";
 import { businessListofAdminDoc } from "../docs/businessListofAdminDoc";
-import RolesEnum from "../../base/enums/roles";
+
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN } = UserRole;
 
 const router = express.Router();
 const controller = new BusinessController();
@@ -38,53 +41,77 @@ const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-const authorization = authorizeUser({
-  allowedRoles: [],
-});
-
+// Get all businesses - Super admin sees all, business admin sees only theirs
 router.get(
   "/",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   businessListDoc,
   setFilterParams(businessFilterFields),
   controller.get
 );
 
+// Count businesses - Admin only
 router.get(
   "/count-documents",
+  checkRole([SUPER_ADMIN]),
   businessCountDoc,
   controller.countTotalDocuments
 );
 
-router.get("/:id", businessDetailsDoc, controller.getOne);
+// Get one business - Admin can only access their own business
+router.get(
+  "/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  validateBusinessParam,
+  businessDetailsDoc,
+  controller.getOne
+);
 
+// Create business - Super admin only
 router.post(
   "/",
-  authorization,
+  checkRole([SUPER_ADMIN]),
   businessCreateDoc,
   uploadMethod,
   businessCreateValidator,
   controller.create
 );
+
+// Update business - Super admin or business admin (only their own)
 router.put(
   "/:id",
-  authorization,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN]),
+  validateBusinessParam,
   businessUpdateDoc,
   uploadMethod,
   businessCreateValidator,
   controller.update
 );
+
+// Update VC link - Admin only (business admin can update their own)
 router.put(
   "/vcLink/:id",
-  authorization,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN]),
+  validateBusinessParam,
   vcLinkUpdateDoc,
   controller.updateVcLink
 );
-router.delete("/:id", businessDeleteDoc, authorization, controller.delete);
 
+// Delete business - Super admin only
+router.delete(
+  "/:id",
+  checkRole([SUPER_ADMIN]),
+  businessDeleteDoc,
+  controller.delete
+);
+
+// Get businesses by admin - Business admin gets their business
 router.get(
   "/admin/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN]),
+  validateBusinessParam,
   businessListofAdminDoc,
-  authorizeUser({ allowedRoles: [RolesEnum.businessAdmin] }),
   controller.filterByAdmin
 );
 

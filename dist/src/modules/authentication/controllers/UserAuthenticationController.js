@@ -34,6 +34,7 @@ class UserAuthenticationController extends BaseController_1.default {
                 this.sendSuccessResponse(res, 200, {
                     message: "user authenticated successfully",
                     data: Object.assign({
+                        _id: user.id,
                         id: user.id,
                         isSuperAdmin: user.isSuperAdmin,
                         roles: user.roles,
@@ -66,6 +67,7 @@ class UserAuthenticationController extends BaseController_1.default {
                 this.sendSuccessResponse(res, 200, {
                     message: "token refreshed successfully",
                     data: Object.assign({
+                        _id: user.id,
                         id: user.id,
                         isSuperAdmin: user.isSuperAdmin,
                         roles: user.roles,

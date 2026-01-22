@@ -139,4 +139,69 @@ export default class LocationDataController extends BaseController {
       next(e);
     }
   };
+
+  // Get mocked GPS locations
+  getMockedLocations = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { startDate, endDate, businessId } = req.query;
+      if (!(startDate && endDate)) {
+        throw new ValidationFailedError({
+          errors: ["startDate & endDate required as query parameters"],
+        });
+      }
+      const data = await this.service.getMockedLocations(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        businessId as string | undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  // Get mocked GPS summary
+  getMockedGPSSummary = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { startDate, endDate, businessId } = req.query;
+      if (!(startDate && endDate)) {
+        throw new ValidationFailedError({
+          errors: ["startDate & endDate required as query parameters"],
+        });
+      }
+      const data = await this.service.getMockedGPSSummary(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        businessId as string | undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  // Get location tracking status for all staff
+  getLocationTrackingStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { businessId } = req.query;
+      const data = await this.service.getLocationTrackingStatus(
+        businessId as string | undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
 }

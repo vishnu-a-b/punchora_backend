@@ -1,7 +1,10 @@
 import express from "express";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
-import authorizeUser from "../../../middlewares/authorizeUser";
+import { checkRole } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
+import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import setFilterParams from "../../../middlewares/setFilterParams";
+import { mergeScopingFilters } from "../../../middlewares/mergeScopingFilters";
 import { staffListDoc } from "../docs/staffListDoc";
 import { staffFilterFields } from "../models/Staff";
 import { staffCountDoc } from "../docs/staffCountDoc";
@@ -12,39 +15,142 @@ import { staffUpdateDoc } from "../docs/staffUpdateDoc";
 import { staffUpdateValidator } from "../validators/staffUpdateValidator";
 import StaffController from "../controllers/StaffController";
 import { staffDeleteDoc } from "../docs/staffDeleteDoc";
-import RolesEnum from "../../base/enums/roles";
+
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF } = UserRole;
 
 const router = express.Router();
 const controller = new StaffController();
 
 router.use(authenticateUser);
 
-const authorization = authorizeUser({ allowedRoles: [] });
-
+// Get all staff - Admins see all in business, dept heads see department
 router.get(
   "/",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
   staffListDoc,
   setFilterParams(staffFilterFields),
+  mergeScopingFilters,
   controller.get
 );
-router.get("/count-documents", staffCountDoc, controller.countTotalDocuments);
-router.get("/get-attendance", staffListDoc, controller.getWithAttendance);
-router.get("/user/:id", staffDetailsDoc, controller.getWithUserId);
-router.get("/:id", staffDetailsDoc, controller.getOne);
+
+// Count staff - Super admin only
+router.get(
+  "/count-documents",
+  checkRole([SUPER_ADMIN]),
+  staffCountDoc,
+  controller.countTotalDocuments
+);
+
+// Get staff with attendance - Admins and dept heads
+router.get(
+  "/get-attendance",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  setFilterParams(staffFilterFields),
+  mergeScopingFilters,
+  staffListDoc,
+  controller.getWithAttendance
+);
+
+// Get staff by user ID - Admins, dept heads, and self
+router.get(
+  "/user/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
+  applyBusinessScoping,
+  staffDetailsDoc,
+  controller.getWithUserId
+);
+
+// Get one staff - Admins, dept heads, and self
+router.get(
+  "/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
+  applyBusinessScoping,
+  staffDetailsDoc,
+  controller.getOne
+);
+// Create staff - Admins (including HR) can hire new staff
 router.post(
   "/",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   staffCreateDoc,
-  authorization,
   staffCreateValidator,
   controller.create
 );
+
+// Update staff - Admins (including HR) and staff can update
 router.put(
   "/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, STAFF]),
+  applyBusinessScoping,
   staffUpdateDoc,
-  authorizeUser({ allowedRoles: [RolesEnum.staff] }),
   staffUpdateValidator,
   controller.update
 );
-router.delete("/:id", staffDeleteDoc, authorization, controller.delete);
+
+// Delete staff - Admins (including HR) can remove staff
+router.delete(
+  "/:id",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  staffDeleteDoc,
+  controller.delete
+);
+
+/**
+ * PHASE 4: Multi-Department Support Routes
+ */
+import StaffDepartmentController from "../controllers/StaffDepartmentController";
+const deptController = new StaffDepartmentController();
+
+// Get all staff in a department (primary + additional)
+router.get(
+  "/department/:departmentId",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  deptController.getStaffInDepartment
+);
+
+// Get staff's all departments
+router.get(
+  "/:id/departments",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  deptController.getStaffDepartments
+);
+
+// Add staff to additional department
+router.post(
+  "/:id/departments",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  deptController.addStaffToDepartment
+);
+
+// Remove staff from additional department
+router.delete(
+  "/:id/departments/:departmentId",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  deptController.removeStaffFromDepartment
+);
+
+// Change staff's primary department
+router.put(
+  "/:id/primary-department",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  deptController.changePrimaryDepartment
+);
+
+// Get department staff counts
+router.get(
+  "/departments/counts",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  deptController.getDepartmentStaffCounts
+);
 
 export default router;

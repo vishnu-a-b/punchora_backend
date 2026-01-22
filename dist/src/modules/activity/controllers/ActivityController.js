@@ -111,19 +111,27 @@ class ActivityController extends BaseController_1.default {
          * End an ongoing activity
          */
         this.endActivity = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const { id } = req.params;
                 const user = req.user;
+                console.log(`[EndActivity] User ID: ${user._id}, Activity ID: ${id}`);
                 const activity = yield this.service.getActivityById(id);
                 if (!activity) {
                     throw new NotFoundError_1.default({ error: "Activity not found" });
                 }
+                console.log(`[EndActivity] Activity found - Staff: ${activity.staff}, Status: ${activity.status}`);
                 // Verify this activity belongs to the user
                 const { Staff } = yield Promise.resolve().then(() => __importStar(require("../../staff/models/Staff")));
                 const staff = yield Staff.findOne({ user: user._id });
-                if (!staff || activity.staff.toString() !== staff._id.toString()) {
+                console.log(`[EndActivity] Current user's staff ID: ${staff === null || staff === void 0 ? void 0 : staff._id}`);
+                // Handle both populated and non-populated staff field
+                const activityStaffId = ((_a = activity.staff) === null || _a === void 0 ? void 0 : _a._id) || activity.staff;
+                if (!staff || activityStaffId.toString() !== staff._id.toString()) {
+                    console.log(`[EndActivity] Authorization failed - Activity staff: ${activityStaffId}, User staff: ${staff === null || staff === void 0 ? void 0 : staff._id}`);
                     throw new BadRequestError_1.default({ error: "Unauthorized" });
                 }
+                console.log(`[EndActivity] Authorization successful, proceeding to end activity`);
                 const endData = {
                     endTime: req.body.endTime ? new Date(req.body.endTime) : undefined,
                     meterReadingEnd: req.body.meterReadingEnd
@@ -210,13 +218,16 @@ class ActivityController extends BaseController_1.default {
             try {
                 const user = req.user;
                 const { skip, limit, startDate, endDate, type, departmentId } = req.query;
+                console.log(`[GetBusinessActivities] User role: ${user.role}, User business: ${user.business}, Query businessId: ${req.query.businessId}`);
                 // Get business ID from user or query
                 let businessId = user.business;
                 // Super admin can query any business
                 if (user.role === "super-admin" && req.query.businessId) {
                     businessId = req.query.businessId;
                 }
+                console.log(`[GetBusinessActivities] Final businessId: ${businessId}`);
                 if (!businessId) {
+                    console.log(`[GetBusinessActivities] No businessId found - throwing error`);
                     throw new BadRequestError_1.default({ error: "Business ID required" });
                 }
                 const options = {

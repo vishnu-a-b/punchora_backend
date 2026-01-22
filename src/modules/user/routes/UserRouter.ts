@@ -2,7 +2,9 @@ import express, { Request, Response, NextFunction } from "express";
 import UserController from "../controllers/UserController";
 import { userCreateValidator } from "../validators/UserCreateValidator";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
-import authorizeUser from "../../../middlewares/authorizeUser";
+import { checkRole } from "../../../middlewares/checkPermission";
+import { UserRole } from "../../../constants/roles";
+import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import multer from "multer";
 import { multerFileStorageForUserData } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
@@ -15,9 +17,11 @@ import { userDetailsDoc } from "../docs/userDetailsDoc";
 import { userUpdateDoc } from "../docs/userUpdateDoc";
 import { userUpdateValidator } from "../validators/UserUpdateValidator";
 import { userDeleteDoc } from "../docs/userDeleteDoc";
-import RolesEnum from "../../base/enums/roles";
 import { updatePasswordDoc } from "../docs/updatePasswordDoc";
 import { updatePasswordValidator } from "../validators/updatePasswordValidator";
+
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN } = UserRole;
+
 const router = express.Router();
 
 const controller = new UserController();
@@ -39,80 +43,96 @@ const uploadMethod = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+// Get all users - Admin only
 router.get(
   "/",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   setFilterParams(userFilterFields),
-  authorizeUser({ allowedRoles: [] }),
   userListDoc,
   controller.getList
 );
 
+// Get users filtered by role - Admin only
 router.get(
   "/filter-by-role/:slug",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   setFilterParams(userFilterFields),
-  authorizeUser({ allowedRoles: [] }),
   userListDoc,
   controller.filterByRole
 );
+
+// Create user - Admin only
 router.post(
   "/",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   uploadMethod,
-  authorizeUser({ allowedRoles: [] }),
   userCreateValidator,
   userCreateDoc,
   controller.create
 );
+
+// Get one user - Admin only
 router.get(
   "/:id",
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   userDetailsDoc,
   controller.getOne
 );
+
+// Update user - Admin only
 router.put(
   "/:id",
-  authorizeUser({ allowedRoles: [] }),
-  userUpdateDoc,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   uploadMethod,
+  userUpdateDoc,
   userUpdateValidator,
   controller.update
 );
 
+// Update password - User can update own password, admins can update any
 router.put(
   "/update-password/:id",
-  authorizeUser({ allowedRoles: [RolesEnum.staff] }),
   updatePasswordDoc,
   updatePasswordValidator,
   controller.updatePassword
 );
 
+// Delete user - Admin only
 router.delete(
   "/:id",
-  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   userDeleteDoc,
-  authorizeUser({ allowedRoles: [] }),
   controller.delete
 );
 
 /**
  * @route PUT /users/:id/photos
  * @desc Update user photos and regenerate face descriptors
- * @access Admin
+ * @access Admin only
  */
 router.put(
   "/:id/photos",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   uploadMethod,
-  authorizeUser({ allowedRoles: [] }),
   controller.updatePhotos
 );
 
 /**
  * @route DELETE /users/:id/photos
  * @desc Delete user photos and face descriptors
- * @access Admin
+ * @access Admin only
  */
 router.delete(
   "/:id/photos",
-  authorizeUser({ allowedRoles: [] }),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
   controller.deletePhotos
 );
 

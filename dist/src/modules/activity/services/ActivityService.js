@@ -49,6 +49,7 @@ class ActivityService {
     }
     /**
      * Get staff activities
+     * PHASE 5: Added .lean() optimization
      */
     getStaffActivities(staffId_1) {
         return __awaiter(this, arguments, void 0, function* (staffId, options = {}) {
@@ -74,39 +75,45 @@ class ActivityService {
                     .skip(options.skip || 0)
                     .limit(options.limit || 100)
                     .populate("staff", "name")
-                    .populate("department", "name"),
-                Activity_1.Activity.countDocuments(query)
+                    .populate("department", "name")
+                    .lean(),
+                Activity_1.Activity.countDocuments(query),
             ]);
-            return { items, total };
+            return { items: items, total };
         });
     }
     /**
      * Get ongoing activities for a staff member
+     * PHASE 5: Added .lean() optimization
      */
     getOngoingActivities(staffId) {
         return __awaiter(this, void 0, void 0, function* () {
             return Activity_1.Activity.find({
                 staff: staffId,
-                status: Activity_1.ActivityStatus.STARTED
+                status: Activity_1.ActivityStatus.STARTED,
             })
                 .sort({ startTime: -1 })
                 .populate("staff", "name")
-                .populate("department", "name");
+                .populate("department", "name")
+                .lean();
         });
     }
     /**
      * Get activity by ID
+     * PHASE 5: Added .lean() optimization
      */
     getActivityById(activityId) {
         return __awaiter(this, void 0, void 0, function* () {
             return Activity_1.Activity.findById(activityId)
                 .populate("staff", "name email")
                 .populate("business", "name")
-                .populate("department", "name");
+                .populate("department", "name")
+                .lean();
         });
     }
     /**
      * Get business activities (for admin)
+     * PHASE 5: Added .lean() optimization
      */
     getBusinessActivities(businessId_1) {
         return __awaiter(this, arguments, void 0, function* (businessId, options = {}) {
@@ -132,10 +139,11 @@ class ActivityService {
                     .skip(options.skip || 0)
                     .limit(options.limit || 100)
                     .populate("staff", "name")
-                    .populate("department", "name"),
-                Activity_1.Activity.countDocuments(query)
+                    .populate("department", "name")
+                    .lean(),
+                Activity_1.Activity.countDocuments(query),
             ]);
-            return { items, total };
+            return { items: items, total };
         });
     }
     /**

@@ -271,4 +271,79 @@ export default class AttendanceService {
       { new: true }
     );
   };
+
+  /**
+   * PHASE 3: Enhanced Flagging System
+   */
+
+  /**
+   * Flag an attendance record for review
+   */
+  async flagAttendance(
+    attendanceId: string,
+    flagData: {
+      flaggedBy: string;
+      flaggedByName: string;
+      flagReason: string;
+      flagNotes?: string;
+    }
+  ): Promise<any> {
+    const attendance = await Attendance.findByIdAndUpdate(
+      attendanceId,
+      {
+        flagged: true,
+        flaggedAt: new Date(),
+        flaggedBy: flagData.flaggedBy,
+        flaggedByName: flagData.flaggedByName,
+        flagReason: flagData.flagReason,
+        flagNotes: flagData.flagNotes || "",
+        flagStatus: "pending",
+      },
+      { new: true }
+    ).populate([
+      { path: "staff", select: "name uid" },
+      { path: "flaggedBy", select: "name email" },
+    ]);
+
+    return attendance;
+  }
+
+  /**
+   * Review a flagged attendance record
+   */
+  async reviewFlag(
+    attendanceId: string,
+    reviewData: {
+      reviewedBy: string;
+      flagStatus: string;
+      reviewNotes?: string;
+    }
+  ): Promise<any> {
+    const attendance = await Attendance.findByIdAndUpdate(
+      attendanceId,
+      {
+        flagStatus: reviewData.flagStatus,
+        reviewedAt: new Date(),
+        reviewedBy: reviewData.reviewedBy,
+        reviewNotes: reviewData.reviewNotes || "",
+      },
+      { new: true }
+    ).populate([
+      { path: "staff", select: "name uid" },
+      { path: "flaggedBy", select: "name email" },
+      { path: "reviewedBy", select: "name email" },
+    ]);
+
+    return attendance;
+  }
+
+  /**
+   * Get attendance by ID (for controller use)
+   */
+  async getById(attendanceId: string): Promise<any> {
+    const attendance = await Attendance.findById(attendanceId).populate([
+      { path: "staff", select: "name uid" },
+    ]);
+    return attendance;
+  }
 }

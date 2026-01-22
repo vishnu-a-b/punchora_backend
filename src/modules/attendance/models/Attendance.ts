@@ -45,12 +45,76 @@ const attendanceSchema = new mongoose.Schema(
       sparse: true,           // Allows null values
       index: true             // Fast lookup
     },
+
+    // ENHANCED FLAGGING SYSTEM (Phase 3 - Control Room)
     flagged: {
       type: Boolean,
       default: false,
-      index: true
+      index: true,
+      description: "Whether this attendance record has been flagged for review"
     },
-    flagReason: { type: String, required: false },
+    flaggedAt: {
+      type: Date,
+      required: false,
+      description: "When the record was flagged"
+    },
+    flaggedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+      description: "User who flagged this record (Control Room, Admin)"
+    },
+    flaggedByName: {
+      type: String,
+      required: false,
+      description: "Name of user who flagged (for quick display)"
+    },
+    flagReason: {
+      type: String,
+      enum: [
+        "suspicious_location",
+        "duplicate_entry",
+        "time_mismatch",
+        "missing_checkout",
+        "gps_spoofing",
+        "unusual_pattern",
+        "other"
+      ],
+      required: false,
+      description: "Reason for flagging"
+    },
+    flagNotes: {
+      type: String,
+      required: false,
+      maxLength: 1000,
+      description: "Additional notes about why flagged"
+    },
+    flagStatus: {
+      type: String,
+      enum: ["pending", "reviewed", "cleared", "confirmed"],
+      default: "pending",
+      required: false,
+      description: "Status of flag review"
+    },
+
+    // FLAG REVIEW FIELDS
+    reviewedAt: {
+      type: Date,
+      required: false,
+      description: "When the flag was reviewed"
+    },
+    reviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+      description: "User who reviewed the flag (Business Admin)"
+    },
+    reviewNotes: {
+      type: String,
+      required: false,
+      maxLength: 1000,
+      description: "Notes from flag review"
+    },
   },
   { timestamps: true }
 );
@@ -58,7 +122,18 @@ const attendanceSchema = new mongoose.Schema(
 // Add indexes for faster duplicate detection and querying
 attendanceSchema.index({ staff: 1, date: 1 });
 attendanceSchema.index({ idempotencyKey: 1 }, { sparse: true });
-attendanceSchema.index({ flagged: 1 });
+
+// PHASE 5: Enhanced indexes for optimized queries
+// Compound index for flagged record filtering (replaces separate flagged/flagStatus indexes)
+attendanceSchema.index({ flagged: 1, flagStatus: 1, flaggedAt: -1 });
+attendanceSchema.index({ flaggedBy: 1 }); // For tracking who flagged
+
+// Date range queries (attendance anomalies, reports)
+attendanceSchema.index({ date: 1, checkInTime: 1 }); // Late check-in queries
+
+// GPS spoofing detection queries
+attendanceSchema.index({ "checkInLocation.mocked": 1 });
+attendanceSchema.index({ "checkOutLocation.mocked": 1 });
 
 export const attendanceFilterFields: ModelFilterInterface = {
   filterFields: ["staff", "status"],

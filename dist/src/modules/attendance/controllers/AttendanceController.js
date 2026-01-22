@@ -123,7 +123,7 @@ class AttendanceController extends BaseController_1.default {
                         });
                     }
                     data = yield this.service.checkOut({
-                        date: body.date,
+                        date: new Date(),
                         checkOutTime: new Date(),
                         staff: body.staff,
                         checkOutPhoto: body.photo,
@@ -138,7 +138,69 @@ class AttendanceController extends BaseController_1.default {
                         });
                     }
                     data = yield this.service.checkIn({
-                        date: body.date,
+                        date: new Date(),
+                        checkInTime: new Date(),
+                        staff: body.staff,
+                        checkInPhoto: body.photo,
+                        checkInLocation: JSON.parse(body.checkInLocation),
+                        createdBy: req.user._id,
+                        idempotencyKey: body.idempotencyKey, // NEW
+                    });
+                }
+                this.sendSuccessResponse(res, 201, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        this.markAndEditAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
+                console.log("Request body:", req.body);
+                console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
+                console.log("Content-Type:", req.headers['content-type']);
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty()) {
+                    console.error("Validation errors:", errors.array());
+                    throw new ValidationFailedError_1.default({ errors: errors.array() });
+                }
+                const body = req.body;
+                if (!body.checkOutTime && !body.checkInTime) {
+                    console.error("Missing checkOutTime and checkInTime");
+                    throw new ValidationFailedError_1.default({
+                        error: "checkOutTime or checkInTime required",
+                    });
+                }
+                if (!req.file) {
+                    console.error("No photo provided");
+                    throw new ValidationFailedError_1.default({ errors: ["no photo provided"] });
+                }
+                body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
+                console.log("Photo URL:", body.photo);
+                let data;
+                if (body.checkIn === "false") {
+                    if (!body.checkOutLocation) {
+                        throw new ValidationFailedError_1.default({
+                            errors: ["checkOutLocation required"],
+                        });
+                    }
+                    data = yield this.service.checkOut({
+                        date: new Date(),
+                        checkOutTime: new Date(),
+                        staff: body.staff,
+                        checkOutPhoto: body.photo,
+                        checkOutLocation: JSON.parse(body.checkOutLocation),
+                        idempotencyKey: body.idempotencyKey, // NEW
+                    });
+                }
+                if (body.checkIn === "true") {
+                    if (!body.checkInLocation) {
+                        throw new ValidationFailedError_1.default({
+                            errors: ["checkInLocation required"],
+                        });
+                    }
+                    data = yield this.service.checkIn({
+                        date: new Date(),
                         checkInTime: new Date(),
                         staff: body.staff,
                         checkInPhoto: body.photo,
@@ -268,6 +330,89 @@ class AttendanceController extends BaseController_1.default {
                     next(new BadRequestError_1.default({ error: "invalid attendance_id" }));
                 }
                 next(e);
+            }
+        });
+        /**
+         * PHASE 3: Enhanced Flagging System
+         */
+        /**
+         * Flag an attendance record for review
+         * POST /v1/attendance/:id/flag
+         */
+        this.flagAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const user = req.user;
+                const { reason, notes } = req.body;
+                // Get the attendance record
+                const attendance = yield this.service.getById(id);
+                if (!attendance) {
+                    throw new NotFoundError_1.default({ error: "Attendance record not found" });
+                }
+                // Flag the attendance
+                const flaggedAttendance = yield this.service.flagAttendance(id, {
+                    flaggedBy: user._id.toString(),
+                    flaggedByName: user.name,
+                    flagReason: reason || "other",
+                    flagNotes: notes,
+                });
+                this.sendSuccessResponse(res, 200, {
+                    message: "Attendance record flagged successfully",
+                    data: flaggedAttendance,
+                });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "Invalid attendance ID" }));
+                }
+                else {
+                    next(e);
+                }
+            }
+        });
+        /**
+         * Review a flagged attendance record
+         * POST /v1/attendance/:id/review
+         */
+        this.reviewFlag = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const user = req.user;
+                const { status, notes } = req.body;
+                // Validate status
+                if (!["cleared", "confirmed"].includes(status)) {
+                    throw new BadRequestError_1.default({
+                        error: "Invalid status. Must be 'cleared' or 'confirmed'",
+                    });
+                }
+                // Get the attendance record
+                const attendance = yield this.service.getById(id);
+                if (!attendance) {
+                    throw new NotFoundError_1.default({ error: "Attendance record not found" });
+                }
+                if (!attendance.flagged) {
+                    throw new BadRequestError_1.default({
+                        error: "Attendance record is not flagged",
+                    });
+                }
+                // Review the flag
+                const reviewedAttendance = yield this.service.reviewFlag(id, {
+                    reviewedBy: user._id.toString(),
+                    flagStatus: status,
+                    reviewNotes: notes,
+                });
+                this.sendSuccessResponse(res, 200, {
+                    message: "Flag reviewed successfully",
+                    data: reviewedAttendance,
+                });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "Invalid attendance ID" }));
+                }
+                else {
+                    next(e);
+                }
             }
         });
     }

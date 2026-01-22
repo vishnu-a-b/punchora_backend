@@ -130,6 +130,33 @@ class FailedLocationAttemptController extends BaseController_1.default {
                 next(e);
             }
         });
+        // Get staff with location currently disabled
+        this.getStaffWithLocationDisabled = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { businessId, lastMinutes } = req.query;
+                const data = yield this.service.getStaffWithLocationDisabled(businessId, lastMinutes ? Number(lastMinutes) : 10);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        // Get location failure summary
+        this.getLocationFailureSummary = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, businessId } = req.query;
+                if (!(startDate && endDate)) {
+                    throw new ValidationFailedError_1.default({
+                        errors: ["startDate & endDate required as query parameters"],
+                    });
+                }
+                const data = yield this.service.getLocationFailureSummary(new Date(startDate), new Date(endDate), businessId);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
     }
 }
 exports.default = FailedLocationAttemptController;

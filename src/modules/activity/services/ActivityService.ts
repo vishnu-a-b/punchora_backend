@@ -71,6 +71,7 @@ export default class ActivityService {
 
   /**
    * Get staff activities
+   * PHASE 5: Added .lean() optimization
    */
   async getStaffActivities(
     staffId: string,
@@ -109,38 +110,44 @@ export default class ActivityService {
         .skip(options.skip || 0)
         .limit(options.limit || 100)
         .populate("staff", "name")
-        .populate("department", "name"),
-      Activity.countDocuments(query)
+        .populate("department", "name")
+        .lean(),
+      Activity.countDocuments(query),
     ]);
 
-    return { items, total };
+    return { items: items as any, total };
   }
 
   /**
    * Get ongoing activities for a staff member
+   * PHASE 5: Added .lean() optimization
    */
   async getOngoingActivities(staffId: string): Promise<IActivity[]> {
     return Activity.find({
       staff: staffId,
-      status: ActivityStatus.STARTED
+      status: ActivityStatus.STARTED,
     })
       .sort({ startTime: -1 })
       .populate("staff", "name")
-      .populate("department", "name");
+      .populate("department", "name")
+      .lean() as any;
   }
 
   /**
    * Get activity by ID
+   * PHASE 5: Added .lean() optimization
    */
   async getActivityById(activityId: string): Promise<IActivity | null> {
     return Activity.findById(activityId)
       .populate("staff", "name email")
       .populate("business", "name")
-      .populate("department", "name");
+      .populate("department", "name")
+      .lean() as any;
   }
 
   /**
    * Get business activities (for admin)
+   * PHASE 5: Added .lean() optimization
    */
   async getBusinessActivities(
     businessId: string,
@@ -179,11 +186,12 @@ export default class ActivityService {
         .skip(options.skip || 0)
         .limit(options.limit || 100)
         .populate("staff", "name")
-        .populate("department", "name"),
-      Activity.countDocuments(query)
+        .populate("department", "name")
+        .lean(),
+      Activity.countDocuments(query),
     ]);
 
-    return { items, total };
+    return { items: items as any, total };
   }
 
   /**

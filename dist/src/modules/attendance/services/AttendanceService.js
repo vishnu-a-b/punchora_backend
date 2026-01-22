@@ -208,5 +208,57 @@ class AttendanceService {
             }, { new: true });
         });
     }
+    /**
+     * PHASE 3: Enhanced Flagging System
+     */
+    /**
+     * Flag an attendance record for review
+     */
+    flagAttendance(attendanceId, flagData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const attendance = yield Attendance_1.Attendance.findByIdAndUpdate(attendanceId, {
+                flagged: true,
+                flaggedAt: new Date(),
+                flaggedBy: flagData.flaggedBy,
+                flaggedByName: flagData.flaggedByName,
+                flagReason: flagData.flagReason,
+                flagNotes: flagData.flagNotes || "",
+                flagStatus: "pending",
+            }, { new: true }).populate([
+                { path: "staff", select: "name uid" },
+                { path: "flaggedBy", select: "name email" },
+            ]);
+            return attendance;
+        });
+    }
+    /**
+     * Review a flagged attendance record
+     */
+    reviewFlag(attendanceId, reviewData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const attendance = yield Attendance_1.Attendance.findByIdAndUpdate(attendanceId, {
+                flagStatus: reviewData.flagStatus,
+                reviewedAt: new Date(),
+                reviewedBy: reviewData.reviewedBy,
+                reviewNotes: reviewData.reviewNotes || "",
+            }, { new: true }).populate([
+                { path: "staff", select: "name uid" },
+                { path: "flaggedBy", select: "name email" },
+                { path: "reviewedBy", select: "name email" },
+            ]);
+            return attendance;
+        });
+    }
+    /**
+     * Get attendance by ID (for controller use)
+     */
+    getById(attendanceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const attendance = yield Attendance_1.Attendance.findById(attendanceId).populate([
+                { path: "staff", select: "name uid" },
+            ]);
+            return attendance;
+        });
+    }
 }
 exports.default = AttendanceService;

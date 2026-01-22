@@ -12,9 +12,15 @@ import LeaveRequestRouter from "../modules/leaveRequest/routes/LeaveRequestRoute
 import BusinessRouter from "../modules/business/routes/BusinessRouter";
 import LocationDataRouter from "../modules/location/Routers/LocationDataRouter";
 import FailedLocationAttemptRouter from "../modules/location/Routers/FailedLocationAttemptRouter";
+import LocationAlertRouter from "../modules/location/Routers/LocationAlertRouter";
 import FaceDescriptorRouter from "../modules/faceDescriptor/routes/FaceDescriptorRouter";
 import OfflineFaceRouter from "../modules/offlineFaceRecognition/routes/OfflineFaceRouter";
 import ActivityRouter from "../modules/activity/routes/ActivityRouter";
+import AlertRouter from "../modules/alert/routes/AlertRouter";
+import JobRouter from "../jobs/JobRouter";
+import ReportRouter from "../modules/report/routes/ReportRouter";
+import AuditRouter from "../modules/audit/routes/AuditRouter";
+import PerformanceRouter from "../modules/performance/routes/PerformanceRouter";
 
 const router = express.Router();
 
@@ -31,8 +37,14 @@ router.use("/v1/attendance/", AttendanceRouter);
 router.use("/v1/leave-request/", LeaveRequestRouter);
 router.use("/v1/location-data/", LocationDataRouter);
 router.use("/v1/failed-location-attempts/", FailedLocationAttemptRouter);
+router.use("/v1/location-alerts/", LocationAlertRouter);
 router.use("/v1/face-descriptors/", FaceDescriptorRouter);
 router.use("/v1/offline-face/", OfflineFaceRouter);
 router.use("/v1/activity/", ActivityRouter);
+router.use("/v1/alerts/", AlertRouter);
+router.use("/v1/jobs/", JobRouter);
+router.use("/v1/reports/", ReportRouter);
+router.use("/v1/audit/", AuditRouter);
+router.use("/v1/performance/", PerformanceRouter);
 
 export default router;
