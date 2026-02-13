@@ -392,7 +392,7 @@ export default class AnalyticsService {
 
     return {
       pendingBatches,
-      lastSyncTime: lastSync?.completedAt,
+      lastSyncTime: lastSync?.completedAt ?? undefined,
       failedSyncsToday,
       successRate: Math.round(successRate * 10) / 10
     };

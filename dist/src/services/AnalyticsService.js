@@ -288,6 +288,7 @@ class AnalyticsService {
      */
     getSyncMetrics(startDate, endDate) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const [pendingBatches, lastSync, failedSyncsToday, successfulSyncsToday] = yield Promise.all([
                 SyncBatch_1.SyncBatch.countDocuments({
                     status: 'processing'
@@ -308,7 +309,7 @@ class AnalyticsService {
                 : 100;
             return {
                 pendingBatches,
-                lastSyncTime: lastSync === null || lastSync === void 0 ? void 0 : lastSync.completedAt,
+                lastSyncTime: (_a = lastSync === null || lastSync === void 0 ? void 0 : lastSync.completedAt) !== null && _a !== void 0 ? _a : undefined,
                 failedSyncsToday,
                 successRate: Math.round(successRate * 10) / 10
             };

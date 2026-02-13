@@ -78,8 +78,8 @@ class SlowQueryFinder {
    */
   private async enableProfiling(): Promise<void> {
     try {
-      const admin = this.db.db.admin();
-      await this.db.db.command({ profile: 2, slowms: this.SLOW_THRESHOLD_MS });
+      const admin = this.db.db!.admin();
+      await this.db.db!.command({ profile: 2, slowms: this.SLOW_THRESHOLD_MS });
       console.log(`✅ MongoDB profiling enabled (threshold: ${this.SLOW_THRESHOLD_MS}ms)\n`);
     } catch (error) {
       console.log('⚠️  Could not enable profiling (requires admin privileges)');
@@ -92,7 +92,7 @@ class SlowQueryFinder {
    */
   private async getSlowQueries(): Promise<SlowQuery[]> {
     try {
-      const profileCollection = this.db.db.collection('system.profile');
+      const profileCollection = this.db.db!.collection('system.profile');
 
       const slowQueries = await profileCollection
         .find({
@@ -122,15 +122,15 @@ class SlowQueryFinder {
    * Get collection statistics
    */
   private async getCollectionStats(): Promise<any[]> {
-    const collections = await this.db.db.listCollections().toArray();
+    const collections = await this.db.db!.listCollections().toArray();
     const stats: any[] = [];
 
     for (const coll of collections) {
       if (coll.name.startsWith('system.')) continue;
 
       try {
-        const collStats = await this.db.db.command({ collStats: coll.name });
-        const indexes = await this.db.db.collection(coll.name).indexes();
+        const collStats = await this.db.db!.command({ collStats: coll.name });
+        const indexes = await this.db.db!.collection(coll.name).indexes();
 
         stats.push({
           name: coll.name,

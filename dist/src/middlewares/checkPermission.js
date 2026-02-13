@@ -15,6 +15,10 @@ const checkPermission = (requiredPermission) => {
                     error: 'Unauthorized - No user found',
                 });
             }
+            // Super admin bypasses all permission checks
+            if (user.isSuperAdmin) {
+                return next();
+            }
             const userRole = user.role;
             if (!(0, roles_1.hasPermission)(userRole, requiredPermission)) {
                 return res.status(403).json({
@@ -47,6 +51,10 @@ const checkRole = (allowedRoles) => {
                     success: false,
                     error: 'Unauthorized - No user found',
                 });
+            }
+            // Super admin bypasses all role checks
+            if (user.isSuperAdmin) {
+                return next();
             }
             const userRole = user.role;
             if (!allowedRoles.includes(userRole)) {
@@ -81,6 +89,10 @@ const checkLeaveApprovalPermission = (level) => {
                     error: 'Unauthorized - No user found',
                 });
             }
+            // Super admin bypasses all permission checks
+            if (user.isSuperAdmin) {
+                return next();
+            }
             const userRole = user.role;
             if (!(0, roles_1.canApproveLeave)(userRole, level)) {
                 return res.status(403).json({
@@ -114,7 +126,7 @@ const filterByBusiness = (req, res, next) => {
             });
         }
         // Super admin and control room can see all businesses
-        if (user.role === roles_1.UserRole.SUPER_ADMIN || user.role === roles_1.UserRole.CONTROL_ROOM) {
+        if (user.isSuperAdmin || user.role === roles_1.UserRole.SUPER_ADMIN || user.role === roles_1.UserRole.CONTROL_ROOM) {
             return next();
         }
         // For all other roles, filter by their assigned business

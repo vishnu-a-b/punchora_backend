@@ -8,11 +8,12 @@ import { Request, Response, NextFunction } from 'express';
 
 // Initialize CSRF protection
 const {
-  generateToken,
+  generateCsrfToken: generateToken,
   doubleCsrfProtection,
   invalidCsrfTokenError
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
+  getSessionIdentifier: (req: Request) => (req as any).session?.id || (req as any).user?._id?.toString() || 'anonymous',
   cookieName: '__Host-csrf',
   cookieOptions: {
     httpOnly: true,
@@ -22,7 +23,7 @@ const {
   },
   size: 64,
   ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
-  getTokenFromRequest: (req) => {
+  getCsrfTokenFromRequest: (req: Request) => {
     // Check multiple sources for CSRF token
     return req.headers['x-csrf-token'] as string ||
            req.body?._csrf ||

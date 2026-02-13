@@ -68,7 +68,7 @@ export const validateApiKey = async (
         action: 'API_KEY_USED',
         performedBy: apiKey.createdBy.toString(),
         targetModel: 'ApiKey',
-        targetId: apiKey._id.toString(),
+        targetId: (apiKey._id as any).toString(),
         business: apiKey.business._id.toString(),
         metadata: {
           apiKeyName: apiKey.name,

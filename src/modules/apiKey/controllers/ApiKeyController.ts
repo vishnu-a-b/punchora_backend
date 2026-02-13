@@ -99,7 +99,7 @@ export class ApiKeyController {
         action: 'API_KEY_CREATED',
         performedBy: user._id.toString(),
         targetModel: 'ApiKey',
-        targetId: apiKey._id.toString(),
+        targetId: (apiKey._id as any).toString(),
         business: businessId,
         metadata: {
           name,
@@ -260,7 +260,7 @@ export class ApiKeyController {
         action: 'API_KEY_REVOKED',
         performedBy: user._id.toString(),
         targetModel: 'ApiKey',
-        targetId: apiKey._id.toString(),
+        targetId: (apiKey._id as any).toString(),
         business: apiKey.business.toString(),
         metadata: {
           name: apiKey.name,
@@ -315,7 +315,7 @@ export class ApiKeyController {
         action: 'API_KEY_UPDATED',
         performedBy: user._id.toString(),
         targetModel: 'ApiKey',
-        targetId: apiKey._id.toString(),
+        targetId: (apiKey._id as any).toString(),
         business: apiKey.business.toString(),
         metadata: {
           name: apiKey.name,

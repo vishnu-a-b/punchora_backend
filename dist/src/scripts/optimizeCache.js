@@ -23,7 +23,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 class CacheOptimizer {
     constructor() {
-        this.cacheService = CacheService_1.default.getInstance();
+        this.cacheService = CacheService_1.default;
     }
     /**
      * Run complete cache analysis

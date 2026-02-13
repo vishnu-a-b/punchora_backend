@@ -29,10 +29,10 @@ interface CacheAnalysis {
 }
 
 class CacheOptimizer {
-  private cacheService: CacheService;
+  private cacheService: any;
 
   constructor() {
-    this.cacheService = CacheService.getInstance();
+    this.cacheService = CacheService;
   }
 
   /**

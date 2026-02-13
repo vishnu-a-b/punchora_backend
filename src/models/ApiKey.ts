@@ -16,6 +16,8 @@ export interface IApiKey extends Document {
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
+  isExpired(): boolean;
+  hasPermission(permission: string): boolean;
 }
 
 const ApiKeySchema = new Schema<IApiKey>(
