@@ -364,5 +364,201 @@ class AuditService {
             });
         });
     }
+    /**
+     * Alternative audit log creation (for compatibility with security services)
+     */
+    createAuditLog(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.log({
+                action: data.action,
+                resource: data.targetModel,
+                resourceId: data.targetId,
+                userId: data.performedBy,
+                business: data.business,
+                department: data.department,
+                metadata: data.metadata,
+                ipAddress: data.ipAddress,
+                status: data.status || "success",
+                errorMessage: data.errorMessage,
+            });
+        });
+    }
+    /**
+     * Helper: Log security events
+     */
+    logSecurityEvent(action_1, userId_1, metadata_1) {
+        return __awaiter(this, arguments, void 0, function* (action, userId, metadata, success = true, errorMessage) {
+            yield this.logAsync({
+                action,
+                resource: "security",
+                userId,
+                metadata,
+                status: success ? "success" : "failure",
+                errorMessage,
+            });
+        });
+    }
+    /**
+     * Helper: Log API key usage
+     */
+    logApiKeyUsage(apiKeyId, apiKeyName, businessId, endpoint, method) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action: AuditLog_1.AuditAction.API_KEY_USED,
+                resource: "ApiKey",
+                resourceId: apiKeyId,
+                business: businessId,
+                metadata: {
+                    apiKeyName,
+                    endpoint,
+                    method,
+                },
+                status: "success",
+            });
+        });
+    }
+    /**
+     * Helper: Log 2FA events
+     */
+    log2FAEvent(action_1, userId_1) {
+        return __awaiter(this, arguments, void 0, function* (action, userId, success = true, metadata) {
+            yield this.logAsync({
+                action,
+                resource: "authentication",
+                userId,
+                metadata,
+                status: success ? "success" : "failure",
+                errorMessage: success ? undefined : "2FA verification failed",
+            });
+        });
+    }
+    /**
+     * Helper: Log IP block events
+     */
+    logIPBlock(blockedIP, endpoint, method, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action: AuditLog_1.AuditAction.IP_BLOCKED,
+                resource: "security",
+                userId,
+                ipAddress: blockedIP,
+                metadata: {
+                    endpoint,
+                    method,
+                    reason: "IP not whitelisted",
+                },
+                status: "failure",
+            });
+        });
+    }
+    /**
+     * Helper: Log performance events
+     */
+    logPerformanceEvent(action, resource, metadata) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action,
+                resource,
+                metadata,
+                status: "success",
+            });
+        });
+    }
+    /**
+     * Helper: Log data access events
+     */
+    logDataAccess(action, resource, userId, userName, business, metadata) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action,
+                resource,
+                userId,
+                userName,
+                business,
+                metadata,
+                status: "success",
+            });
+        });
+    }
+    /**
+     * Helper: Log slow query for performance monitoring
+     */
+    logSlowQuery(query, duration, collection) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action: AuditLog_1.AuditAction.SLOW_QUERY,
+                resource: "database",
+                metadata: {
+                    query,
+                    duration,
+                    collection,
+                    threshold: 100, // ms
+                },
+                status: "success",
+            });
+        });
+    }
+    /**
+     * Helper: Log cache miss for optimization
+     */
+    logCacheMiss(cacheKey, resource) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.logAsync({
+                action: AuditLog_1.AuditAction.CACHE_MISS,
+                resource,
+                metadata: {
+                    cacheKey,
+                },
+                status: "success",
+            });
+        });
+    }
+    /**
+     * Get security events (audit trail for security incidents)
+     */
+    getSecurityEvents(businessId, startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const securityActions = [
+                AuditLog_1.AuditAction.API_KEY_CREATED,
+                AuditLog_1.AuditAction.API_KEY_REVOKED,
+                AuditLog_1.AuditAction.API_KEY_USED,
+                AuditLog_1.AuditAction.TWO_FACTOR_ENABLED,
+                AuditLog_1.AuditAction.TWO_FACTOR_DISABLED,
+                AuditLog_1.AuditAction.TWO_FACTOR_FAILED,
+                AuditLog_1.AuditAction.IP_BLOCKED,
+                AuditLog_1.AuditAction.CSRF_TOKEN_INVALID,
+                AuditLog_1.AuditAction.LOGIN_FAILED,
+            ];
+            const filter = {
+                action: securityActions,
+            };
+            if (businessId)
+                filter.business = businessId;
+            if (startDate)
+                filter.startDate = startDate;
+            if (endDate)
+                filter.endDate = endDate;
+            const { logs } = yield this.query(filter, { limit: 1000 });
+            return logs;
+        });
+    }
+    /**
+     * Get performance events for monitoring
+     */
+    getPerformanceEvents(startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const performanceActions = [
+                AuditLog_1.AuditAction.SLOW_QUERY,
+                AuditLog_1.AuditAction.CACHE_MISS,
+                AuditLog_1.AuditAction.HIGH_MEMORY_USAGE,
+            ];
+            const { logs } = yield this.query({
+                action: performanceActions,
+                startDate,
+                endDate,
+            }, { limit: 5000 });
+            return logs;
+        });
+    }
 }
 exports.default = AuditService;

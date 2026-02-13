@@ -14,6 +14,9 @@ const path_1 = __importDefault(require("path"));
 const requestLogger_1 = require("./middlewares/requestLogger");
 const SentryService_1 = __importDefault(require("./services/SentryService"));
 const performanceMiddleware_1 = require("./middlewares/performanceMiddleware");
+const apiKeyAuth_1 = require("./middlewares/apiKeyAuth");
+const csrfProtection_1 = require("./middlewares/csrfProtection");
+const ipWhitelist_1 = require("./middlewares/ipWhitelist");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require(path_1.default.join(__dirname, "../out/swagger.json"));
 const cors = require("cors");
@@ -28,6 +31,10 @@ app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static("public"));
 app.use((0, express_mongo_sanitize_1.default)());
+// Phase 6: Security Middlewares
+app.use(apiKeyAuth_1.validateApiKey); // Validate API keys (if present)
+app.use(csrfProtection_1.csrfProtection); // CSRF protection for non-API requests
+app.use(ipWhitelist_1.ipWhitelist); // IP whitelist (if enabled)
 app.use(requestLogger_1.requestLogger);
 app.use(performanceMiddleware_1.performanceMiddleware); // Add performance tracking
 app.use(routes_1.default);

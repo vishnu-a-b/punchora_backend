@@ -165,6 +165,32 @@ class CacheService {
         });
     }
     /**
+     * Alias for delPattern for consistency
+     */
+    deletePattern(pattern) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.delPattern(pattern);
+        });
+    }
+    /**
+     * Get all keys matching pattern
+     */
+    getKeysByPattern(pattern) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isEnabled()) {
+                return [];
+            }
+            try {
+                const keys = yield this.redis.keys(pattern);
+                return keys;
+            }
+            catch (error) {
+                console.error(`Error getting keys by pattern ${pattern}:`, error.message);
+                return [];
+            }
+        });
+    }
+    /**
      * Check if key exists
      */
     exists(key) {

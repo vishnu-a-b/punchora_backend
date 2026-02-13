@@ -78,6 +78,28 @@ export enum AuditAction {
   // Activity
   ACTIVITY_START = "activity_start",
   ACTIVITY_END = "activity_end",
+
+  // Security Events (Phase 6)
+  API_KEY_CREATED = "api_key_created",
+  API_KEY_REVOKED = "api_key_revoked",
+  API_KEY_UPDATED = "api_key_updated",
+  API_KEY_USED = "api_key_used",
+  TWO_FACTOR_ENABLED = "two_factor_enabled",
+  TWO_FACTOR_DISABLED = "two_factor_disabled",
+  TWO_FACTOR_FAILED = "two_factor_failed",
+  BACKUP_CODES_GENERATED = "backup_codes_generated",
+  IP_BLOCKED = "ip_blocked",
+  CSRF_TOKEN_INVALID = "csrf_token_invalid",
+
+  // Performance Events (Phase 6)
+  SLOW_QUERY = "slow_query",
+  CACHE_MISS = "cache_miss",
+  HIGH_MEMORY_USAGE = "high_memory_usage",
+
+  // Data Access (Phase 6)
+  DATA_EXPORT = "data_export",
+  DATA_IMPORT = "data_import",
+  BULK_OPERATION = "bulk_operation",
 }
 
 export interface IAuditLog extends Document {

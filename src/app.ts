@@ -9,6 +9,9 @@ import path from "path";
 import { requestLogger } from "./middlewares/requestLogger";
 import sentryService from "./services/SentryService";
 import { performanceMiddleware } from "./middlewares/performanceMiddleware";
+import { validateApiKey } from "./middlewares/apiKeyAuth";
+import { csrfProtection } from "./middlewares/csrfProtection";
+import { ipWhitelist } from "./middlewares/ipWhitelist";
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require(path.join(__dirname, "../out/swagger.json"));
@@ -29,6 +32,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(expressMongoSanitize());
+
+// Phase 6: Security Middlewares
+app.use(validateApiKey); // Validate API keys (if present)
+app.use(csrfProtection); // CSRF protection for non-API requests
+app.use(ipWhitelist); // IP whitelist (if enabled)
+
 app.use(requestLogger);
 app.use(performanceMiddleware); // Add performance tracking
 app.use(routes);

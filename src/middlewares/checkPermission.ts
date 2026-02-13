@@ -16,6 +16,11 @@ export const checkPermission = (requiredPermission: Permission) => {
         });
       }
 
+      // Super admin bypasses all permission checks
+      if (user.isSuperAdmin) {
+        return next();
+      }
+
       const userRole = user.role as UserRole;
 
       if (!hasPermission(userRole, requiredPermission)) {
@@ -50,6 +55,11 @@ export const checkRole = (allowedRoles: UserRole[]) => {
           success: false,
           error: 'Unauthorized - No user found',
         });
+      }
+
+      // Super admin bypasses all role checks
+      if (user.isSuperAdmin) {
+        return next();
       }
 
       const userRole = user.role as UserRole;
@@ -88,6 +98,11 @@ export const checkLeaveApprovalPermission = (level: 1 | 2) => {
         });
       }
 
+      // Super admin bypasses all permission checks
+      if (user.isSuperAdmin) {
+        return next();
+      }
+
       const userRole = user.role as UserRole;
 
       if (!canApproveLeave(userRole, level)) {
@@ -124,7 +139,7 @@ export const filterByBusiness = (req: Request, res: Response, next: NextFunction
     }
 
     // Super admin and control room can see all businesses
-    if (user.role === UserRole.SUPER_ADMIN || user.role === UserRole.CONTROL_ROOM) {
+    if (user.isSuperAdmin || user.role === UserRole.SUPER_ADMIN || user.role === UserRole.CONTROL_ROOM) {
       return next();
     }
 

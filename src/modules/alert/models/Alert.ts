@@ -201,8 +201,8 @@ const AlertSchema: Schema = new Schema(
     // Auto-expiry
     expiresAt: {
       type: Date,
-      required: false,
-      index: true,
+      required: false
+      // TTL index defined separately below (line 221)
     },
   },
   {

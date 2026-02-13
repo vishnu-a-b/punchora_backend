@@ -101,6 +101,25 @@ var AuditAction;
     // Activity
     AuditAction["ACTIVITY_START"] = "activity_start";
     AuditAction["ACTIVITY_END"] = "activity_end";
+    // Security Events (Phase 6)
+    AuditAction["API_KEY_CREATED"] = "api_key_created";
+    AuditAction["API_KEY_REVOKED"] = "api_key_revoked";
+    AuditAction["API_KEY_UPDATED"] = "api_key_updated";
+    AuditAction["API_KEY_USED"] = "api_key_used";
+    AuditAction["TWO_FACTOR_ENABLED"] = "two_factor_enabled";
+    AuditAction["TWO_FACTOR_DISABLED"] = "two_factor_disabled";
+    AuditAction["TWO_FACTOR_FAILED"] = "two_factor_failed";
+    AuditAction["BACKUP_CODES_GENERATED"] = "backup_codes_generated";
+    AuditAction["IP_BLOCKED"] = "ip_blocked";
+    AuditAction["CSRF_TOKEN_INVALID"] = "csrf_token_invalid";
+    // Performance Events (Phase 6)
+    AuditAction["SLOW_QUERY"] = "slow_query";
+    AuditAction["CACHE_MISS"] = "cache_miss";
+    AuditAction["HIGH_MEMORY_USAGE"] = "high_memory_usage";
+    // Data Access (Phase 6)
+    AuditAction["DATA_EXPORT"] = "data_export";
+    AuditAction["DATA_IMPORT"] = "data_import";
+    AuditAction["BULK_OPERATION"] = "bulk_operation";
 })(AuditAction || (exports.AuditAction = AuditAction = {}));
 const AuditLogSchema = new mongoose_1.Schema({
     // Action Information

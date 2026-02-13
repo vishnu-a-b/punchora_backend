@@ -87,6 +87,15 @@ const userSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
+    // Two-Factor Authentication fields
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    twoFactorSecret: {
+        type: String,
+        select: false, // Don't return by default for security
+    },
 }, { timestamps: true });
 userSchema.pre("findOneAndUpdate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {

@@ -28,7 +28,7 @@ module.exports = {
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 
-  // Coverage settings with 60% threshold
+  // Coverage settings with 80% threshold (Phase 6)
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -42,10 +42,10 @@ module.exports = {
 
   coverageThreshold: {
     global: {
-      branches: 60,
-      functions: 60,
-      lines: 60,
-      statements: 60
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
     }
   },
 

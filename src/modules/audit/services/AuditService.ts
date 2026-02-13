@@ -31,6 +31,20 @@ export interface CreateAuditLogDTO {
   errorMessage?: string;
 }
 
+// Alternative interface for consistency with security services
+export interface CreateAuditLogAlternativeDTO {
+  action: string;
+  performedBy: string;
+  targetModel: string;
+  targetId?: string;
+  business?: string;
+  department?: string;
+  metadata?: any;
+  ipAddress?: string;
+  status?: "success" | "failure";
+  errorMessage?: string;
+}
+
 export interface AuditLogFilter {
   userId?: string;
   resource?: string;
@@ -423,5 +437,242 @@ export default class AuditService {
       metadata,
       status: "success",
     });
+  }
+
+  /**
+   * Alternative audit log creation (for compatibility with security services)
+   */
+  async createAuditLog(data: CreateAuditLogAlternativeDTO): Promise<IAuditLog | null> {
+    return this.log({
+      action: data.action as AuditAction,
+      resource: data.targetModel,
+      resourceId: data.targetId,
+      userId: data.performedBy,
+      business: data.business,
+      department: data.department,
+      metadata: data.metadata,
+      ipAddress: data.ipAddress,
+      status: data.status || "success",
+      errorMessage: data.errorMessage,
+    });
+  }
+
+  /**
+   * Helper: Log security events
+   */
+  async logSecurityEvent(
+    action: AuditAction,
+    userId: string,
+    metadata?: any,
+    success: boolean = true,
+    errorMessage?: string
+  ): Promise<void> {
+    await this.logAsync({
+      action,
+      resource: "security",
+      userId,
+      metadata,
+      status: success ? "success" : "failure",
+      errorMessage,
+    });
+  }
+
+  /**
+   * Helper: Log API key usage
+   */
+  async logApiKeyUsage(
+    apiKeyId: string,
+    apiKeyName: string,
+    businessId: string,
+    endpoint: string,
+    method: string
+  ): Promise<void> {
+    await this.logAsync({
+      action: AuditAction.API_KEY_USED,
+      resource: "ApiKey",
+      resourceId: apiKeyId,
+      business: businessId,
+      metadata: {
+        apiKeyName,
+        endpoint,
+        method,
+      },
+      status: "success",
+    });
+  }
+
+  /**
+   * Helper: Log 2FA events
+   */
+  async log2FAEvent(
+    action: AuditAction,
+    userId: string,
+    success: boolean = true,
+    metadata?: any
+  ): Promise<void> {
+    await this.logAsync({
+      action,
+      resource: "authentication",
+      userId,
+      metadata,
+      status: success ? "success" : "failure",
+      errorMessage: success ? undefined : "2FA verification failed",
+    });
+  }
+
+  /**
+   * Helper: Log IP block events
+   */
+  async logIPBlock(
+    blockedIP: string,
+    endpoint: string,
+    method: string,
+    userId?: string
+  ): Promise<void> {
+    await this.logAsync({
+      action: AuditAction.IP_BLOCKED,
+      resource: "security",
+      userId,
+      ipAddress: blockedIP,
+      metadata: {
+        endpoint,
+        method,
+        reason: "IP not whitelisted",
+      },
+      status: "failure",
+    });
+  }
+
+  /**
+   * Helper: Log performance events
+   */
+  async logPerformanceEvent(
+    action: AuditAction,
+    resource: string,
+    metadata: any
+  ): Promise<void> {
+    await this.logAsync({
+      action,
+      resource,
+      metadata,
+      status: "success",
+    });
+  }
+
+  /**
+   * Helper: Log data access events
+   */
+  async logDataAccess(
+    action: AuditAction,
+    resource: string,
+    userId: string,
+    userName: string,
+    business?: string,
+    metadata?: any
+  ): Promise<void> {
+    await this.logAsync({
+      action,
+      resource,
+      userId,
+      userName,
+      business,
+      metadata,
+      status: "success",
+    });
+  }
+
+  /**
+   * Helper: Log slow query for performance monitoring
+   */
+  async logSlowQuery(
+    query: string,
+    duration: number,
+    collection: string
+  ): Promise<void> {
+    await this.logAsync({
+      action: AuditAction.SLOW_QUERY,
+      resource: "database",
+      metadata: {
+        query,
+        duration,
+        collection,
+        threshold: 100, // ms
+      },
+      status: "success",
+    });
+  }
+
+  /**
+   * Helper: Log cache miss for optimization
+   */
+  async logCacheMiss(
+    cacheKey: string,
+    resource: string
+  ): Promise<void> {
+    await this.logAsync({
+      action: AuditAction.CACHE_MISS,
+      resource,
+      metadata: {
+        cacheKey,
+      },
+      status: "success",
+    });
+  }
+
+  /**
+   * Get security events (audit trail for security incidents)
+   */
+  async getSecurityEvents(
+    businessId?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<IAuditLog[]> {
+    const securityActions = [
+      AuditAction.API_KEY_CREATED,
+      AuditAction.API_KEY_REVOKED,
+      AuditAction.API_KEY_USED,
+      AuditAction.TWO_FACTOR_ENABLED,
+      AuditAction.TWO_FACTOR_DISABLED,
+      AuditAction.TWO_FACTOR_FAILED,
+      AuditAction.IP_BLOCKED,
+      AuditAction.CSRF_TOKEN_INVALID,
+      AuditAction.LOGIN_FAILED,
+    ];
+
+    const filter: AuditLogFilter = {
+      action: securityActions,
+    };
+
+    if (businessId) filter.business = businessId;
+    if (startDate) filter.startDate = startDate;
+    if (endDate) filter.endDate = endDate;
+
+    const { logs } = await this.query(filter, { limit: 1000 });
+    return logs;
+  }
+
+  /**
+   * Get performance events for monitoring
+   */
+  async getPerformanceEvents(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IAuditLog[]> {
+    const performanceActions = [
+      AuditAction.SLOW_QUERY,
+      AuditAction.CACHE_MISS,
+      AuditAction.HIGH_MEMORY_USAGE,
+    ];
+
+    const { logs } = await this.query(
+      {
+        action: performanceActions,
+        startDate,
+        endDate,
+      },
+      { limit: 5000 }
+    );
+
+    return logs;
   }
 }

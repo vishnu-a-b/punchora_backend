@@ -42,8 +42,8 @@ const attendanceSchema = new mongoose.Schema(
       type: String,
       required: false,
       unique: true,           // Ensures no duplicate submissions
-      sparse: true,           // Allows null values
-      index: true             // Fast lookup
+      sparse: true            // Allows null values
+      // Index defined separately below (line 124)
     },
 
     // ENHANCED FLAGGING SYSTEM (Phase 3 - Control Room)
@@ -121,7 +121,7 @@ const attendanceSchema = new mongoose.Schema(
 
 // Add indexes for faster duplicate detection and querying
 attendanceSchema.index({ staff: 1, date: 1 });
-attendanceSchema.index({ idempotencyKey: 1 }, { sparse: true });
+// idempotencyKey index is created automatically by unique: true with sparse: true
 
 // PHASE 5: Enhanced indexes for optimized queries
 // Compound index for flagged record filtering (replaces separate flagged/flagStatus indexes)

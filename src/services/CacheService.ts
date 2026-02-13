@@ -161,6 +161,30 @@ class CacheService {
   }
 
   /**
+   * Alias for delPattern for consistency
+   */
+  async deletePattern(pattern: string): Promise<number> {
+    return this.delPattern(pattern);
+  }
+
+  /**
+   * Get all keys matching pattern
+   */
+  async getKeysByPattern(pattern: string): Promise<string[]> {
+    if (!this.isEnabled()) {
+      return [];
+    }
+
+    try {
+      const keys = await this.redis!.keys(pattern);
+      return keys;
+    } catch (error: any) {
+      console.error(`Error getting keys by pattern ${pattern}:`, error.message);
+      return [];
+    }
+  }
+
+  /**
    * Check if key exists
    */
   async exists(key: string): Promise<boolean> {

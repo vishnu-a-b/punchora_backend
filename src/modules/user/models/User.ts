@@ -75,6 +75,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // Two-Factor Authentication fields
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      select: false, // Don't return by default for security
+    },
   },
   { timestamps: true }
 );
