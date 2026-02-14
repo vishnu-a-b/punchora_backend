@@ -233,7 +233,13 @@ export default class AttendanceService {
         $lte: endOfEndDate,
       },
       status: status,
-    }).populate("staff");
+    }).populate({
+      path: "staff",
+      populate: [
+        { path: "business", select: "name" },
+        { path: "department", select: "name" },
+      ],
+    });
     return attendances;
   };
 
