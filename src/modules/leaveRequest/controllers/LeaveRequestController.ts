@@ -9,6 +9,8 @@ import LeaveRequestService from "../services/LeaveRequestService";
 import { LeaveRequest } from "../models/LeaveRequest";
 import { LeaveStatus } from "../../base/enums/leaveStatus";
 import { UserRole } from "../../../constants/roles";
+import NotificationService from "../../../services/NotificationService";
+import { Staff } from "../../staff/models/Staff";
 
 export default class LeaveRequestController extends BaseController {
   service = new LeaveRequestService();
@@ -212,6 +214,19 @@ export default class LeaveRequestController extends BaseController {
       leave.status = LeaveStatus.pending_hr_approval;
       await leave.save();
 
+      // Send push notification (fire-and-forget)
+      try {
+        const staff = leave.staff as any;
+        if (staff?.expoPushToken) {
+          NotificationService.sendPushNotification(
+            staff.expoPushToken,
+            "Leave Request Update",
+            "Your leave request has been forwarded to HR for approval",
+            { leaveRequestId: leave._id, status: LeaveStatus.pending_hr_approval }
+          );
+        }
+      } catch (e) { /* ignore notification errors */ }
+
       this.sendSuccessResponse(res, 200, {
         message: 'Leave approved by department head, pending HR approval',
         data: leave
@@ -256,6 +271,19 @@ export default class LeaveRequestController extends BaseController {
       leave.status = LeaveStatus.rejected_by_dept_head;
       await leave.save();
 
+      // Send push notification (fire-and-forget)
+      try {
+        const staff = leave.staff as any;
+        if (staff?.expoPushToken) {
+          NotificationService.sendPushNotification(
+            staff.expoPushToken,
+            "Leave Request Update",
+            "Your leave request has been rejected by department head",
+            { leaveRequestId: leave._id, status: LeaveStatus.rejected_by_dept_head }
+          );
+        }
+      } catch (e) { /* ignore notification errors */ }
+
       this.sendSuccessResponse(res, 200, {
         message: 'Leave rejected by department head',
         data: leave
@@ -292,6 +320,19 @@ export default class LeaveRequestController extends BaseController {
       leave.status = LeaveStatus.approved;
       await leave.save();
 
+      // Send push notification (fire-and-forget)
+      try {
+        const staff = await Staff.findById(leave.staff);
+        if (staff?.expoPushToken) {
+          NotificationService.sendPushNotification(
+            staff.expoPushToken,
+            "Leave Request Update",
+            "Your leave request has been approved!",
+            { leaveRequestId: leave._id, status: LeaveStatus.approved }
+          );
+        }
+      } catch (e) { /* ignore notification errors */ }
+
       this.sendSuccessResponse(res, 200, {
         message: 'Leave approved by HR',
         data: leave
@@ -327,6 +368,19 @@ export default class LeaveRequestController extends BaseController {
       };
       leave.status = LeaveStatus.rejected_by_hr;
       await leave.save();
+
+      // Send push notification (fire-and-forget)
+      try {
+        const staff = await Staff.findById(leave.staff);
+        if (staff?.expoPushToken) {
+          NotificationService.sendPushNotification(
+            staff.expoPushToken,
+            "Leave Request Update",
+            "Your leave request has been rejected by HR",
+            { leaveRequestId: leave._id, status: LeaveStatus.rejected_by_hr }
+          );
+        }
+      } catch (e) { /* ignore notification errors */ }
 
       this.sendSuccessResponse(res, 200, {
         message: 'Leave rejected by HR',

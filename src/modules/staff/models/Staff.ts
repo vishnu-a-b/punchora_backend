@@ -84,6 +84,7 @@ const staffSchema = new mongoose.Schema(
       type: [shiftEntrySchema],
       default: [],
     },
+    expoPushToken: { type: String, default: null },
   },
   { timestamps: true }
 );

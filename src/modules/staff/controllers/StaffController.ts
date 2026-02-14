@@ -6,9 +6,40 @@ import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import mongoose from "mongoose";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import StaffService from "../services/StaffService";
+import { Staff } from "../models/Staff";
 
 export default class StaffController extends BaseController {
   service = new StaffService();
+
+  updatePushToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { expoPushToken } = req.body;
+      if (
+        !expoPushToken ||
+        typeof expoPushToken !== "string" ||
+        !expoPushToken.startsWith("ExponentPushToken[")
+      ) {
+        throw new BadRequestError({ error: "Invalid Expo push token format" });
+      }
+
+      const staff = await Staff.findByIdAndUpdate(
+        req.params.id,
+        { expoPushToken },
+        { new: true }
+      );
+      if (!staff) {
+        throw new NotFoundError({ error: "staff not found" });
+      }
+
+      this.sendSuccessResponse(res, 200, { data: { _id: staff._id } });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid staff_id" }));
+        return;
+      }
+      next(e);
+    }
+  };
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);

@@ -57,6 +57,7 @@
     "csrf-csrf": "^4.0.3",
     "csv-parser": "^3.2.0",
     "dotenv": "^16.4.5",
+    "expo-server-sdk": "^5.0.0",
     "express": "^4.21.1",
     "express-async-errors": "^3.1.1",
     "express-mongo-sanitize": "^2.2.0",

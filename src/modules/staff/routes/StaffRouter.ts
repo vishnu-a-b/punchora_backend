@@ -90,6 +90,13 @@ router.put(
   controller.update
 );
 
+// Update push token - Staff can update their own push token
+router.put(
+  "/:id/push-token",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
+  controller.updatePushToken
+);
+
 // Delete staff - Admins (including HR) can remove staff
 router.delete(
   "/:id",
