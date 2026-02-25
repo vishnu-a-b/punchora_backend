@@ -179,7 +179,13 @@ class AttendanceService {
                     $lte: endOfEndDate,
                 },
                 status: status,
-            }).populate("staff");
+            }).populate({
+                path: "staff",
+                populate: [
+                    { path: "business", select: "name" },
+                    { path: "department", select: "name" },
+                ],
+            });
             return attendances;
         });
         this.update = (id, attendance) => __awaiter(this, void 0, void 0, function* () {

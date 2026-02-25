@@ -38,6 +38,8 @@ router.get("/:id", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN
 router.post("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, staffCreateDoc_1.staffCreateDoc, staffCreateValidator_1.staffCreateValidator, controller.create);
 // Update staff - Admins (including HR) and staff can update
 router.put("/:id", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, STAFF]), businessScopingValidator_1.applyBusinessScoping, staffUpdateDoc_1.staffUpdateDoc, staffUpdateValidator_1.staffUpdateValidator, controller.update);
+// Update push token - Staff can update their own push token
+router.put("/:id/push-token", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), controller.updatePushToken);
 // Delete staff - Admins (including HR) can remove staff
 router.delete("/:id", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, staffDeleteDoc_1.staffDeleteDoc, controller.delete);
 /**

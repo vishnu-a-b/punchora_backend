@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,6 +48,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FaceDescriptorService = void 0;
 const FaceDescriptor_1 = __importDefault(require("../models/FaceDescriptor"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const facialRecognitionservice_1 = require("../../../services/facialRecognitionservice");
+const fs = __importStar(require("fs"));
+const faceRecognitionService = new facialRecognitionservice_1.FaceRecognitionService();
+const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
 class FaceDescriptorService {
     constructor() {
         /**
@@ -97,6 +134,63 @@ class FaceDescriptorService {
             })
                 .sort({ updatedAt: -1 })
                 .lean();
+        });
+        /**
+         * Recognize a person from an uploaded photo using face-api.js.
+         * Returns best match from FaceDescriptor collection.
+         */
+        this.recognizeFromPhoto = (imagePath, businessId) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Extract descriptor from the uploaded photo
+                const descriptor = yield faceRecognitionService.extractDescriptor(imagePath);
+                // Fetch all active descriptors (optionally scoped to a business)
+                const query = { isActive: true };
+                if (businessId)
+                    query.business = businessId;
+                const records = yield FaceDescriptor_1.default.find(query).lean();
+                if (records.length === 0) {
+                    return null;
+                }
+                let bestMatch = null;
+                for (const record of records) {
+                    if (!record.descriptor || record.descriptor.length !== 128)
+                        continue;
+                    const storedDescriptor = new Float32Array(record.descriptor);
+                    // Euclidean distance (same as faceapi.euclideanDistance)
+                    let sum = 0;
+                    for (let i = 0; i < 128; i++) {
+                        const diff = descriptor[i] - storedDescriptor[i];
+                        sum += diff * diff;
+                    }
+                    const distance = Math.sqrt(sum);
+                    if (!bestMatch || distance < bestMatch.distance) {
+                        bestMatch = {
+                            staffId: record.staffId.toString(),
+                            staffName: record.staffName,
+                            distance,
+                            photoUrl: record.photoUrl,
+                        };
+                    }
+                }
+                if (!bestMatch || bestMatch.distance > RECOGNITION_THRESHOLD) {
+                    return null;
+                }
+                // Convert distance to confidence score (0-1, higher is better)
+                const confidence = Math.max(0, 1 - bestMatch.distance / RECOGNITION_THRESHOLD);
+                return {
+                    staffId: bestMatch.staffId,
+                    staffName: bestMatch.staffName,
+                    confidence,
+                    photoUrl: bestMatch.photoUrl,
+                };
+            }
+            finally {
+                // Clean up temp file
+                try {
+                    fs.unlinkSync(imagePath);
+                }
+                catch (_a) { }
+            }
         });
         /**
          * Get descriptor count for a business

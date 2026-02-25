@@ -22,6 +22,8 @@ const LeaveRequestService_1 = __importDefault(require("../services/LeaveRequestS
 const LeaveRequest_1 = require("../models/LeaveRequest");
 const leaveStatus_1 = require("../../base/enums/leaveStatus");
 const roles_1 = require("../../../constants/roles");
+const NotificationService_1 = __importDefault(require("../../../services/NotificationService"));
+const Staff_1 = require("../../staff/models/Staff");
 class LeaveRequestController extends BaseController_1.default {
     constructor() {
         super(...arguments);
@@ -211,6 +213,14 @@ class LeaveRequestController extends BaseController_1.default {
                 };
                 leave.status = leaveStatus_1.LeaveStatus.pending_hr_approval;
                 yield leave.save();
+                // Send push notification (fire-and-forget)
+                try {
+                    const staff = leave.staff;
+                    if (staff === null || staff === void 0 ? void 0 : staff.expoPushToken) {
+                        NotificationService_1.default.sendPushNotification(staff.expoPushToken, "Leave Request Update", "Your leave request has been forwarded to HR for approval", { leaveRequestId: leave._id, status: leaveStatus_1.LeaveStatus.pending_hr_approval });
+                    }
+                }
+                catch (e) { /* ignore notification errors */ }
                 this.sendSuccessResponse(res, 200, {
                     message: 'Leave approved by department head, pending HR approval',
                     data: leave
@@ -251,6 +261,14 @@ class LeaveRequestController extends BaseController_1.default {
                 };
                 leave.status = leaveStatus_1.LeaveStatus.rejected_by_dept_head;
                 yield leave.save();
+                // Send push notification (fire-and-forget)
+                try {
+                    const staff = leave.staff;
+                    if (staff === null || staff === void 0 ? void 0 : staff.expoPushToken) {
+                        NotificationService_1.default.sendPushNotification(staff.expoPushToken, "Leave Request Update", "Your leave request has been rejected by department head", { leaveRequestId: leave._id, status: leaveStatus_1.LeaveStatus.rejected_by_dept_head });
+                    }
+                }
+                catch (e) { /* ignore notification errors */ }
                 this.sendSuccessResponse(res, 200, {
                     message: 'Leave rejected by department head',
                     data: leave
@@ -283,6 +301,14 @@ class LeaveRequestController extends BaseController_1.default {
                 };
                 leave.status = leaveStatus_1.LeaveStatus.approved;
                 yield leave.save();
+                // Send push notification (fire-and-forget)
+                try {
+                    const staff = yield Staff_1.Staff.findById(leave.staff);
+                    if (staff === null || staff === void 0 ? void 0 : staff.expoPushToken) {
+                        NotificationService_1.default.sendPushNotification(staff.expoPushToken, "Leave Request Update", "Your leave request has been approved!", { leaveRequestId: leave._id, status: leaveStatus_1.LeaveStatus.approved });
+                    }
+                }
+                catch (e) { /* ignore notification errors */ }
                 this.sendSuccessResponse(res, 200, {
                     message: 'Leave approved by HR',
                     data: leave
@@ -315,6 +341,14 @@ class LeaveRequestController extends BaseController_1.default {
                 };
                 leave.status = leaveStatus_1.LeaveStatus.rejected_by_hr;
                 yield leave.save();
+                // Send push notification (fire-and-forget)
+                try {
+                    const staff = yield Staff_1.Staff.findById(leave.staff);
+                    if (staff === null || staff === void 0 ? void 0 : staff.expoPushToken) {
+                        NotificationService_1.default.sendPushNotification(staff.expoPushToken, "Leave Request Update", "Your leave request has been rejected by HR", { leaveRequestId: leave._id, status: leaveStatus_1.LeaveStatus.rejected_by_hr });
+                    }
+                }
+                catch (e) { /* ignore notification errors */ }
                 this.sendSuccessResponse(res, 200, {
                     message: 'Leave rejected by HR',
                     data: leave

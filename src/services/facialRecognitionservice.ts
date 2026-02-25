@@ -107,6 +107,24 @@ export class FaceRecognitionService {
     }
   };
 
+  /**
+   * Extract 128-dim descriptor from a single image without storing or matching.
+   * Used by the recognize endpoint.
+   */
+  extractDescriptor = async (imagePath: string): Promise<Float32Array> => {
+    const img = await canvas.loadImage(imagePath);
+    const detection = await faceapi
+      .detectSingleFace(img as any)
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!detection) {
+      throw new Error("No face detected in the image");
+    }
+
+    return detection.descriptor;
+  };
+
   averageDescriptors = (descriptors: Float32Array[]): Float32Array => {
     const avg = new Float32Array(128);
     descriptors.forEach((desc) => {

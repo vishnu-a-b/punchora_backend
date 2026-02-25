@@ -1,5 +1,10 @@
 import FaceDescriptor, { IFaceDescriptor } from "../models/FaceDescriptor";
 import mongoose from "mongoose";
+import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
+import * as fs from "fs";
+
+const faceRecognitionService = new FaceRecognitionService();
+const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
 
 export class FaceDescriptorService {
   /**
@@ -107,6 +112,77 @@ export class FaceDescriptorService {
     })
       .sort({ updatedAt: -1 })
       .lean() as any[];
+  };
+
+  /**
+   * Recognize a person from an uploaded photo using face-api.js.
+   * Returns best match from FaceDescriptor collection.
+   */
+  recognizeFromPhoto = async (
+    imagePath: string,
+    businessId?: string
+  ): Promise<{
+    staffId: string;
+    staffName: string;
+    confidence: number;
+    photoUrl?: string;
+  } | null> => {
+    try {
+      // Extract descriptor from the uploaded photo
+      const descriptor = await faceRecognitionService.extractDescriptor(imagePath);
+
+      // Fetch all active descriptors (optionally scoped to a business)
+      const query: any = { isActive: true };
+      if (businessId) query.business = businessId;
+      const records = await FaceDescriptor.find(query).lean();
+
+      if (records.length === 0) {
+        return null;
+      }
+
+      let bestMatch: { staffId: string; staffName: string; distance: number; photoUrl?: string } | null = null;
+
+      for (const record of records) {
+        if (!record.descriptor || record.descriptor.length !== 128) continue;
+
+        const storedDescriptor = new Float32Array(record.descriptor);
+        // Euclidean distance (same as faceapi.euclideanDistance)
+        let sum = 0;
+        for (let i = 0; i < 128; i++) {
+          const diff = descriptor[i] - storedDescriptor[i];
+          sum += diff * diff;
+        }
+        const distance = Math.sqrt(sum);
+
+        if (!bestMatch || distance < bestMatch.distance) {
+          bestMatch = {
+            staffId: record.staffId.toString(),
+            staffName: record.staffName,
+            distance,
+            photoUrl: record.photoUrl,
+          };
+        }
+      }
+
+      if (!bestMatch || bestMatch.distance > RECOGNITION_THRESHOLD) {
+        return null;
+      }
+
+      // Convert distance to confidence score (0-1, higher is better)
+      const confidence = Math.max(0, 1 - bestMatch.distance / RECOGNITION_THRESHOLD);
+
+      return {
+        staffId: bestMatch.staffId,
+        staffName: bestMatch.staffName,
+        confidence,
+        photoUrl: bestMatch.photoUrl,
+      };
+    } finally {
+      // Clean up temp file
+      try {
+        fs.unlinkSync(imagePath);
+      } catch {}
+    }
   };
 
   /**

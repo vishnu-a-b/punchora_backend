@@ -1,9 +1,13 @@
 import { Router } from "express";
+import multer from "multer";
 import FaceDescriptorController from "../controllers/FaceDescriptorController";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
 import { checkRole } from "../../../middlewares/checkPermission";
 import { UserRole } from "../../../constants/roles";
 import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
+import { multerFileStorageForRecognition } from "../../../multer/multerConfig";
+
+const recognitionUpload = multer({ storage: multerFileStorageForRecognition });
 
 const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM } = UserRole;
 
@@ -59,6 +63,18 @@ router.get(
   checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM]),
   applyBusinessScoping,
   FaceDescriptorController.getDescriptorCount
+);
+
+/**
+ * @route   POST /v1/face-descriptors/recognize
+ * @desc    Recognize a face from an uploaded photo using face-api.js
+ * @access  Private - any authenticated user (kiosk device)
+ */
+router.post(
+  "/recognize",
+  authenticateUser,
+  recognitionUpload.single("photo"),
+  FaceDescriptorController.recognize
 );
 
 export default router;

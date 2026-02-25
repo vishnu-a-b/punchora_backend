@@ -19,10 +19,33 @@ const NotFoundError_1 = __importDefault(require("../../../errors/errorTypes/NotF
 const mongoose_1 = __importDefault(require("mongoose"));
 const BadRequestError_1 = __importDefault(require("../../../errors/errorTypes/BadRequestError"));
 const StaffService_1 = __importDefault(require("../services/StaffService"));
+const Staff_1 = require("../models/Staff");
 class StaffController extends BaseController_1.default {
     constructor() {
         super(...arguments);
         this.service = new StaffService_1.default();
+        this.updatePushToken = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { expoPushToken } = req.body;
+                if (!expoPushToken ||
+                    typeof expoPushToken !== "string" ||
+                    !expoPushToken.startsWith("ExponentPushToken[")) {
+                    throw new BadRequestError_1.default({ error: "Invalid Expo push token format" });
+                }
+                const staff = yield Staff_1.Staff.findByIdAndUpdate(req.params.id, { expoPushToken }, { new: true });
+                if (!staff) {
+                    throw new NotFoundError_1.default({ error: "staff not found" });
+                }
+                this.sendSuccessResponse(res, 200, { data: { _id: staff._id } });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "invalid staff_id" }));
+                    return;
+                }
+                next(e);
+            }
+        });
         this.create = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const errors = (0, express_validator_1.validationResult)(req);

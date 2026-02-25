@@ -41,3 +41,14 @@ export const multerFileStorageForAttendance = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
+
+export const multerFileStorageForRecognition = multer.diskStorage({
+  destination: function (_req, _file, cb) {
+    const uploadPath = "public/recognition_temp/";
+    ensureDirectoryExists(uploadPath);
+    cb(null, uploadPath);
+  },
+  filename: function (_req, file, cb) {
+    cb(null, `recognize_${Date.now()}-${file.originalname}`);
+  },
+});

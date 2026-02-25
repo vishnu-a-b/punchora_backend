@@ -117,6 +117,38 @@ class FaceDescriptorController extends BaseController_1.default {
             }
         });
         /**
+         * Recognize a face from an uploaded photo
+         */
+        this.recognize = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                if (!req.file) {
+                    return res.status(400).json({ success: false, error: "No photo provided" });
+                }
+                const businessId = req.query.business;
+                const result = yield this.service.recognizeFromPhoto(req.file.path, businessId);
+                if (!result) {
+                    return res.status(200).json({ success: true, data: { recognized: false } });
+                }
+                this.sendSuccessResponse(res, 200, {
+                    data: {
+                        recognized: true,
+                        staffId: result.staffId,
+                        staffName: result.staffName,
+                        confidence: result.confidence,
+                        photoUrl: result.photoUrl,
+                    },
+                });
+            }
+            catch (error) {
+                // If face not detected, return as unrecognized (not an error)
+                if ((_a = error === null || error === void 0 ? void 0 : error.message) === null || _a === void 0 ? void 0 : _a.includes("No face detected")) {
+                    return res.status(200).json({ success: true, data: { recognized: false, reason: "no_face" } });
+                }
+                next(error);
+            }
+        });
+        /**
          * Get descriptor count
          */
         this.getDescriptorCount = (req, res, next) => __awaiter(this, void 0, void 0, function* () {

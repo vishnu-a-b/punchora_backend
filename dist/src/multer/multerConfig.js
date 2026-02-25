@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.multerFileStorageForAttendance = exports.multerFileStorageForUserData = exports.multerFileStorage = void 0;
+exports.multerFileStorageForRecognition = exports.multerFileStorageForAttendance = exports.multerFileStorageForUserData = exports.multerFileStorage = void 0;
 const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
 // Ensure directory exists, create if it doesn't
@@ -41,5 +41,15 @@ exports.multerFileStorageForAttendance = multer_1.default.diskStorage({
     },
     filename: function (_req, file, cb) {
         cb(null, Date.now() + "-" + file.originalname);
+    },
+});
+exports.multerFileStorageForRecognition = multer_1.default.diskStorage({
+    destination: function (_req, _file, cb) {
+        const uploadPath = "public/recognition_temp/";
+        ensureDirectoryExists(uploadPath);
+        cb(null, uploadPath);
+    },
+    filename: function (_req, file, cb) {
+        cb(null, `recognize_${Date.now()}-${file.originalname}`);
     },
 });

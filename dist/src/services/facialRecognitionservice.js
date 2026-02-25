@@ -129,6 +129,21 @@ class FaceRecognitionService {
                 });
             }
         });
+        /**
+         * Extract 128-dim descriptor from a single image without storing or matching.
+         * Used by the recognize endpoint.
+         */
+        this.extractDescriptor = (imagePath) => __awaiter(this, void 0, void 0, function* () {
+            const img = yield canvas.loadImage(imagePath);
+            const detection = yield faceapi
+                .detectSingleFace(img)
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+            if (!detection) {
+                throw new Error("No face detected in the image");
+            }
+            return detection.descriptor;
+        });
         this.averageDescriptors = (descriptors) => {
             const avg = new Float32Array(128);
             descriptors.forEach((desc) => {

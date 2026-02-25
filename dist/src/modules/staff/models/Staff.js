@@ -91,6 +91,7 @@ const staffSchema = new mongoose_1.default.Schema({
         type: [shiftEntrySchema],
         default: [],
     },
+    expoPushToken: { type: String, default: null },
 }, { timestamps: true });
 // PHASE 4: Virtual field for all departments
 staffSchema.virtual("allDepartments").get(function () {
