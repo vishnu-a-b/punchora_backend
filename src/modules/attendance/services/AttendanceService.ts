@@ -223,10 +223,13 @@ export default class AttendanceService {
     endDate: Date,
     status: string
   ) => {
-    const startOfStartDate = new Date(startDate);
-    const endOfEndDate = new Date(endDate);
-    startOfStartDate.setHours(0, 0, 0, 0);
-    endOfEndDate.setHours(23, 59, 59, 999);
+    // Extract the date strings (YYYY-MM-DD) and parse as IST midnight (UTC+05:30).
+    // setHours(0,0,0,0) would use server local time (UTC) causing a 5h30m offset,
+    // which makes Jan 26 IST records appear as Jan 25 in the result.
+    const startDateStr = new Date(startDate).toISOString().split("T")[0];
+    const endDateStr = new Date(endDate).toISOString().split("T")[0];
+    const startOfStartDate = new Date(`${startDateStr}T00:00:00.000+05:30`);
+    const endOfEndDate = new Date(`${endDateStr}T23:59:59.999+05:30`);
     const attendances = await Attendance.find({
       date: {
         $gte: startOfStartDate,
