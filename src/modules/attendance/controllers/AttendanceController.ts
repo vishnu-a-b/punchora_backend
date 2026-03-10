@@ -83,29 +83,19 @@ export default class AttendanceController extends BaseController {
 
   markAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
-      console.log("Request body:", req.body);
-      console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
-      console.log("Content-Type:", req.headers['content-type']);
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        console.error("Validation errors:", errors.array());
         throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
       if (!body.checkOutTime && !body.checkInTime) {
-        console.error("Missing checkOutTime and checkInTime");
         throw new ValidationFailedError({
           error: "checkOutTime or checkInTime required",
         });
       }
-      if (!req.file) {
-        console.error("No photo provided");
-        throw new ValidationFailedError({ errors: ["no photo provided"] });
+      if (req.file) {
+        body.photo = Configs.domain + "attendance/" + req.file.filename;
       }
-      body.photo = Configs.domain + "attendance/" + req.file!.filename;
-      console.log("Photo URL:", body.photo);
       let data: any;
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
@@ -113,13 +103,16 @@ export default class AttendanceController extends BaseController {
             errors: ["checkOutLocation required"],
           });
         }
+        let checkOutLocation: any;
+        try { checkOutLocation = JSON.parse(body.checkOutLocation); }
+        catch { throw new ValidationFailedError({ error: "invalid checkOutLocation JSON" }); }
         data = await this.service.checkOut({
           date: new Date(),
           checkOutTime: new Date(),
           staff: body.staff,
           checkOutPhoto: body.photo,
-          checkOutLocation: JSON.parse(body.checkOutLocation),
-          idempotencyKey: body.idempotencyKey,  // NEW
+          checkOutLocation,
+          idempotencyKey: body.idempotencyKey,
         });
       }
       if (body.checkIn === "true") {
@@ -128,14 +121,17 @@ export default class AttendanceController extends BaseController {
             errors: ["checkInLocation required"],
           });
         }
+        let checkInLocation: any;
+        try { checkInLocation = JSON.parse(body.checkInLocation); }
+        catch { throw new ValidationFailedError({ error: "invalid checkInLocation JSON" }); }
         data = await this.service.checkIn({
           date: new Date(),
           checkInTime: new Date(),
           staff: body.staff,
           checkInPhoto: body.photo,
-          checkInLocation: JSON.parse(body.checkInLocation),
+          checkInLocation,
           createdBy: req.user._id,
-          idempotencyKey: body.idempotencyKey,  // NEW
+          idempotencyKey: body.idempotencyKey,
         });
       }
       this.sendSuccessResponse(res, 201, { data });
@@ -146,29 +142,19 @@ export default class AttendanceController extends BaseController {
 
   markAndEditAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
-      console.log("Request body:", req.body);
-      console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
-      console.log("Content-Type:", req.headers['content-type']);
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        console.error("Validation errors:", errors.array());
         throw new ValidationFailedError({ errors: errors.array() });
       }
       const body = req.body;
       if (!body.checkOutTime && !body.checkInTime) {
-        console.error("Missing checkOutTime and checkInTime");
         throw new ValidationFailedError({
           error: "checkOutTime or checkInTime required",
         });
       }
-      if (!req.file) {
-        console.error("No photo provided");
-        throw new ValidationFailedError({ errors: ["no photo provided"] });
+      if (req.file) {
+        body.photo = Configs.domain + "attendance/" + req.file.filename;
       }
-      body.photo = Configs.domain + "attendance/" + req.file!.filename;
-      console.log("Photo URL:", body.photo);
       let data: any;
       if (body.checkIn === "false") {
         if (!body.checkOutLocation) {
@@ -176,13 +162,16 @@ export default class AttendanceController extends BaseController {
             errors: ["checkOutLocation required"],
           });
         }
+        let checkOutLocation: any;
+        try { checkOutLocation = JSON.parse(body.checkOutLocation); }
+        catch { throw new ValidationFailedError({ error: "invalid checkOutLocation JSON" }); }
         data = await this.service.checkOut({
           date: new Date(),
           checkOutTime: new Date(),
           staff: body.staff,
           checkOutPhoto: body.photo,
-          checkOutLocation: JSON.parse(body.checkOutLocation),
-          idempotencyKey: body.idempotencyKey,  // NEW
+          checkOutLocation,
+          idempotencyKey: body.idempotencyKey,
         });
       }
       if (body.checkIn === "true") {
@@ -191,14 +180,17 @@ export default class AttendanceController extends BaseController {
             errors: ["checkInLocation required"],
           });
         }
+        let checkInLocation: any;
+        try { checkInLocation = JSON.parse(body.checkInLocation); }
+        catch { throw new ValidationFailedError({ error: "invalid checkInLocation JSON" }); }
         data = await this.service.checkIn({
           date: new Date(),
           checkInTime: new Date(),
           staff: body.staff,
           checkInPhoto: body.photo,
-          checkInLocation: JSON.parse(body.checkInLocation),
+          checkInLocation,
           createdBy: req.user._id,
-          idempotencyKey: body.idempotencyKey,  // NEW
+          idempotencyKey: body.idempotencyKey,
         });
       }
       this.sendSuccessResponse(res, 201, { data });
@@ -262,8 +254,6 @@ export default class AttendanceController extends BaseController {
     next: NextFunction
   ) => {
     try {
-      const { limit, skip } = req.query;
-      const { filterQuery, sort } = req;
       const staffId = req.params.id;
       const { startDate, endDate } = req.query;
       if (!startDate || !endDate) {
@@ -400,6 +390,43 @@ export default class AttendanceController extends BaseController {
       } else {
         next(e);
       }
+    }
+  };
+
+  /**
+   * Upload photo for an existing attendance record (staff uploads own photo in background)
+   * PATCH /v1/attendance/:id/photo
+   */
+  uploadAttendancePhoto = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        throw new ValidationFailedError({ errors: ["no photo provided"] });
+      }
+
+      const { id } = req.params;
+      const photoType = req.body.photoType; // "checkIn" or "checkOut"
+      const photoUrl = Configs.domain + "attendance/" + req.file.filename;
+
+      const attendance = await this.service.getById(id);
+      if (!attendance) {
+        throw new NotFoundError({ error: "attendance not found" });
+      }
+
+      // Verify the attendance belongs to this user's staff
+      const staff = await Staff.findOne({ user: req.user._id });
+      if (!staff || attendance.staff._id.toString() !== staff._id.toString()) {
+        throw new BadRequestError({ error: "unauthorized" });
+      }
+
+      const updateField = photoType === "checkOut" ? "checkOutPhoto" : "checkInPhoto";
+      await this.service.update(id, { $set: { [updateField]: photoUrl } });
+
+      this.sendSuccessResponse(res, 200, { data: { _id: id } });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid attendance_id" }));
+      }
+      next(e);
     }
   };
 

@@ -57,10 +57,12 @@ export default class LocationDataController extends BaseController {
           errors: ["startDate & endDate required as query parameters"],
         });
       }
+      const { sessionId } = req.query;
       const data = await this.service.filterByDate(
         new Date(startDate as string),
         new Date(endDate as string),
-        staff as string | undefined
+        staff as string | undefined,
+        sessionId as string | undefined  // Fix 7
       );
       this.sendSuccessResponse(res, 200, { data });
     } catch (e: any) {

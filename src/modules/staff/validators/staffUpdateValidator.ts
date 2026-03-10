@@ -36,4 +36,8 @@ export const staffUpdateValidator = [
   body("joinDate").optional().isISO8601(),
   body("role").optional().isIn(Object.values(StaffRoles)),
   body("type").optional().isIn(Object.values(StaffTypes)),
+  body("otEnabled").optional().isBoolean(),
+  body("otMultiplier").optional().isFloat({ min: 1 }),
+  body("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off"]),
+  body("extraOff").optional().isInt({ min: 0 }),
 ];

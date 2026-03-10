@@ -85,6 +85,18 @@ const staffSchema = new mongoose.Schema(
       default: [],
     },
     expoPushToken: { type: String, default: null },
+
+    // OT settings
+    otEnabled: { type: Boolean, default: false },
+    otMultiplier: { type: Number, default: 1.5, min: 1 },
+
+    // Off settings
+    weeklyOff: {
+      type: String,
+      enum: ["weekly-off", "no-off", "night-off"],
+      default: "weekly-off",
+    },
+    extraOff: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

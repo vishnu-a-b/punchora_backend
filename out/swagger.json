@@ -3865,6 +3865,30 @@
         ]
       }
     },
+    "/v1/attendance/{id}/photo": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/attendance/flagged/list": {
       "get": {
         "description": "",
@@ -4774,6 +4798,11 @@
           },
           {
             "name": "staff",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sessionId",
             "in": "query",
             "type": "string"
           }

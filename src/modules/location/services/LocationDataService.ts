@@ -40,20 +40,17 @@ export default class LocationDataService {
   filterByDate = async (
     startDate: Date,
     endDate: Date,
-    staffId: string | undefined
+    staffId: string | undefined,
+    sessionId?: string  // Fix 7: filter by session (attendance record)
   ) => {
     const startOfStartDate = new Date(startDate);
     const endOfEndDate = new Date(endDate);
     let query: any = {
-      date: {
-        $gte: startOfStartDate,
-        $lte: endOfEndDate,
-      },
+      date: { $gte: startOfStartDate, $lte: endOfEndDate },
     };
-    if (staffId) {
-      query.staff = staffId;
-    }
-    const locations = await LocationData.find(query).populate("staff");
+    if (staffId) query.staff = staffId;
+    if (sessionId) query.sessionId = sessionId; // Fix 7
+    const locations = await LocationData.find(query).sort({ date: 1 }).populate("staff");
     return locations;
   };
 

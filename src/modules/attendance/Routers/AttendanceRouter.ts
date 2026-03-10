@@ -131,6 +131,15 @@ router.post(
   controller.markAttendanceViaRecognition
 );
 
+// Upload photo for own attendance record - Staff uploads photo in background
+router.patch(
+  "/:id/photo",
+  authenticateUser,
+  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  singleUploadMethod,
+  controller.uploadAttendancePhoto
+);
+
 // Update attendance - Admin only
 router.put(
   "/:id",
