@@ -3500,16 +3500,6 @@
             "type": "string"
           },
           {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "startDate",
             "in": "query",
             "type": "string"
@@ -3729,11 +3719,6 @@
             "in": "formData",
             "required": true,
             "type": "file"
-          },
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -3787,11 +3772,6 @@
             "in": "formData",
             "required": true,
             "type": "file"
-          },
-          {
-            "name": "content-type",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {

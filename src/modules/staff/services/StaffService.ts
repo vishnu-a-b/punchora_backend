@@ -14,7 +14,7 @@ export default class StaffService {
     skip = skip ? skip : 0;
     console.log("hai",sort)
     const staffs = await Staff.find(filterQuery)
-      .populate(["user", "department"])
+      .populate(["user", "department", "business"])
       .sort(sort)
       .limit(limit)
       .skip(skip);
@@ -38,7 +38,7 @@ export default class StaffService {
     let staffData = [];
 
     const staffs: any[] = await Staff.find(filterQuery)
-      .populate(["user", "department"])
+      .populate(["user", "department", "business"])
       .sort(sort)
       .limit(limit)
       .skip(skip);
