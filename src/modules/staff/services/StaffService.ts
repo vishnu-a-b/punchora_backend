@@ -12,7 +12,6 @@ export default class StaffService {
   find = async ({ limit, skip, filterQuery, sort }: ListFilterData) => {
     limit = limit ? limit : 10;
     skip = skip ? skip : 0;
-    console.log("hai",sort)
     const staffs = await Staff.find(filterQuery)
       .populate(["user", "department", "business"])
       .sort(sort)

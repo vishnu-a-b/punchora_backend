@@ -12,7 +12,7 @@
     "test:e2e": "jest --testPathPattern=e2e",
     "test:load": "jest --testPathPattern=load",
     "build": "tsc",
-    "postbuild": "mkdir -p dist/models && cp -r models/* dist/models/",
+    "postbuild": "mkdir -p dist/models && cp -r models/* dist/models/ && mkdir -p dist/out && (cp out/swagger.json dist/out/swagger.json 2>/dev/null || echo '[postbuild] swagger.json not found, skipping')",
     "optimize:cache": "ts-node src/scripts/optimizeCache.ts",
     "analyze:queries": "ts-node src/scripts/findSlowQueries.ts",
     "seed": "ts-node src/scripts/seedDatabase.ts",

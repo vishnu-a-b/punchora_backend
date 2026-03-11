@@ -11,7 +11,7 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
       origin: "*",
       methods: ["GET", "POST"],
     },
-    transports: ["websocket", "polling"],
+    transports: ["polling", "websocket"],
   });
 
   // JWT auth middleware for socket connections
