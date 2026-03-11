@@ -24,6 +24,7 @@ import PerformanceRouter from "../modules/performance/routes/PerformanceRouter";
 import ApiKeyRouter from "../modules/apiKey/routes/ApiKeyRouter";
 import SecurityRouter from "../modules/security/routes/SecurityRouter";
 import DashboardRouter from "../modules/dashboard/routes/DashboardRouter";
+import TimeSyncRouter from "../modules/timeSync/Routers/TimeSyncRouter";
 
 const router = express.Router();
 
@@ -52,5 +53,6 @@ router.use("/v1/performance/", PerformanceRouter);
 router.use("/v1/api-keys/", ApiKeyRouter);
 router.use("/v1/security/", SecurityRouter);
 router.use("/v1/dashboard/", DashboardRouter);
+router.use("/v1/time-sync/", TimeSyncRouter);
 
 export default router;

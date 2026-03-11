@@ -7471,6 +7471,26 @@
           }
         }
       }
+    },
+    "/v1/time-sync/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/time-sync/validate": {
+      "post": {
+        "description": "",
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
   }
 }
