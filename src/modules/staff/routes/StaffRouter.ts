@@ -16,17 +16,17 @@ import { staffUpdateValidator } from "../validators/staffUpdateValidator";
 import StaffController from "../controllers/StaffController";
 import { staffDeleteDoc } from "../docs/staffDeleteDoc";
 
-const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF } = UserRole;
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF, CONTROL_ROOM } = UserRole;
 
 const router = express.Router();
 const controller = new StaffController();
 
 router.use(authenticateUser);
 
-// Get all staff - Admins see all in business, dept heads see department
+// Get all staff - Admins see all in business, dept heads see department, control room sees all
 router.get(
   "/",
-  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM]),
   applyBusinessScoping,
   staffListDoc,
   setFilterParams(staffFilterFields),
@@ -42,10 +42,10 @@ router.get(
   controller.countTotalDocuments
 );
 
-// Get staff with attendance - Admins and dept heads
+// Get staff with attendance - Admins, dept heads, and control room
 router.get(
   "/get-attendance",
-  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM]),
   applyBusinessScoping,
   setFilterParams(staffFilterFields),
   mergeScopingFilters,
