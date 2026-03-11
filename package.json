@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.ts",
   "scripts": {
-    "dev": "node swagger-autogen.js && nodemon",
-    "start": "node dist/src/server.js",
+    "dev": "TF_CPP_MIN_LOG_LEVEL=3 node swagger-autogen.js && TF_CPP_MIN_LOG_LEVEL=3 nodemon",
+    "start": "TF_CPP_MIN_LOG_LEVEL=3 node dist/src/server.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=unit",
