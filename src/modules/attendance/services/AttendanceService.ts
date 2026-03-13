@@ -254,6 +254,58 @@ export default class AttendanceService {
     return await Attendance.findByIdAndDelete(id);
   };
 
+  // Get attendance records where check-in or check-out used mocked/fake GPS
+  getMockedPunches = async (startDate: Date, endDate: Date, businessId?: string) => {
+    const pipeline: any[] = [
+      {
+        $match: {
+          date: { $gte: startDate, $lte: endDate },
+          $or: [
+            { "checkInLocation.mocked": true },
+            { "checkOutLocation.mocked": true },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "staffs",
+          localField: "staff",
+          foreignField: "_id",
+          as: "staffInfo",
+        },
+      },
+      { $unwind: { path: "$staffInfo", preserveNullAndEmptyArrays: false } },
+    ];
+
+    if (businessId) {
+      pipeline.push({ $match: { "staffInfo.business": new (require("mongoose").Types.ObjectId)(businessId) } });
+    }
+
+    pipeline.push(
+      {
+        $project: {
+          _id: 1,
+          date: 1,
+          checkInTime: 1,
+          checkOutTime: 1,
+          checkInMocked: "$checkInLocation.mocked",
+          checkOutMocked: "$checkOutLocation.mocked",
+          checkInLat: "$checkInLocation.latitude",
+          checkInLng: "$checkInLocation.longitude",
+          checkOutLat: "$checkOutLocation.latitude",
+          checkOutLng: "$checkOutLocation.longitude",
+          staffId: "$staffInfo._id",
+          staffName: "$staffInfo.name",
+          staffEmail: "$staffInfo.email",
+          flagged: 1,
+        },
+      },
+      { $sort: { date: -1 } }
+    );
+
+    return await Attendance.aggregate(pipeline);
+  };
+
   // NEW: Get all flagged attendance records
   getFlaggedAttendance = async (startDate?: Date, endDate?: Date) => {
     const query: any = { flagged: true };

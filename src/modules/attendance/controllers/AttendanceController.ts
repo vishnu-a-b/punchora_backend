@@ -330,6 +330,25 @@ export default class AttendanceController extends BaseController {
     }
   };
 
+  // Get attendance with mocked/fake GPS at punch-in or punch-out
+  getMockedPunches = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { startDate, endDate, businessId } = req.query;
+      if (!(startDate && endDate)) {
+        res.status(400).json({ success: false, message: "startDate & endDate required" });
+        return;
+      }
+      const data = await this.service.getMockedPunches(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        businessId as string | undefined
+      );
+      this.sendSuccessResponse(res, 200, { data });
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
   // NEW: Clear flag from attendance record
   clearAttendanceFlag = async (
     req: Request,

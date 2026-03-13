@@ -21,7 +21,7 @@ class LiveTrackingService {
       staffId,
       adminUserId,
       startedAt: now,
-      expiresAt: now + 60 * 1000, // 1 minute
+      expiresAt: now + 2 * 60 * 1000, // 2 minutes
       sessionToken,
     };
 

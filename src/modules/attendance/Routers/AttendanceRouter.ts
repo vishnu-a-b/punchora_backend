@@ -161,6 +161,15 @@ router.delete(
   controller.delete
 );
 
+// Get attendance with mocked/fake GPS - Admins and control room
+router.get(
+  "/mocked-punches",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM]),
+  applyBusinessScoping,
+  controller.getMockedPunches
+);
+
 // Get flagged attendance - Admin only
 router.get(
   "/flagged/list",

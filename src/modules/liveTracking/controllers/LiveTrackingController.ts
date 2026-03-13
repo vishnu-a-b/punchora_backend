@@ -4,7 +4,7 @@ import { getIO } from "../../../socket/SocketServer";
 
 export default class LiveTrackingController {
 
-  // Admin: start a 1-minute live tracking session for a staff member
+  // Admin: start a 2-minute live tracking session for a staff member
   startTracking = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { staffId } = req.body;
@@ -22,16 +22,16 @@ export default class LiveTrackingController {
         io.to(`live-track:${staffId}`).emit("tracking-started", {
           staffId,
           expiresAt: session.expiresAt,
-          remainingMs: 60000,
+          remainingMs: 2 * 60 * 1000,
         });
 
-        // Auto-expire: broadcast session-expired after 1 minute
+        // Auto-expire: broadcast session-expired after 2 minutes
         setTimeout(() => {
           if (liveTrackingService.isActive(staffId)) {
             liveTrackingService.stopSession(staffId);
             io.to(`live-track:${staffId}`).emit("session-expired", { staffId });
           }
-        }, 60 * 1000);
+        }, 2 * 60 * 1000);
       } catch (_) {
         // Socket may not be initialized yet, REST response still works
       }
