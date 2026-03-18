@@ -57,7 +57,7 @@ export default class UserService {
   };
 
   findOne = async (id: string) => {
-    return await User.findOne({ _id: id }).populate("roles");
+    return await User.findOne({ _id: id }).populate("roles").populate("business", "_id name");
   };
 
   update = async (id: string, user: any) => {

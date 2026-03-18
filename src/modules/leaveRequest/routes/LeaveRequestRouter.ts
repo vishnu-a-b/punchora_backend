@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticateUser } from "../../authentication/middlewares/authenticateUser";
 import { checkRole, checkLeaveApprovalPermission, applyDataFilters } from "../../../middlewares/checkPermission";
+import { mergeScopingFilters } from "../../../middlewares/mergeScopingFilters";
 import { UserRole } from "../../../constants/roles";
 import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 import setFilterParams from "../../../middlewares/setFilterParams";
@@ -28,6 +29,7 @@ router.get(
   applyBusinessScoping,
   leaveRequestListDoc,
   setFilterParams(leaveRequestFilterFields),
+  mergeScopingFilters,
   controller.get
 );
 

@@ -11,6 +11,7 @@ export default class DepartmentService {
     skip = skip ? skip : 0;
 
     const departments = await Department.find(filterQuery)
+      .populate("head", "name")
       .sort(sort)
       .limit(limit)
       .skip(skip);

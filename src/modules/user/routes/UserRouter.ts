@@ -10,6 +10,7 @@ import { multerFileStorageForUserData } from "../../../multer/multerConfig";
 import { multerImageFilter } from "../../../multer/multerFileFilters";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import setFilterParams from "../../../middlewares/setFilterParams";
+import { mergeScopingFilters } from "../../../middlewares/mergeScopingFilters";
 import { userFilterFields } from "../models/User";
 import { userCreateDoc } from "../docs/userCreateDoc";
 import { userListDoc } from "../docs/userListDoc";
@@ -49,6 +50,7 @@ router.get(
   checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   applyBusinessScoping,
   setFilterParams(userFilterFields),
+  mergeScopingFilters,
   userListDoc,
   controller.getList
 );
@@ -59,6 +61,7 @@ router.get(
   checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   applyBusinessScoping,
   setFilterParams(userFilterFields),
+  mergeScopingFilters,
   userListDoc,
   controller.filterByRole
 );

@@ -110,6 +110,7 @@ export const userFilterFields: ModelFilterInterface = {
     "maritalStatus",
     "isActive",
     "isSuperAdmin",
+    "role",
   ],
   searchFields: ["name", "mobileNo", "email"],
   sortFields: ["createdAt", "updatedAt"],
