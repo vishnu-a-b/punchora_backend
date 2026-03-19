@@ -15,6 +15,7 @@ const multerConfig_1 = require("../../../multer/multerConfig");
 const multerFileFilters_1 = require("../../../multer/multerFileFilters");
 const BadRequestError_1 = __importDefault(require("../../../errors/errorTypes/BadRequestError"));
 const setFilterParams_1 = __importDefault(require("../../../middlewares/setFilterParams"));
+const mergeScopingFilters_1 = require("../../../middlewares/mergeScopingFilters");
 const User_1 = require("../models/User");
 const userCreateDoc_1 = require("../docs/userCreateDoc");
 const userListDoc_1 = require("../docs/userListDoc");
@@ -42,9 +43,9 @@ const uploadMethod = (req, res, next) => {
     });
 };
 // Get all users - Admin only
-router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(User_1.userFilterFields), userListDoc_1.userListDoc, controller.getList);
+router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(User_1.userFilterFields), mergeScopingFilters_1.mergeScopingFilters, userListDoc_1.userListDoc, controller.getList);
 // Get users filtered by role - Admin only
-router.get("/filter-by-role/:slug", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(User_1.userFilterFields), userListDoc_1.userListDoc, controller.filterByRole);
+router.get("/filter-by-role/:slug", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(User_1.userFilterFields), mergeScopingFilters_1.mergeScopingFilters, userListDoc_1.userListDoc, controller.filterByRole);
 // Create user - Admin only
 router.post("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, uploadMethod, UserCreateValidator_1.userCreateValidator, userCreateDoc_1.userCreateDoc, controller.create);
 // Get one user - Admin only

@@ -185,9 +185,9 @@ staffSchema.pre("validate", async function (next) {
       const patient = await User.findById(this.user.toString());
       if (patient) this.name = patient?.name;
     }
-    const prevStaffs = await Staff.find().sort({ createdAt: -1 });
-    if (prevStaffs && prevStaffs.length > 0) {
-      this.uid = prevStaffs[0].uid ?? 100 + 1;
+    const latestStaff = await Staff.findOne({ uid: { $exists: true } }).sort({ uid: -1 }).select("uid");
+    if (latestStaff && latestStaff.uid) {
+      this.uid = latestStaff.uid + 1;
     } else {
       this.uid = 101;
     }

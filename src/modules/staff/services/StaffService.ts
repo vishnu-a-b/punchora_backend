@@ -34,32 +34,37 @@ export default class StaffService {
   }: ListFilterData) => {
     limit = limit ? limit : 10;
     skip = skip ? skip : 0;
-    let staffData = [];
 
-    const staffs: any[] = await Staff.find(filterQuery)
-      .populate(["user", "department", "business"])
-      .sort(sort)
-      .limit(limit)
-      .skip(skip);
-    const today = new Date();
-    const startOfDay = today;
-    const endOfDay = today;
+    const [staffs, total] = await Promise.all([
+      Staff.find(filterQuery)
+        .populate(["user", "department", "business"])
+        .sort(sort)
+        .limit(limit)
+        .skip(skip),
+      Staff.countDocuments(filterQuery),
+    ]);
+
+    const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    for (const staff of staffs) {
-      const attendance = await Attendance.findOne({
-        date: {
-          $gte: startOfDay,
-          $lte: endOfDay,
-        },
-        staff: staff,
-      });
-      let data = staff;
-      data.attendance = attendance;
-      staffData.push(data);
-    }
-    const total = await Staff.countDocuments(filterQuery);
+    const staffIds = staffs.map((s: any) => s._id);
+    const attendances = await Attendance.find({
+      date: { $gte: startOfDay, $lte: endOfDay },
+      staff: { $in: staffIds },
+    });
+
+    const attendanceMap = new Map(
+      attendances.map((a: any) => [a.staff.toString(), a])
+    );
+
+    const staffData = staffs.map((staff: any) => {
+      const data = staff.toObject ? staff.toObject() : staff;
+      data.attendance = attendanceMap.get(staff._id.toString()) || null;
+      return data;
+    });
+
     return {
       total,
       limit,

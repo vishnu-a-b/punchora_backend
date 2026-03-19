@@ -70,10 +70,14 @@ router.post("/mark", authenticateUser_1.authenticateUser, (0, checkPermission_1.
 router.post("/mark-admin", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAndEditAttendance);
 // Mark attendance via face recognition - Staff or admin
 router.post("/mark-via-recogntion", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), markAttendanceViaImageDoc_1.markAttendanceViaImageDoc, singleUploadMethod, markAttendanceViaPhotoValidator_1.markAttendanceViaPhotoValidator, controller.markAttendanceViaRecognition);
+// Upload photo for own attendance record - Staff uploads photo in background
+router.patch("/:id/photo", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), singleUploadMethod, controller.uploadAttendancePhoto);
 // Update attendance - Admin only
 router.put("/:id", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, multiUploadMethod, attendanceUpdateValidator_1.attendanceUpdateValidator, updateAttendanceDoc_1.updateAttendanceDoc, controller.update);
 // Delete attendance - Admin only
 router.delete("/:id", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, controller.delete);
+// Get attendance with mocked/fake GPS - Admins and control room
+router.get("/mocked-punches", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM]), businessScopingValidator_1.applyBusinessScoping, controller.getMockedPunches);
 // Get flagged attendance - Admin only
 router.get("/flagged/list", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, controller.getFlaggedAttendance);
 // Clear attendance flag - Admin only

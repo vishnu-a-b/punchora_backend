@@ -47,4 +47,8 @@ exports.staffUpdateValidator = [
     (0, express_validator_1.body)("joinDate").optional().isISO8601(),
     (0, express_validator_1.body)("role").optional().isIn(Object.values(staffRoles_1.StaffRoles)),
     (0, express_validator_1.body)("type").optional().isIn(Object.values(staffTypes_1.StaffTypes)),
+    (0, express_validator_1.body)("otEnabled").optional().isBoolean(),
+    (0, express_validator_1.body)("otMultiplier").optional().isFloat({ min: 1 }),
+    (0, express_validator_1.body)("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off"]),
+    (0, express_validator_1.body)("extraOff").optional().isInt({ min: 0 }),
 ];

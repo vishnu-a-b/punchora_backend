@@ -19,6 +19,7 @@ class DepartmentService {
             limit = limit ? limit : 10;
             skip = skip ? skip : 0;
             const departments = yield Department_1.Department.find(filterQuery)
+                .populate("head", "name")
                 .sort(sort)
                 .limit(limit)
                 .skip(skip);

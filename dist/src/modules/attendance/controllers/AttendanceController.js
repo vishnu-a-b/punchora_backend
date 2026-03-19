@@ -27,7 +27,7 @@ class AttendanceController extends BaseController_1.default {
     constructor() {
         super(...arguments);
         this.service = new AttendanceService_1.default();
-        this.facialRecognitionService = new facialRecognitionservice_1.FaceRecognitionService();
+        this._facialRecognitionService = null;
         this.create = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;
             try {
@@ -93,28 +93,19 @@ class AttendanceController extends BaseController_1.default {
         });
         this.markAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
-                console.log("Request body:", req.body);
-                console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
-                console.log("Content-Type:", req.headers['content-type']);
                 const errors = (0, express_validator_1.validationResult)(req);
                 if (!errors.isEmpty()) {
-                    console.error("Validation errors:", errors.array());
                     throw new ValidationFailedError_1.default({ errors: errors.array() });
                 }
                 const body = req.body;
                 if (!body.checkOutTime && !body.checkInTime) {
-                    console.error("Missing checkOutTime and checkInTime");
                     throw new ValidationFailedError_1.default({
                         error: "checkOutTime or checkInTime required",
                     });
                 }
-                if (!req.file) {
-                    console.error("No photo provided");
-                    throw new ValidationFailedError_1.default({ errors: ["no photo provided"] });
+                if (req.file) {
+                    body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
                 }
-                body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
-                console.log("Photo URL:", body.photo);
                 let data;
                 if (body.checkIn === "false") {
                     if (!body.checkOutLocation) {
@@ -122,13 +113,20 @@ class AttendanceController extends BaseController_1.default {
                             errors: ["checkOutLocation required"],
                         });
                     }
+                    let checkOutLocation;
+                    try {
+                        checkOutLocation = JSON.parse(body.checkOutLocation);
+                    }
+                    catch (_a) {
+                        throw new ValidationFailedError_1.default({ error: "invalid checkOutLocation JSON" });
+                    }
                     data = yield this.service.checkOut({
                         date: new Date(),
                         checkOutTime: new Date(),
                         staff: body.staff,
                         checkOutPhoto: body.photo,
-                        checkOutLocation: JSON.parse(body.checkOutLocation),
-                        idempotencyKey: body.idempotencyKey, // NEW
+                        checkOutLocation,
+                        idempotencyKey: body.idempotencyKey,
                     });
                 }
                 if (body.checkIn === "true") {
@@ -137,14 +135,21 @@ class AttendanceController extends BaseController_1.default {
                             errors: ["checkInLocation required"],
                         });
                     }
+                    let checkInLocation;
+                    try {
+                        checkInLocation = JSON.parse(body.checkInLocation);
+                    }
+                    catch (_b) {
+                        throw new ValidationFailedError_1.default({ error: "invalid checkInLocation JSON" });
+                    }
                     data = yield this.service.checkIn({
                         date: new Date(),
                         checkInTime: new Date(),
                         staff: body.staff,
                         checkInPhoto: body.photo,
-                        checkInLocation: JSON.parse(body.checkInLocation),
+                        checkInLocation,
                         createdBy: req.user._id,
-                        idempotencyKey: body.idempotencyKey, // NEW
+                        idempotencyKey: body.idempotencyKey,
                     });
                 }
                 this.sendSuccessResponse(res, 201, { data });
@@ -155,28 +160,19 @@ class AttendanceController extends BaseController_1.default {
         });
         this.markAndEditAttendance = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("=== MARK ATTENDANCE REQUEST RECEIVED ===");
-                console.log("Request body:", req.body);
-                console.log("Request file:", req.file ? { filename: req.file.filename, mimetype: req.file.mimetype } : "NO FILE");
-                console.log("Content-Type:", req.headers['content-type']);
                 const errors = (0, express_validator_1.validationResult)(req);
                 if (!errors.isEmpty()) {
-                    console.error("Validation errors:", errors.array());
                     throw new ValidationFailedError_1.default({ errors: errors.array() });
                 }
                 const body = req.body;
                 if (!body.checkOutTime && !body.checkInTime) {
-                    console.error("Missing checkOutTime and checkInTime");
                     throw new ValidationFailedError_1.default({
                         error: "checkOutTime or checkInTime required",
                     });
                 }
-                if (!req.file) {
-                    console.error("No photo provided");
-                    throw new ValidationFailedError_1.default({ errors: ["no photo provided"] });
+                if (req.file) {
+                    body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
                 }
-                body.photo = configs_1.default.domain + "attendance/" + req.file.filename;
-                console.log("Photo URL:", body.photo);
                 let data;
                 if (body.checkIn === "false") {
                     if (!body.checkOutLocation) {
@@ -184,13 +180,20 @@ class AttendanceController extends BaseController_1.default {
                             errors: ["checkOutLocation required"],
                         });
                     }
+                    let checkOutLocation;
+                    try {
+                        checkOutLocation = JSON.parse(body.checkOutLocation);
+                    }
+                    catch (_a) {
+                        throw new ValidationFailedError_1.default({ error: "invalid checkOutLocation JSON" });
+                    }
                     data = yield this.service.checkOut({
                         date: new Date(),
                         checkOutTime: new Date(),
                         staff: body.staff,
                         checkOutPhoto: body.photo,
-                        checkOutLocation: JSON.parse(body.checkOutLocation),
-                        idempotencyKey: body.idempotencyKey, // NEW
+                        checkOutLocation,
+                        idempotencyKey: body.idempotencyKey,
                     });
                 }
                 if (body.checkIn === "true") {
@@ -199,14 +202,21 @@ class AttendanceController extends BaseController_1.default {
                             errors: ["checkInLocation required"],
                         });
                     }
+                    let checkInLocation;
+                    try {
+                        checkInLocation = JSON.parse(body.checkInLocation);
+                    }
+                    catch (_b) {
+                        throw new ValidationFailedError_1.default({ error: "invalid checkInLocation JSON" });
+                    }
                     data = yield this.service.checkIn({
                         date: new Date(),
                         checkInTime: new Date(),
                         staff: body.staff,
                         checkInPhoto: body.photo,
-                        checkInLocation: JSON.parse(body.checkInLocation),
+                        checkInLocation,
                         createdBy: req.user._id,
-                        idempotencyKey: body.idempotencyKey, // NEW
+                        idempotencyKey: body.idempotencyKey,
                     });
                 }
                 this.sendSuccessResponse(res, 201, { data });
@@ -257,8 +267,6 @@ class AttendanceController extends BaseController_1.default {
         });
         this.getAttendanceForStaff = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const { limit, skip } = req.query;
-                const { filterQuery, sort } = req;
                 const staffId = req.params.id;
                 const { startDate, endDate } = req.query;
                 if (!startDate || !endDate) {
@@ -308,6 +316,21 @@ class AttendanceController extends BaseController_1.default {
             try {
                 const { startDate, endDate } = req.query;
                 const data = yield this.service.getFlaggedAttendance(startDate ? new Date(startDate) : undefined, endDate ? new Date(endDate) : undefined);
+                this.sendSuccessResponse(res, 200, { data });
+            }
+            catch (e) {
+                next(e);
+            }
+        });
+        // Get attendance with mocked/fake GPS at punch-in or punch-out
+        this.getMockedPunches = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, businessId } = req.query;
+                if (!(startDate && endDate)) {
+                    res.status(400).json({ success: false, message: "startDate & endDate required" });
+                    return;
+                }
+                const data = yield this.service.getMockedPunches(new Date(startDate), new Date(endDate), businessId);
                 this.sendSuccessResponse(res, 200, { data });
             }
             catch (e) {
@@ -371,6 +394,38 @@ class AttendanceController extends BaseController_1.default {
             }
         });
         /**
+         * Upload photo for an existing attendance record (staff uploads own photo in background)
+         * PATCH /v1/attendance/:id/photo
+         */
+        this.uploadAttendancePhoto = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!req.file) {
+                    throw new ValidationFailedError_1.default({ errors: ["no photo provided"] });
+                }
+                const { id } = req.params;
+                const photoType = req.body.photoType; // "checkIn" or "checkOut"
+                const photoUrl = configs_1.default.domain + "attendance/" + req.file.filename;
+                const attendance = yield this.service.getById(id);
+                if (!attendance) {
+                    throw new NotFoundError_1.default({ error: "attendance not found" });
+                }
+                // Verify the attendance belongs to this user's staff
+                const staff = yield Staff_1.Staff.findOne({ user: req.user._id });
+                if (!staff || attendance.staff._id.toString() !== staff._id.toString()) {
+                    throw new BadRequestError_1.default({ error: "unauthorized" });
+                }
+                const updateField = photoType === "checkOut" ? "checkOutPhoto" : "checkInPhoto";
+                yield this.service.update(id, { $set: { [updateField]: photoUrl } });
+                this.sendSuccessResponse(res, 200, { data: { _id: id } });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "invalid attendance_id" }));
+                }
+                next(e);
+            }
+        });
+        /**
          * Review a flagged attendance record
          * POST /v1/attendance/:id/review
          */
@@ -415,6 +470,12 @@ class AttendanceController extends BaseController_1.default {
                 }
             }
         });
+    }
+    get facialRecognitionService() {
+        if (!this._facialRecognitionService) {
+            this._facialRecognitionService = new facialRecognitionservice_1.FaceRecognitionService();
+        }
+        return this._facialRecognitionService;
     }
 }
 exports.default = AttendanceController;

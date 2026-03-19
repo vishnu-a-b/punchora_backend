@@ -169,10 +169,13 @@ class AttendanceService {
             return attendances;
         });
         this.filterAllStaffsByDate = (startDate, endDate, status) => __awaiter(this, void 0, void 0, function* () {
-            const startOfStartDate = new Date(startDate);
-            const endOfEndDate = new Date(endDate);
-            startOfStartDate.setHours(0, 0, 0, 0);
-            endOfEndDate.setHours(23, 59, 59, 999);
+            // Extract the date strings (YYYY-MM-DD) and parse as IST midnight (UTC+05:30).
+            // setHours(0,0,0,0) would use server local time (UTC) causing a 5h30m offset,
+            // which makes Jan 26 IST records appear as Jan 25 in the result.
+            const startDateStr = new Date(startDate).toISOString().split("T")[0];
+            const endDateStr = new Date(endDate).toISOString().split("T")[0];
+            const startOfStartDate = new Date(`${startDateStr}T00:00:00.000+05:30`);
+            const endOfEndDate = new Date(`${endDateStr}T23:59:59.999+05:30`);
             const attendances = yield Attendance_1.Attendance.find({
                 date: {
                     $gte: startOfStartDate,
@@ -193,6 +196,51 @@ class AttendanceService {
         });
         this.delete = (id) => __awaiter(this, void 0, void 0, function* () {
             return yield Attendance_1.Attendance.findByIdAndDelete(id);
+        });
+        // Get attendance records where check-in or check-out used mocked/fake GPS
+        this.getMockedPunches = (startDate, endDate, businessId) => __awaiter(this, void 0, void 0, function* () {
+            const pipeline = [
+                {
+                    $match: {
+                        date: { $gte: startDate, $lte: endDate },
+                        $or: [
+                            { "checkInLocation.mocked": true },
+                            { "checkOutLocation.mocked": true },
+                        ],
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "staffs",
+                        localField: "staff",
+                        foreignField: "_id",
+                        as: "staffInfo",
+                    },
+                },
+                { $unwind: { path: "$staffInfo", preserveNullAndEmptyArrays: false } },
+            ];
+            if (businessId) {
+                pipeline.push({ $match: { "staffInfo.business": new (require("mongoose").Types.ObjectId)(businessId) } });
+            }
+            pipeline.push({
+                $project: {
+                    _id: 1,
+                    date: 1,
+                    checkInTime: 1,
+                    checkOutTime: 1,
+                    checkInMocked: "$checkInLocation.mocked",
+                    checkOutMocked: "$checkOutLocation.mocked",
+                    checkInLat: "$checkInLocation.latitude",
+                    checkInLng: "$checkInLocation.longitude",
+                    checkOutLat: "$checkOutLocation.latitude",
+                    checkOutLng: "$checkOutLocation.longitude",
+                    staffId: "$staffInfo._id",
+                    staffName: "$staffInfo.name",
+                    staffEmail: "$staffInfo.email",
+                    flagged: 1,
+                },
+            }, { $sort: { date: -1 } });
+            return yield Attendance_1.Attendance.aggregate(pipeline);
         });
         // NEW: Get all flagged attendance records
         this.getFlaggedAttendance = (startDate, endDate) => __awaiter(this, void 0, void 0, function* () {

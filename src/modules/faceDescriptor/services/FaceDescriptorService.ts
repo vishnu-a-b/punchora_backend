@@ -3,8 +3,16 @@ import mongoose from "mongoose";
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 import * as fs from "fs";
 
-const faceRecognitionService = new FaceRecognitionService();
 const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
+
+// Lazy singleton — only created on first face recognition request, not at startup
+let _faceRecognitionService: FaceRecognitionService | null = null;
+function getFaceRecognitionService(): FaceRecognitionService {
+  if (!_faceRecognitionService) {
+    _faceRecognitionService = new FaceRecognitionService();
+  }
+  return _faceRecognitionService;
+}
 
 export class FaceDescriptorService {
   /**
@@ -129,7 +137,7 @@ export class FaceDescriptorService {
   } | null> => {
     try {
       // Extract descriptor from the uploaded photo
-      const descriptor = await faceRecognitionService.extractDescriptor(imagePath);
+      const descriptor = await getFaceRecognitionService().extractDescriptor(imagePath);
 
       // Fetch all active descriptors (optionally scoped to a business)
       const query: any = { isActive: true };

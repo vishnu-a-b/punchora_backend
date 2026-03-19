@@ -8,6 +8,10 @@ const removeBasicParams = (query) => {
         delete query.limit;
     if (query.skip)
         delete query.skip;
+    if (query.business)
+        delete query.business; // handled by req.businessFilter via mergeScopingFilters
+    if (query.department)
+        delete query.department; // handled by req.departmentFilter via mergeScopingFilters
     return query;
 };
 exports.removeBasicParams = removeBasicParams;

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const authenticateUser_1 = require("../../authentication/middlewares/authenticateUser");
 const checkPermission_1 = require("../../../middlewares/checkPermission");
+const mergeScopingFilters_1 = require("../../../middlewares/mergeScopingFilters");
 const roles_1 = require("../../../constants/roles");
 const businessScopingValidator_1 = require("../../../middlewares/businessScopingValidator");
 const setFilterParams_1 = __importDefault(require("../../../middlewares/setFilterParams"));
@@ -23,7 +24,7 @@ const router = express_1.default.Router();
 const controller = new LeaveRequestController_1.default();
 router.use(authenticateUser_1.authenticateUser);
 // Get all leave requests - Admins see all in business, staff see own
-router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), businessScopingValidator_1.applyBusinessScoping, leaveRequestListDoc_1.leaveRequestListDoc, (0, setFilterParams_1.default)(LeaveRequest_1.leaveRequestFilterFields), controller.get);
+router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), businessScopingValidator_1.applyBusinessScoping, leaveRequestListDoc_1.leaveRequestListDoc, (0, setFilterParams_1.default)(LeaveRequest_1.leaveRequestFilterFields), mergeScopingFilters_1.mergeScopingFilters, controller.get);
 // Create leave request - Anyone can apply for leave
 router.post("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), leaveRequestCreateDoc_1.leaveRequestCreateDoc, leaveRequestCreateValidator_1.leaveRequestCreateValidator, controller.create);
 // Accept or reject leave - Legacy endpoint, use specific approval routes instead

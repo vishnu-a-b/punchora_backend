@@ -13,9 +13,12 @@ const locationSchema = new mongoose_1.default.Schema({
         type: Date,
         required: true,
     },
-    mocked: { type: Boolean, default: false }, // Flag for fake/mocked GPS locations
-    accuracy: { type: Number }, // Location accuracy in meters
-    altitude: { type: Number }, // Altitude if available
+    mocked: { type: Boolean, default: false },
+    accuracy: { type: Number },
+    altitude: { type: Number },
+    speed: { type: Number }, // Fix 4: speed in m/s
+    heading: { type: Number }, // Fix 4: direction 0-360°
+    sessionId: { type: String, index: true }, // Fix 7: links points to an attendance record
 }, { timestamps: true });
 exports.locationDataFilterFields = {
     filterFields: ["staff"],

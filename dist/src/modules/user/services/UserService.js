@@ -64,7 +64,7 @@ class UserService {
             return yield User_1.User.create(Object.assign(Object.assign({}, data), { password }));
         });
         this.findOne = (id) => __awaiter(this, void 0, void 0, function* () {
-            return yield User_1.User.findOne({ _id: id }).populate("roles");
+            return yield User_1.User.findOne({ _id: id }).populate("roles").populate("business", "_id name");
         });
         this.update = (id, user) => __awaiter(this, void 0, void 0, function* () {
             return yield User_1.User.findByIdAndUpdate(id, user);

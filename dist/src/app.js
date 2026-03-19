@@ -18,7 +18,13 @@ const apiKeyAuth_1 = require("./middlewares/apiKeyAuth");
 const csrfProtection_1 = require("./middlewares/csrfProtection");
 const ipWhitelist_1 = require("./middlewares/ipWhitelist");
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require(path_1.default.join(__dirname, "../out/swagger.json"));
+let swaggerDocument = null;
+try {
+    swaggerDocument = require(path_1.default.join(__dirname, "../out/swagger.json"));
+}
+catch (_) {
+    console.warn("[Swagger] swagger.json not found — /docs will be unavailable");
+}
 const cors = require("cors");
 const app = (0, express_1.default)();
 // Initialize Sentry (must be first)
@@ -41,7 +47,9 @@ app.use(routes_1.default);
 // to serve static files
 const publicDirectoryPath = path_1.default.join(__dirname, "../public");
 app.use(express_1.default.static(publicDirectoryPath));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+if (swaggerDocument) {
+    app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 // Install Sentry error handler (must be before custom error handler)
 SentryService_1.default.installErrorHandler(app);
 app.use(customErrorHandler_1.default);

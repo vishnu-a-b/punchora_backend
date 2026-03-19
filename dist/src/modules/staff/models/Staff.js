@@ -92,6 +92,16 @@ const staffSchema = new mongoose_1.default.Schema({
         default: [],
     },
     expoPushToken: { type: String, default: null },
+    // OT settings
+    otEnabled: { type: Boolean, default: false },
+    otMultiplier: { type: Number, default: 1.5, min: 1 },
+    // Off settings
+    weeklyOff: {
+        type: String,
+        enum: ["weekly-off", "no-off", "night-off"],
+        default: "weekly-off",
+    },
+    extraOff: { type: Number, default: 0, min: 0 },
 }, { timestamps: true });
 // PHASE 4: Virtual field for all departments
 staffSchema.virtual("allDepartments").get(function () {
@@ -157,16 +167,15 @@ staffSchema.methods.removeFromDepartment = function (departmentId) {
 };
 staffSchema.pre("validate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
         try {
             if (!this.name) {
                 const patient = yield User_1.User.findById(this.user.toString());
                 if (patient)
                     this.name = patient === null || patient === void 0 ? void 0 : patient.name;
             }
-            const prevStaffs = yield exports.Staff.find().sort({ createdAt: -1 });
-            if (prevStaffs && prevStaffs.length > 0) {
-                this.uid = (_a = prevStaffs[0].uid) !== null && _a !== void 0 ? _a : 100 + 1;
+            const latestStaff = yield exports.Staff.findOne({ uid: { $exists: true } }).sort({ uid: -1 }).select("uid");
+            if (latestStaff && latestStaff.uid) {
+                this.uid = latestStaff.uid + 1;
             }
             else {
                 this.uid = 101;

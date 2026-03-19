@@ -20,16 +20,16 @@ const staffUpdateDoc_1 = require("../docs/staffUpdateDoc");
 const staffUpdateValidator_1 = require("../validators/staffUpdateValidator");
 const StaffController_1 = __importDefault(require("../controllers/StaffController"));
 const staffDeleteDoc_1 = require("../docs/staffDeleteDoc");
-const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF } = roles_1.UserRole;
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF, CONTROL_ROOM } = roles_1.UserRole;
 const router = express_1.default.Router();
 const controller = new StaffController_1.default();
 router.use(authenticateUser_1.authenticateUser);
-// Get all staff - Admins see all in business, dept heads see department
-router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]), businessScopingValidator_1.applyBusinessScoping, staffListDoc_1.staffListDoc, (0, setFilterParams_1.default)(Staff_1.staffFilterFields), mergeScopingFilters_1.mergeScopingFilters, controller.get);
+// Get all staff - Admins see all in business, dept heads see department, control room sees all
+router.get("/", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM]), businessScopingValidator_1.applyBusinessScoping, staffListDoc_1.staffListDoc, (0, setFilterParams_1.default)(Staff_1.staffFilterFields), mergeScopingFilters_1.mergeScopingFilters, controller.get);
 // Count staff - Super admin only
 router.get("/count-documents", (0, checkPermission_1.checkRole)([SUPER_ADMIN]), staffCountDoc_1.staffCountDoc, controller.countTotalDocuments);
-// Get staff with attendance - Admins and dept heads
-router.get("/get-attendance", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(Staff_1.staffFilterFields), mergeScopingFilters_1.mergeScopingFilters, staffListDoc_1.staffListDoc, controller.getWithAttendance);
+// Get staff with attendance - Admins, dept heads, and control room
+router.get("/get-attendance", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM]), businessScopingValidator_1.applyBusinessScoping, (0, setFilterParams_1.default)(Staff_1.staffFilterFields), mergeScopingFilters_1.mergeScopingFilters, staffListDoc_1.staffListDoc, controller.getWithAttendance);
 // Get staff by user ID - Admins, dept heads, and self
 router.get("/user/:id", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), businessScopingValidator_1.applyBusinessScoping, staffDetailsDoc_1.staffDetailsDoc, controller.getWithUserId);
 // Get one staff - Admins, dept heads, and self

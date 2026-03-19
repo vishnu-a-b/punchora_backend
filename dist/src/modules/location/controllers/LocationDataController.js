@@ -70,7 +70,9 @@ class LocationDataController extends BaseController_1.default {
                         errors: ["startDate & endDate required as query parameters"],
                     });
                 }
-                const data = yield this.service.filterByDate(new Date(startDate), new Date(endDate), staff);
+                const { sessionId } = req.query;
+                const data = yield this.service.filterByDate(new Date(startDate), new Date(endDate), staff, sessionId // Fix 7
+                );
                 this.sendSuccessResponse(res, 200, { data });
             }
             catch (e) {

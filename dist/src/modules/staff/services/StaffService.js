@@ -23,9 +23,8 @@ class StaffService {
         this.find = (_a) => __awaiter(this, [_a], void 0, function* ({ limit, skip, filterQuery, sort }) {
             limit = limit ? limit : 10;
             skip = skip ? skip : 0;
-            console.log("hai", sort);
             const staffs = yield Staff_1.Staff.find(filterQuery)
-                .populate(["user", "department"])
+                .populate(["user", "department", "business"])
                 .sort(sort)
                 .limit(limit)
                 .skip(skip);
@@ -40,30 +39,29 @@ class StaffService {
         this.findAndGetAttendance = (_a) => __awaiter(this, [_a], void 0, function* ({ limit, skip, filterQuery, sort, }) {
             limit = limit ? limit : 10;
             skip = skip ? skip : 0;
-            let staffData = [];
-            const staffs = yield Staff_1.Staff.find(filterQuery)
-                .populate(["user", "department"])
-                .sort(sort)
-                .limit(limit)
-                .skip(skip);
-            const today = new Date();
-            const startOfDay = today;
-            const endOfDay = today;
+            const [staffs, total] = yield Promise.all([
+                Staff_1.Staff.find(filterQuery)
+                    .populate(["user", "department", "business"])
+                    .sort(sort)
+                    .limit(limit)
+                    .skip(skip),
+                Staff_1.Staff.countDocuments(filterQuery),
+            ]);
+            const startOfDay = new Date();
             startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
-            for (const staff of staffs) {
-                const attendance = yield Attendance_1.Attendance.findOne({
-                    date: {
-                        $gte: startOfDay,
-                        $lte: endOfDay,
-                    },
-                    staff: staff,
-                });
-                let data = staff;
-                data.attendance = attendance;
-                staffData.push(data);
-            }
-            const total = yield Staff_1.Staff.countDocuments(filterQuery);
+            const staffIds = staffs.map((s) => s._id);
+            const attendances = yield Attendance_1.Attendance.find({
+                date: { $gte: startOfDay, $lte: endOfDay },
+                staff: { $in: staffIds },
+            });
+            const attendanceMap = new Map(attendances.map((a) => [a.staff.toString(), a]));
+            const staffData = staffs.map((staff) => {
+                const data = staff.toObject ? staff.toObject() : staff;
+                data.attendance = attendanceMap.get(staff._id.toString()) || null;
+                return data;
+            });
             return {
                 total,
                 limit,

@@ -13,7 +13,13 @@ import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 
 export default class AttendanceController extends BaseController {
   service = new AttendanceService();
-  facialRecognitionService = new FaceRecognitionService();
+  private _facialRecognitionService: FaceRecognitionService | null = null;
+  private get facialRecognitionService(): FaceRecognitionService {
+    if (!this._facialRecognitionService) {
+      this._facialRecognitionService = new FaceRecognitionService();
+    }
+    return this._facialRecognitionService;
+  }
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {

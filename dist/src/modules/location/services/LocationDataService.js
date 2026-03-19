@@ -42,19 +42,18 @@ class LocationDataService {
         this.insertMany = (data) => __awaiter(this, void 0, void 0, function* () {
             return yield LocationData_1.LocationData.insertMany(data);
         });
-        this.filterByDate = (startDate, endDate, staffId) => __awaiter(this, void 0, void 0, function* () {
+        this.filterByDate = (startDate, endDate, staffId, sessionId // Fix 7: filter by session (attendance record)
+        ) => __awaiter(this, void 0, void 0, function* () {
             const startOfStartDate = new Date(startDate);
             const endOfEndDate = new Date(endDate);
             let query = {
-                date: {
-                    $gte: startOfStartDate,
-                    $lte: endOfEndDate,
-                },
+                date: { $gte: startOfStartDate, $lte: endOfEndDate },
             };
-            if (staffId) {
+            if (staffId)
                 query.staff = staffId;
-            }
-            const locations = yield LocationData_1.LocationData.find(query).populate("staff");
+            if (sessionId)
+                query.sessionId = sessionId; // Fix 7
+            const locations = yield LocationData_1.LocationData.find(query).sort({ date: 1 }).populate("staff");
             return locations;
         });
         this.getLastSeenLocations = (startDate, endDate, businessId) => __awaiter(this, void 0, void 0, function* () {

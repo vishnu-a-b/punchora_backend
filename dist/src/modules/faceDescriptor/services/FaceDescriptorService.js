@@ -50,8 +50,15 @@ const FaceDescriptor_1 = __importDefault(require("../models/FaceDescriptor"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const facialRecognitionservice_1 = require("../../../services/facialRecognitionservice");
 const fs = __importStar(require("fs"));
-const faceRecognitionService = new facialRecognitionservice_1.FaceRecognitionService();
 const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
+// Lazy singleton — only created on first face recognition request, not at startup
+let _faceRecognitionService = null;
+function getFaceRecognitionService() {
+    if (!_faceRecognitionService) {
+        _faceRecognitionService = new facialRecognitionservice_1.FaceRecognitionService();
+    }
+    return _faceRecognitionService;
+}
 class FaceDescriptorService {
     constructor() {
         /**
@@ -142,7 +149,7 @@ class FaceDescriptorService {
         this.recognizeFromPhoto = (imagePath, businessId) => __awaiter(this, void 0, void 0, function* () {
             try {
                 // Extract descriptor from the uploaded photo
-                const descriptor = yield faceRecognitionService.extractDescriptor(imagePath);
+                const descriptor = yield getFaceRecognitionService().extractDescriptor(imagePath);
                 // Fetch all active descriptors (optionally scoped to a business)
                 const query = { isActive: true };
                 if (businessId)
