@@ -62,8 +62,6 @@ const multiUploadMethod = (req, res, next) => {
 router.post("/", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, multiUploadMethod, attendanceCreateValidator_1.attendanceCreateValidator, createAttendanceDoc_1.createAttendanceDoc, controller.create);
 // Get all staffs attendance - Admin and Department Head (with filtering)
 router.get("/all-staffs", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]), businessScopingValidator_1.applyBusinessScoping, attendanceListDoc_1.attendanceListDoc, controller.getDatewiseAttendanceForAllStaffs);
-// Get attendance for specific staff - Admin, Department Head, or self
-router.get("/:id", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), businessScopingValidator_1.applyBusinessScoping, attendanceListDoc_1.attendanceListDoc, controller.getAttendanceForStaff);
 // Mark attendance - Staff marks own attendance
 router.post("/mark", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAttendance);
 // Mark attendance as admin - Admin can mark/edit for staff
@@ -89,4 +87,6 @@ router.put("/flagged/:id/clear", authenticateUser_1.authenticateUser, (0, checkP
 router.post("/:id/flag", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, CONTROL_ROOM, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, controller.flagAttendance);
 // Review a flagged attendance record - Business Admin only
 router.post("/:id/review", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN]), businessScopingValidator_1.applyBusinessScoping, controller.reviewFlag);
+// Get attendance for specific staff - must be last to avoid catching specific routes above
+router.get("/:id", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]), businessScopingValidator_1.applyBusinessScoping, attendanceListDoc_1.attendanceListDoc, controller.getAttendanceForStaff);
 exports.default = router;

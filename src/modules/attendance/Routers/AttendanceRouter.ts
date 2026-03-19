@@ -87,16 +87,6 @@ router.get(
   controller.getDatewiseAttendanceForAllStaffs
 );
 
-// Get attendance for specific staff - Admin, Department Head, or self
-router.get(
-  "/:id",
-  authenticateUser,
-  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
-  applyBusinessScoping,
-  attendanceListDoc,
-  controller.getAttendanceForStaff
-);
-
 // Mark attendance - Staff marks own attendance
 router.post(
   "/mark",
@@ -123,7 +113,7 @@ router.post(
 // Mark attendance via face recognition - Staff or admin
 router.post(
   "/mark-via-recogntion",
-  authenticateUser,
+  
   checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   markAttendanceViaImageDoc,
   singleUploadMethod,
@@ -208,6 +198,16 @@ router.post(
   checkRole([SUPER_ADMIN, BUSINESS_ADMIN]),
   applyBusinessScoping,
   controller.reviewFlag
+);
+
+// Get attendance for specific staff - must be last to avoid catching specific routes above
+router.get(
+  "/:id",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
+  applyBusinessScoping,
+  attendanceListDoc,
+  controller.getAttendanceForStaff
 );
 
 export default router;
