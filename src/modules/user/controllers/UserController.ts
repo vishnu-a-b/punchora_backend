@@ -12,6 +12,7 @@ import { createPasswordHash } from "../../authentication/utils/createPasswordHas
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 import { FaceDescriptor } from "../../faceDescriptor/models/FaceDescriptor";
 import { AverageFaceDescriptor } from "../../faceDescriptor/models/AverageFaceDescriptor";
+import { Staff } from "../../staff/models/Staff";
 
 export default class UserController extends BaseController {
   service = new UserService();
@@ -426,6 +427,119 @@ export default class UserController extends BaseController {
           _id: user._id,
           message: "Photos deleted successfully. Face descriptors have been removed."
         }
+      });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+
+  /**
+   * Update profile picture only — does NOT affect face descriptors
+   */
+  updateProfilePicture = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+      if (!files || !files.profilePicture?.[0]) {
+        throw new ValidationFailedError({ error: "No profile picture provided" });
+      }
+
+      const profilePictureUrl = Configs.domain + "users/" + files.profilePicture[0].filename;
+
+      // Only profilePicture updated — photos field not touched, descriptors unaffected
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { profilePicture: profilePictureUrl },
+        { new: true }
+      );
+      if (!user) throw new NotFoundError({ error: "user not found" });
+
+      this.sendSuccessResponse(res, 200, {
+        data: { _id: user._id, profilePicture: profilePictureUrl, message: "Profile picture updated" },
+      });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "invalid user_id" }));
+      }
+      next(e);
+    }
+  };
+
+  /**
+   * Add or remove individual recognition photos.
+   * Adding a photo → extract descriptor → create FaceDescriptor entry.
+   * Removing a photo → delete matching FaceDescriptor.
+   * Recalculates AverageFaceDescriptor after any change.
+   */
+  updateRecognitionPhotos = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+
+      const currentUser = await this.service.findOne(userId);
+      if (!currentUser) throw new NotFoundError({ error: "user not found" });
+
+      const staff = await Staff.findOne({ user: userId });
+      if (!staff) throw new NotFoundError({ error: "staff record not found for this user" });
+
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const removePhotoUrls: string[] = req.body.removePhotoUrls
+        ? (typeof req.body.removePhotoUrls === "string"
+            ? JSON.parse(req.body.removePhotoUrls)
+            : req.body.removePhotoUrls)
+        : [];
+
+      let currentPhotos: string[] = currentUser.photos || [];
+
+      // Remove specified photos and their descriptors
+      if (removePhotoUrls.length > 0) {
+        await FaceDescriptor.deleteMany({ staffId: staff._id, photoUrl: { $in: removePhotoUrls } });
+        currentPhotos = currentPhotos.filter((p: string) => !removePhotoUrls.includes(p));
+      }
+
+      // Add new photos and generate a descriptor per photo
+      if (files && files.photos && files.photos.length > 0) {
+        for (const file of files.photos) {
+          const photoUrl = Configs.domain + "users/" + file.filename;
+          currentPhotos.push(photoUrl);
+          try {
+            const descriptor = await this.facialRecognitionService.extractDescriptor(file.path);
+            await FaceDescriptor.create({
+              staffId: staff._id,
+              staffName: staff.name,
+              descriptor: [...descriptor],
+              photoUrl,
+              business: staff.business,
+              isActive: true,
+            });
+          } catch (err: any) {
+            console.error(`Descriptor extraction failed for ${photoUrl}:`, err.message);
+          }
+        }
+      }
+
+      // Persist updated photos array (profilePicture not touched)
+      await User.findByIdAndUpdate(userId, { photos: currentPhotos });
+
+      // Recalculate AverageFaceDescriptor from all remaining active descriptors
+      const allDescriptors = await FaceDescriptor.find({ staffId: staff._id, isActive: true });
+      if (allDescriptors.length > 0) {
+        const descriptorArrays = allDescriptors.map((d: any) => new Float32Array(d.descriptor));
+        const avg = this.facialRecognitionService.averageDescriptors(descriptorArrays);
+        await AverageFaceDescriptor.findOneAndUpdate(
+          { user: userId },
+          { descriptor: [...avg] },
+          { upsert: true, new: true }
+        );
+      } else {
+        await AverageFaceDescriptor.deleteMany({ user: userId });
+      }
+
+      this.sendSuccessResponse(res, 200, {
+        data: { _id: userId, photos: currentPhotos, message: "Recognition photos updated" },
       });
     } catch (e: any) {
       if (e instanceof mongoose.Error.CastError) {

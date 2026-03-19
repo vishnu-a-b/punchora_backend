@@ -2,6 +2,11 @@ import FaceDescriptor, { IFaceDescriptor } from "../models/FaceDescriptor";
 import mongoose from "mongoose";
 import { FaceRecognitionService } from "../../../services/facialRecognitionservice";
 import * as fs from "fs";
+import * as path from "path";
+import { AverageFaceDescriptor } from "../models/AverageFaceDescriptor";
+import { Staff } from "../../staff/models/Staff";
+import { User } from "../../user/models/User";
+import Configs from "../../../configs/configs";
 
 const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
 
@@ -101,10 +106,63 @@ export class FaceDescriptorService {
   };
 
   /**
-   * Delete face descriptor
+   * Delete face descriptor — also deletes the linked photo file,
+   * removes it from User.photos, and recalculates (or removes)
+   * the AverageFaceDescriptor for that staff member.
    */
   deleteDescriptor = async (descriptorId: string): Promise<void> => {
+    // 1. Fetch record so we have staffId and photoUrl before deleting
+    const descriptor = await FaceDescriptor.findById(descriptorId);
+    if (!descriptor) return;
+
+    const { staffId, photoUrl } = descriptor;
+
+    // 2. Delete the photo file from disk
+    if (photoUrl) {
+      try {
+        const domain = Configs.domain || "";
+        // URL format: "${domain}users/${filename}" → strip domain to get "users/filename"
+        const relativePath = photoUrl.startsWith(domain)
+          ? photoUrl.slice(domain.length)
+          : photoUrl.replace(/^https?:\/\/[^/]+\//, "");
+        const filePath = path.join(process.cwd(), "uploads", relativePath);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (err) {
+        console.warn("Failed to delete photo file:", err);
+      }
+    }
+
+    // 3. Find the linked user via Staff and remove the photoUrl from User.photos
+    const staff = await Staff.findById(staffId).lean();
+    const userId = staff?.user;
+
+    if (userId && photoUrl) {
+      await User.findByIdAndUpdate(userId, { $pull: { photos: photoUrl } });
+    }
+
+    // 4. Delete the FaceDescriptor record
     await FaceDescriptor.findByIdAndDelete(descriptorId);
+
+    // 5. Recalculate AverageFaceDescriptor from remaining active descriptors
+    if (userId) {
+      const remaining = await FaceDescriptor.find({ staffId, isActive: true });
+      if (remaining.length > 0) {
+        const descriptorArrays = remaining.map(
+          (d: any) => new Float32Array(d.descriptor)
+        );
+        const avg = getFaceRecognitionService().averageDescriptors(descriptorArrays);
+        await AverageFaceDescriptor.findOneAndUpdate(
+          { user: userId },
+          { descriptor: [...avg] },
+          { upsert: true, new: true }
+        );
+      } else {
+        // No descriptors left — remove average as well
+        await AverageFaceDescriptor.deleteMany({ user: userId });
+      }
+    }
   };
 
   /**

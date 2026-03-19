@@ -110,11 +110,9 @@ router.post(
   controller.markAndEditAttendance
 );
 
-// Mark attendance via face recognition - Staff or admin
+// Mark attendance via face recognition - no user auth (kiosk device is not logged in)
 router.post(
   "/mark-via-recogntion",
-  
-  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   markAttendanceViaImageDoc,
   singleUploadMethod,
   markAttendanceViaPhotoValidator,

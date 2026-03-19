@@ -115,6 +115,32 @@ router.delete(
 );
 
 /**
+ * @route PUT /users/:id/profile-picture
+ * @desc Update profile picture only — does not affect face descriptors
+ * @access Admin only
+ */
+router.put(
+  "/:id/profile-picture",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  uploadMethod,
+  controller.updateProfilePicture
+);
+
+/**
+ * @route PUT /users/:id/recognition-photos
+ * @desc Add or remove individual recognition photos and update descriptors
+ * @access Admin only
+ */
+router.put(
+  "/:id/recognition-photos",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  applyBusinessScoping,
+  uploadMethod,
+  controller.updateRecognitionPhotos
+);
+
+/**
  * @route PUT /users/:id/photos
  * @desc Update user photos and regenerate face descriptors
  * @access Admin only
