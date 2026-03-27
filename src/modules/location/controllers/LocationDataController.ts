@@ -42,10 +42,18 @@ export default class LocationDataController extends BaseController {
 
   insertMany = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      if (!Array.isArray(req.body) || req.body.length === 0) {
+        next(new ValidationFailedError({ errors: ["body must be a non-empty array"] }));
+        return;
+      }
       const data = await this.service.insertMany(req.body);
       this.sendSuccessResponse(res, 201, { data: data });
     } catch (e: any) {
-      next(e);
+      if (e instanceof mongoose.Error.ValidationError) {
+        next(new ValidationFailedError({ errors: [e.message] }));
+      } else {
+        next(e);
+      }
     }
   };
 

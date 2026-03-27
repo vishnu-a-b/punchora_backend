@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { LocationData } from "../models/LocationData";
 
@@ -103,7 +104,7 @@ export default class LocationDataService {
     if (businessId) {
       pipeline.push({
         $match: {
-          "staff.business": businessId,
+          "staff.business": new mongoose.Types.ObjectId(businessId),
         },
       });
     }
@@ -166,7 +167,7 @@ export default class LocationDataService {
     if (businessId) {
       pipeline.push({
         $match: {
-          "staffInfo.business": businessId,
+          "staffInfo.business": new mongoose.Types.ObjectId(businessId),
         },
       });
     }
@@ -232,7 +233,7 @@ export default class LocationDataService {
     if (businessId) {
       pipeline.push({
         $match: {
-          "staffInfo.business": businessId,
+          "staffInfo.business": new mongoose.Types.ObjectId(businessId),
         },
       });
     }
@@ -269,7 +270,10 @@ export default class LocationDataService {
   getLocationTrackingStatus = async (businessId?: string) => {
     const now = new Date();
     const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
-    const threeMinutesAgo = new Date(now.getTime() - 3 * 60 * 1000);
+    // 5 min threshold (not 3 min) — gives 2 min buffer for network delays.
+    // App heartbeat is every 3 min; using 3 min here caused "no_data" flicker
+    // on any tiny sync delay between heartbeats.
+    const threeMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
     const pipeline: any[] = [
       {
@@ -282,7 +286,7 @@ export default class LocationDataService {
     if (businessId) {
       pipeline.push({
         $match: {
-          business: businessId,
+          business: new mongoose.Types.ObjectId(businessId),
         },
       });
     }
