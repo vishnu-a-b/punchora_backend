@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = __importDefault(require("mongoose"));
 const LocationData_1 = require("../models/LocationData");
 class LocationDataService {
     constructor() {
@@ -99,7 +103,7 @@ class LocationDataService {
             if (businessId) {
                 pipeline.push({
                     $match: {
-                        "staff.business": businessId,
+                        "staff.business": new mongoose_1.default.Types.ObjectId(businessId),
                     },
                 });
             }
@@ -151,7 +155,7 @@ class LocationDataService {
             if (businessId) {
                 pipeline.push({
                     $match: {
-                        "staffInfo.business": businessId,
+                        "staffInfo.business": new mongoose_1.default.Types.ObjectId(businessId),
                     },
                 });
             }
@@ -206,7 +210,7 @@ class LocationDataService {
             if (businessId) {
                 pipeline.push({
                     $match: {
-                        "staffInfo.business": businessId,
+                        "staffInfo.business": new mongoose_1.default.Types.ObjectId(businessId),
                     },
                 });
             }
@@ -237,7 +241,10 @@ class LocationDataService {
         this.getLocationTrackingStatus = (businessId) => __awaiter(this, void 0, void 0, function* () {
             const now = new Date();
             const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
-            const threeMinutesAgo = new Date(now.getTime() - 3 * 60 * 1000);
+            // 5 min threshold (not 3 min) — gives 2 min buffer for network delays.
+            // App heartbeat is every 3 min; using 3 min here caused "no_data" flicker
+            // on any tiny sync delay between heartbeats.
+            const threeMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
             const pipeline = [
                 {
                     $match: {
@@ -248,7 +255,7 @@ class LocationDataService {
             if (businessId) {
                 pipeline.push({
                     $match: {
-                        business: businessId,
+                        business: new mongoose_1.default.Types.ObjectId(businessId),
                     },
                 });
             }

@@ -57,6 +57,18 @@ router.put("/update-password/:id", updatePasswordDoc_1.updatePasswordDoc, update
 // Delete user - Admin only
 router.delete("/:id", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, userDeleteDoc_1.userDeleteDoc, controller.delete);
 /**
+ * @route PUT /users/:id/profile-picture
+ * @desc Update profile picture only — does not affect face descriptors
+ * @access Admin only
+ */
+router.put("/:id/profile-picture", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, uploadMethod, controller.updateProfilePicture);
+/**
+ * @route PUT /users/:id/recognition-photos
+ * @desc Add or remove individual recognition photos and update descriptors
+ * @access Admin only
+ */
+router.put("/:id/recognition-photos", (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, uploadMethod, controller.updateRecognitionPhotos);
+/**
  * @route PUT /users/:id/photos
  * @desc Update user photos and regenerate face descriptors
  * @access Admin only

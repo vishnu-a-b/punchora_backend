@@ -50,6 +50,11 @@ const FaceDescriptor_1 = __importDefault(require("../models/FaceDescriptor"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const facialRecognitionservice_1 = require("../../../services/facialRecognitionservice");
 const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const AverageFaceDescriptor_1 = require("../models/AverageFaceDescriptor");
+const Staff_1 = require("../../staff/models/Staff");
+const User_1 = require("../../user/models/User");
+const configs_1 = __importDefault(require("../../../configs/configs"));
 const RECOGNITION_THRESHOLD = 0.5; // euclidean distance (lower = stricter)
 // Lazy singleton — only created on first face recognition request, not at startup
 let _faceRecognitionService = null;
@@ -126,10 +131,54 @@ class FaceDescriptorService {
             });
         });
         /**
-         * Delete face descriptor
+         * Delete face descriptor — also deletes the linked photo file,
+         * removes it from User.photos, and recalculates (or removes)
+         * the AverageFaceDescriptor for that staff member.
          */
         this.deleteDescriptor = (descriptorId) => __awaiter(this, void 0, void 0, function* () {
+            // 1. Fetch record so we have staffId and photoUrl before deleting
+            const descriptor = yield FaceDescriptor_1.default.findById(descriptorId);
+            if (!descriptor)
+                return;
+            const { staffId, photoUrl } = descriptor;
+            // 2. Delete the photo file from disk
+            if (photoUrl) {
+                try {
+                    const domain = configs_1.default.domain || "";
+                    // URL format: "${domain}users/${filename}" → strip domain to get "users/filename"
+                    const relativePath = photoUrl.startsWith(domain)
+                        ? photoUrl.slice(domain.length)
+                        : photoUrl.replace(/^https?:\/\/[^/]+\//, "");
+                    const filePath = path.join(process.cwd(), "uploads", relativePath);
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                }
+                catch (err) {
+                    console.warn("Failed to delete photo file:", err);
+                }
+            }
+            // 3. Find the linked user via Staff and remove the photoUrl from User.photos
+            const staff = yield Staff_1.Staff.findById(staffId).lean();
+            const userId = staff === null || staff === void 0 ? void 0 : staff.user;
+            if (userId && photoUrl) {
+                yield User_1.User.findByIdAndUpdate(userId, { $pull: { photos: photoUrl } });
+            }
+            // 4. Delete the FaceDescriptor record
             yield FaceDescriptor_1.default.findByIdAndDelete(descriptorId);
+            // 5. Recalculate AverageFaceDescriptor from remaining active descriptors
+            if (userId) {
+                const remaining = yield FaceDescriptor_1.default.find({ staffId, isActive: true });
+                if (remaining.length > 0) {
+                    const descriptorArrays = remaining.map((d) => new Float32Array(d.descriptor));
+                    const avg = getFaceRecognitionService().averageDescriptors(descriptorArrays);
+                    yield AverageFaceDescriptor_1.AverageFaceDescriptor.findOneAndUpdate({ user: userId }, { descriptor: [...avg] }, { upsert: true, new: true });
+                }
+                else {
+                    // No descriptors left — remove average as well
+                    yield AverageFaceDescriptor_1.AverageFaceDescriptor.deleteMany({ user: userId });
+                }
+            }
         });
         /**
          * Get descriptors updated after a certain time

@@ -946,6 +946,54 @@
         ]
       }
     },
+    "/v1/user/{id}/profile-picture": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/user/{id}/recognition-photos": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/user/{id}/photos": {
       "put": {
         "description": "",
@@ -3486,206 +3534,6 @@
         ]
       }
     },
-    "/v1/attendance/{id}": {
-      "get": {
-        "tags": [
-          "Attendance"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "startDate",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "endDate",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Endpoint to get Attendance list of a staff",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "data": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "example": "65cd9d8d5cae5ffc348ed638"
-                      },
-                      "staff": {
-                        "type": "string",
-                        "example": "65cd9d8d5cae5ffc348ed638"
-                      },
-                      "date": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "checkInTime": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "checkOutTime": {
-                        "type": "string",
-                        "example": "string"
-                      },
-                      "createdBy": {
-                        "type": "string",
-                        "example": "65cd9d8d5cae4ffc348ed682"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "example": "2024-02-17T07:50:12.025Z"
-                      },
-                      "updatedAt": {
-                        "type": "string",
-                        "example": "2024-02-17T07:50:12.025Z"
-                      }
-                    }
-                  }
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Attendance"
-        ],
-        "description": "",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "staff",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "date",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "checkInTime",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "checkOutTime",
-            "in": "formData",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "checkInPhoto",
-            "in": "formData",
-            "required": false,
-            "type": "file"
-          },
-          {
-            "name": "checkOutPhoto",
-            "in": "formData",
-            "required": false,
-            "type": "file"
-          },
-          {
-            "name": "sttaus",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "present",
-              "absent",
-              "leave",
-              "checkedIn"
-            ]
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/v1/attendance/mark": {
       "post": {
         "tags": [
@@ -3828,14 +3676,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -3867,6 +3709,206 @@
             "description": "Internal Server Error"
           }
         }
+      }
+    },
+    "/v1/attendance/{id}": {
+      "put": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "staff",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkInTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkOutTime",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "checkInPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "checkOutPhoto",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "sttaus",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "present",
+              "absent",
+              "leave",
+              "checkedIn"
+            ]
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Attendance"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint to get Attendance list of a staff",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "staff": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae5ffc348ed638"
+                      },
+                      "date": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "checkInTime": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "checkOutTime": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "createdBy": {
+                        "type": "string",
+                        "example": "65cd9d8d5cae4ffc348ed682"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2024-02-17T07:50:12.025Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/v1/attendance/mocked-punches": {

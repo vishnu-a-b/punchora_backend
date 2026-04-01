@@ -55,11 +55,20 @@ class LocationDataController extends BaseController_1.default {
         });
         this.insertMany = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
+                if (!Array.isArray(req.body) || req.body.length === 0) {
+                    next(new ValidationFailedError_1.default({ errors: ["body must be a non-empty array"] }));
+                    return;
+                }
                 const data = yield this.service.insertMany(req.body);
                 this.sendSuccessResponse(res, 201, { data: data });
             }
             catch (e) {
-                next(e);
+                if (e instanceof mongoose_1.default.Error.ValidationError) {
+                    next(new ValidationFailedError_1.default({ errors: [e.message] }));
+                }
+                else {
+                    next(e);
+                }
             }
         });
         this.filterByDate = (req, res, next) => __awaiter(this, void 0, void 0, function* () {

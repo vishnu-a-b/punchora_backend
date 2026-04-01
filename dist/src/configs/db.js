@@ -16,6 +16,6 @@ exports.connectDb = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const configs_1 = __importDefault(require("./configs"));
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield mongoose_1.default.connect(`mongodb://${configs_1.default.mongoUser}:${configs_1.default.mongoPassword}@${configs_1.default.mongoHost}/${configs_1.default.mongoDatabase}`);
+    yield mongoose_1.default.connect(`mongodb+srv://${configs_1.default.mongoUser}:${configs_1.default.mongoPassword}@${configs_1.default.mongoHost}/${configs_1.default.mongoDatabase}`);
 });
 exports.connectDb = connectDb;

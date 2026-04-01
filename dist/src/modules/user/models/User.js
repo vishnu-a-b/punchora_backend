@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,7 +7,6 @@ exports.User = exports.userFilterFields = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const genders_1 = require("../../base/enums/genders");
 const maritalStatuses_1 = require("../../base/enums/maritalStatuses");
-const FaceDescriptor_1 = require("../../faceDescriptor/models/FaceDescriptor");
 const userSchema = new mongoose_1.default.Schema({
     name: { type: String, required: true, unique: false, maxLength: 100 },
     mobileNo: { type: String, required: true, unique: true, maxLength: 20 },
@@ -97,19 +87,8 @@ const userSchema = new mongoose_1.default.Schema({
         select: false, // Don't return by default for security
     },
 }, { timestamps: true });
-userSchema.pre("findOneAndUpdate", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const update = this.getUpdate();
-        const filter = this.getFilter();
-        if (!update)
-            return next();
-        if ("photos" in update) {
-            console.log("there is photos field in update body. deleting all descriptors available");
-            yield FaceDescriptor_1.FaceDescriptor.deleteMany({ user: filter._id });
-        }
-        next();
-    });
-});
+// FaceDescriptor management is handled explicitly in UserController
+// (FaceDescriptor uses staffId, not user — descriptors are managed per-photo there)
 exports.userFilterFields = {
     filterFields: [
         "name",

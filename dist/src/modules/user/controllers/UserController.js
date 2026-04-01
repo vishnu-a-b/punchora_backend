@@ -23,6 +23,9 @@ const configs_1 = __importDefault(require("../../../configs/configs"));
 const User_1 = require("../models/User");
 const createPasswordHash_1 = require("../../authentication/utils/createPasswordHash");
 const facialRecognitionservice_1 = require("../../../services/facialRecognitionservice");
+const FaceDescriptor_1 = require("../../faceDescriptor/models/FaceDescriptor");
+const AverageFaceDescriptor_1 = require("../../faceDescriptor/models/AverageFaceDescriptor");
+const Staff_1 = require("../../staff/models/Staff");
 class UserController extends BaseController_1.default {
     constructor() {
         super(...arguments);
@@ -380,6 +383,104 @@ class UserController extends BaseController_1.default {
                         _id: user._id,
                         message: "Photos deleted successfully. Face descriptors have been removed."
                     }
+                });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "invalid user_id" }));
+                }
+                next(e);
+            }
+        });
+        /**
+         * Update profile picture only — does NOT affect face descriptors
+         */
+        this.updateProfilePicture = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = req.params.id;
+                const files = req.files;
+                if (!files || !((_a = files.profilePicture) === null || _a === void 0 ? void 0 : _a[0])) {
+                    throw new ValidationFailedError_1.default({ error: "No profile picture provided" });
+                }
+                const profilePictureUrl = configs_1.default.domain + "users/" + files.profilePicture[0].filename;
+                // Only profilePicture updated — photos field not touched, descriptors unaffected
+                const user = yield User_1.User.findByIdAndUpdate(userId, { profilePicture: profilePictureUrl }, { new: true });
+                if (!user)
+                    throw new NotFoundError_1.default({ error: "user not found" });
+                this.sendSuccessResponse(res, 200, {
+                    data: { _id: user._id, profilePicture: profilePictureUrl, message: "Profile picture updated" },
+                });
+            }
+            catch (e) {
+                if (e instanceof mongoose_1.default.Error.CastError) {
+                    next(new BadRequestError_1.default({ error: "invalid user_id" }));
+                }
+                next(e);
+            }
+        });
+        /**
+         * Add or remove individual recognition photos.
+         * Adding a photo → extract descriptor → create FaceDescriptor entry.
+         * Removing a photo → delete matching FaceDescriptor.
+         * Recalculates AverageFaceDescriptor after any change.
+         */
+        this.updateRecognitionPhotos = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.params.id;
+                const currentUser = yield this.service.findOne(userId);
+                if (!currentUser)
+                    throw new NotFoundError_1.default({ error: "user not found" });
+                const staff = yield Staff_1.Staff.findOne({ user: userId });
+                if (!staff)
+                    throw new NotFoundError_1.default({ error: "staff record not found for this user" });
+                const files = req.files;
+                const removePhotoUrls = req.body.removePhotoUrls
+                    ? (typeof req.body.removePhotoUrls === "string"
+                        ? JSON.parse(req.body.removePhotoUrls)
+                        : req.body.removePhotoUrls)
+                    : [];
+                let currentPhotos = currentUser.photos || [];
+                // Remove specified photos and their descriptors
+                if (removePhotoUrls.length > 0) {
+                    yield FaceDescriptor_1.FaceDescriptor.deleteMany({ staffId: staff._id, photoUrl: { $in: removePhotoUrls } });
+                    currentPhotos = currentPhotos.filter((p) => !removePhotoUrls.includes(p));
+                }
+                // Add new photos and generate a descriptor per photo
+                if (files && files.photos && files.photos.length > 0) {
+                    for (const file of files.photos) {
+                        const photoUrl = configs_1.default.domain + "users/" + file.filename;
+                        currentPhotos.push(photoUrl);
+                        try {
+                            const descriptor = yield this.facialRecognitionService.extractDescriptor(file.path);
+                            yield FaceDescriptor_1.FaceDescriptor.create({
+                                staffId: staff._id,
+                                staffName: staff.name,
+                                descriptor: [...descriptor],
+                                photoUrl,
+                                business: staff.business,
+                                isActive: true,
+                            });
+                        }
+                        catch (err) {
+                            console.error(`Descriptor extraction failed for ${photoUrl}:`, err.message);
+                        }
+                    }
+                }
+                // Persist updated photos array (profilePicture not touched)
+                yield User_1.User.findByIdAndUpdate(userId, { photos: currentPhotos });
+                // Recalculate AverageFaceDescriptor from all remaining active descriptors
+                const allDescriptors = yield FaceDescriptor_1.FaceDescriptor.find({ staffId: staff._id, isActive: true });
+                if (allDescriptors.length > 0) {
+                    const descriptorArrays = allDescriptors.map((d) => new Float32Array(d.descriptor));
+                    const avg = this.facialRecognitionService.averageDescriptors(descriptorArrays);
+                    yield AverageFaceDescriptor_1.AverageFaceDescriptor.findOneAndUpdate({ user: userId }, { descriptor: [...avg] }, { upsert: true, new: true });
+                }
+                else {
+                    yield AverageFaceDescriptor_1.AverageFaceDescriptor.deleteMany({ user: userId });
+                }
+                this.sendSuccessResponse(res, 200, {
+                    data: { _id: userId, photos: currentPhotos, message: "Recognition photos updated" },
                 });
             }
             catch (e) {

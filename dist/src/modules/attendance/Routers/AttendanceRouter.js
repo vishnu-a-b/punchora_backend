@@ -66,8 +66,8 @@ router.get("/all-staffs", authenticateUser_1.authenticateUser, (0, checkPermissi
 router.post("/mark", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAttendance);
 // Mark attendance as admin - Admin can mark/edit for staff
 router.post("/mark-admin", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, markAttendanceDoc_1.markAttendanceDoc, singleUploadMethod, markAttendanceValidator_1.markAttendanceValidator, controller.markAndEditAttendance);
-// Mark attendance via face recognition - Staff or admin
-router.post("/mark-via-recogntion", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), markAttendanceViaImageDoc_1.markAttendanceViaImageDoc, singleUploadMethod, markAttendanceViaPhotoValidator_1.markAttendanceViaPhotoValidator, controller.markAttendanceViaRecognition);
+// Mark attendance via face recognition - no user auth (kiosk device is not logged in)
+router.post("/mark-via-recogntion", markAttendanceViaImageDoc_1.markAttendanceViaImageDoc, singleUploadMethod, markAttendanceViaPhotoValidator_1.markAttendanceViaPhotoValidator, controller.markAttendanceViaRecognition);
 // Upload photo for own attendance record - Staff uploads photo in background
 router.patch("/:id/photo", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), singleUploadMethod, controller.uploadAttendancePhoto);
 // Update attendance - Admin only
