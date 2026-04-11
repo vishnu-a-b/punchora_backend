@@ -40,6 +40,18 @@ router.post(
 );
 
 /**
+ * @route   GET /v1/face-descriptors/user-status/:userId
+ * @desc    Check if a user has an average face descriptor and how many individual descriptors exist
+ * @access  Private - Business Admin, HR Admin, Super Admin
+ */
+router.get(
+  "/user-status/:userId",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  FaceDescriptorController.getUserDescriptorStatus
+);
+
+/**
  * @route   DELETE /v1/face-descriptors/:id
  * @desc    Delete face descriptor
  * @access  Private - Business Admin, HR Admin, Super Admin only

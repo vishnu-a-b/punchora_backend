@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import BaseController from "../../base/controllers.ts/BaseController";
 import FaceDescriptorService from "../services/FaceDescriptorService";
+import { AverageFaceDescriptor } from "../models/AverageFaceDescriptor";
+import { FaceDescriptor } from "../models/FaceDescriptor";
+import { Staff } from "../../staff/models/Staff";
 
 export class FaceDescriptorController extends BaseController {
   constructor(private service: typeof FaceDescriptorService) {
@@ -185,6 +188,38 @@ export class FaceDescriptorController extends BaseController {
       );
 
       this.sendSuccessResponse(res, 200, { data: { count } });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Get face descriptor status for a specific user
+   * Returns whether the user has an average descriptor and how many individual descriptors exist
+   */
+  getUserDescriptorStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { userId } = req.params;
+
+      const [avg, staff] = await Promise.all([
+        AverageFaceDescriptor.findOne({ user: userId }),
+        Staff.findOne({ user: userId }),
+      ]);
+
+      const descriptorCount = staff
+        ? await FaceDescriptor.countDocuments({ staffId: staff._id, isActive: true })
+        : 0;
+
+      this.sendSuccessResponse(res, 200, {
+        data: {
+          hasAverage: !!avg,
+          descriptorCount,
+        },
+      });
     } catch (error) {
       next(error);
     }
