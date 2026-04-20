@@ -97,6 +97,11 @@ const staffSchema = new mongoose.Schema(
       default: "weekly-off",
     },
     extraOff: { type: Number, default: 0, min: 0 },
+
+    // Payroll deduction defaults (percentages)
+    tdsPercentage: { type: Number, default: 0, min: 0, max: 100 },
+    esiPercentage: { type: Number, default: 0, min: 0, max: 100 },
+    pfPercentage:  { type: Number, default: 0, min: 0, max: 100 },
   },
   { timestamps: true }
 );

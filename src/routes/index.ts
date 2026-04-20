@@ -26,6 +26,8 @@ import SecurityRouter from "../modules/security/routes/SecurityRouter";
 import DashboardRouter from "../modules/dashboard/routes/DashboardRouter";
 import TimeSyncRouter from "../modules/timeSync/Routers/TimeSyncRouter";
 import LiveTrackingRouter from "../modules/liveTracking/routes/LiveTrackingRouter";
+import PayrollRouter from "../modules/payroll/routes/PayrollRouter";
+import PagarLensRouter from "../modules/pagarLens/routes/PagarLensRouter";
 
 const router = express.Router();
 
@@ -56,5 +58,7 @@ router.use("/v1/security/", SecurityRouter);
 router.use("/v1/dashboard/", DashboardRouter);
 router.use("/v1/time-sync/", TimeSyncRouter);
 router.use("/v1/live-tracking/", LiveTrackingRouter);
+router.use("/v1/payroll/", PayrollRouter);
+router.use("/v1/pagar-lens/", PagarLensRouter);
 
 export default router;

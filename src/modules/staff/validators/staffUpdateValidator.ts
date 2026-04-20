@@ -40,4 +40,7 @@ export const staffUpdateValidator = [
   body("otMultiplier").optional().isFloat({ min: 1 }),
   body("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off"]),
   body("extraOff").optional().isInt({ min: 0 }),
+  body("tdsPercentage").optional().isFloat({ min: 0, max: 100 }),
+  body("esiPercentage").optional().isFloat({ min: 0, max: 100 }),
+  body("pfPercentage").optional().isFloat({ min: 0, max: 100 }),
 ];

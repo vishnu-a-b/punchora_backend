@@ -217,14 +217,11 @@ export default class ActivityController extends BaseController {
       let businessId = user.business;
 
       // Super admin can query any business
-      if (user.role === "super-admin" && req.query.businessId) {
+      if ((user.role === "super-admin" || user.isSuperAdmin) && req.query.businessId) {
         businessId = req.query.businessId;
       }
 
-      console.log(`[GetBusinessActivities] Final businessId: ${businessId}`);
-
       if (!businessId) {
-        console.log(`[GetBusinessActivities] No businessId found - throwing error`);
         throw new BadRequestError({ error: "Business ID required" });
       }
 
@@ -335,7 +332,7 @@ export default class ActivityController extends BaseController {
 
       // Get business ID
       let targetBusinessId = user.business;
-      if (user.role === "super-admin" && businessId) {
+      if ((user.role === "super-admin" || user.isSuperAdmin) && businessId) {
         targetBusinessId = businessId;
       }
 
