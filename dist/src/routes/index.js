@@ -31,6 +31,8 @@ const SecurityRouter_1 = __importDefault(require("../modules/security/routes/Sec
 const DashboardRouter_1 = __importDefault(require("../modules/dashboard/routes/DashboardRouter"));
 const TimeSyncRouter_1 = __importDefault(require("../modules/timeSync/Routers/TimeSyncRouter"));
 const LiveTrackingRouter_1 = __importDefault(require("../modules/liveTracking/routes/LiveTrackingRouter"));
+const PayrollRouter_1 = __importDefault(require("../modules/payroll/routes/PayrollRouter"));
+const PagarLensRouter_1 = __importDefault(require("../modules/pagarLens/routes/PagarLensRouter"));
 const router = express_1.default.Router();
 router.use("/", IndexRouter_1.default);
 router.use("/v1/auth/", AuthenticationRouter_1.default);
@@ -59,4 +61,6 @@ router.use("/v1/security/", SecurityRouter_1.default);
 router.use("/v1/dashboard/", DashboardRouter_1.default);
 router.use("/v1/time-sync/", TimeSyncRouter_1.default);
 router.use("/v1/live-tracking/", LiveTrackingRouter_1.default);
+router.use("/v1/payroll/", PayrollRouter_1.default);
+router.use("/v1/pagar-lens/", PagarLensRouter_1.default);
 exports.default = router;

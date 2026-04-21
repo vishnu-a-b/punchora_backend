@@ -141,6 +141,11 @@ export default class SalaryCalculationController extends BaseController {
               existingRow.customValues.set(k, v as number);
             });
           }
+          if (incoming.notes) {
+            Object.entries(incoming.notes).forEach(([k, v]) => {
+              existingRow.notes.set(k, v as string);
+            });
+          }
         });
       }
 

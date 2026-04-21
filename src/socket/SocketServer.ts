@@ -40,6 +40,16 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
       socket.leave(`live-track:${staffId}`);
     });
 
+    // Admin joins department-wide live tracking room
+    socket.on("join-dept-track", (departmentId: string) => {
+      socket.join(`live-dept:${departmentId}`);
+    });
+
+    // Admin leaves department-wide live tracking room
+    socket.on("leave-dept-track", (departmentId: string) => {
+      socket.leave(`live-dept:${departmentId}`);
+    });
+
     socket.on("disconnect", () => {});
   });
 

@@ -295,7 +295,8 @@ export async function initializeCalculation(params: InitParams) {
   // Group attendance by staffId → dateKey → records[]
   const staffAttendanceMap = new Map<string, Map<string, any[]>>();
   for (const rec of attendanceRecords) {
-    const sid = rec.staff.toString();
+    const sid = rec.staff?.toString();
+    if (!sid) continue;
     const dateKey = new Date(rec.checkInTime || rec.date).toDateString();
     if (!staffAttendanceMap.has(sid)) staffAttendanceMap.set(sid, new Map());
     const dateMap = staffAttendanceMap.get(sid)!;

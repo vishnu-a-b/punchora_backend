@@ -369,7 +369,13 @@ class UserController extends BaseController_1.default {
                 const updateBody = {};
                 if (deleteRecognitionPhotos) {
                     updateBody.photos = [];
-                    // This will trigger the pre-hook that deletes face descriptors
+                    // Explicitly delete all FaceDescriptors and AverageFaceDescriptor for this staff
+                    // (no pre-hook exists on User model — descriptor management is done manually)
+                    const staff = yield Staff_1.Staff.findOne({ user: userId });
+                    if (staff) {
+                        yield FaceDescriptor_1.FaceDescriptor.deleteMany({ staffId: staff._id });
+                    }
+                    yield AverageFaceDescriptor_1.AverageFaceDescriptor.deleteMany({ user: userId });
                 }
                 if (deleteProfilePicture) {
                     updateBody.profilePicture = null;

@@ -46,16 +46,44 @@ class FailedLocationAttemptService {
         this.filterByDate = (startDate, endDate, staffId) => __awaiter(this, void 0, void 0, function* () {
             const startOfStartDate = new Date(startDate);
             const endOfEndDate = new Date(endDate);
-            let query = {
+            let matchQuery = {
                 attemptTime: {
                     $gte: startOfStartDate,
                     $lte: endOfEndDate,
                 },
             };
             if (staffId) {
-                query.staff = staffId;
+                matchQuery.staff = staffId;
             }
-            const attempts = yield FailedLocationAttempt_1.FailedLocationAttempt.find(query).populate("staff");
+            const attempts = yield FailedLocationAttempt_1.FailedLocationAttempt.aggregate([
+                { $match: matchQuery },
+                {
+                    $lookup: {
+                        from: "staffs",
+                        localField: "staff",
+                        foreignField: "_id",
+                        as: "staffInfo",
+                    },
+                },
+                {
+                    $unwind: {
+                        path: "$staffInfo",
+                        preserveNullAndEmptyArrays: true,
+                    },
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        staffName: "$staffInfo.name",
+                        staffEmail: "$staffInfo.email",
+                        attemptTime: 1,
+                        reason: 1,
+                        errorMessage: 1,
+                        failureCount: { $literal: 1 },
+                    },
+                },
+                { $sort: { attemptTime: -1 } },
+            ]);
             return attempts;
         });
         // Get staff with location disabled (failed attempts in last X minutes)

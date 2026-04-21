@@ -102,6 +102,10 @@ const staffSchema = new mongoose_1.default.Schema({
         default: "weekly-off",
     },
     extraOff: { type: Number, default: 0, min: 0 },
+    // Payroll deduction defaults (percentages)
+    tdsPercentage: { type: Number, default: 0, min: 0, max: 100 },
+    esiPercentage: { type: Number, default: 0, min: 0, max: 100 },
+    pfPercentage: { type: Number, default: 0, min: 0, max: 100 },
 }, { timestamps: true });
 // PHASE 4: Virtual field for all departments
 staffSchema.virtual("allDepartments").get(function () {

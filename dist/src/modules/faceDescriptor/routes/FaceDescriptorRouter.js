@@ -27,6 +27,12 @@ router.get("/", authenticateUser_1.authenticateUser, (0, checkPermission_1.check
  */
 router.post("/", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), businessScopingValidator_1.applyBusinessScoping, FaceDescriptorController_1.default.upsertDescriptor);
 /**
+ * @route   GET /v1/face-descriptors/user-status/:userId
+ * @desc    Check if a user has an average face descriptor and how many individual descriptors exist
+ * @access  Private - Business Admin, HR Admin, Super Admin
+ */
+router.get("/user-status/:userId", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), FaceDescriptorController_1.default.getUserDescriptorStatus);
+/**
  * @route   DELETE /v1/face-descriptors/:id
  * @desc    Delete face descriptor
  * @access  Private - Business Admin, HR Admin, Super Admin only

@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FaceDescriptorController = void 0;
 const BaseController_1 = __importDefault(require("../../base/controllers.ts/BaseController"));
 const FaceDescriptorService_1 = __importDefault(require("../services/FaceDescriptorService"));
+const AverageFaceDescriptor_1 = require("../models/AverageFaceDescriptor");
+const FaceDescriptor_1 = require("../models/FaceDescriptor");
+const Staff_1 = require("../../staff/models/Staff");
 class FaceDescriptorController extends BaseController_1.default {
     constructor(service) {
         super();
@@ -162,6 +165,31 @@ class FaceDescriptorController extends BaseController_1.default {
                 }
                 const count = yield this.service.getDescriptorCount(business, true);
                 this.sendSuccessResponse(res, 200, { data: { count } });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+        /**
+         * Get face descriptor status for a specific user
+         * Returns whether the user has an average descriptor and how many individual descriptors exist
+         */
+        this.getUserDescriptorStatus = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId } = req.params;
+                const [avg, staff] = yield Promise.all([
+                    AverageFaceDescriptor_1.AverageFaceDescriptor.findOne({ user: userId }),
+                    Staff_1.Staff.findOne({ user: userId }),
+                ]);
+                const descriptorCount = staff
+                    ? yield FaceDescriptor_1.FaceDescriptor.countDocuments({ staffId: staff._id, isActive: true })
+                    : 0;
+                this.sendSuccessResponse(res, 200, {
+                    data: {
+                        hasAverage: !!avg,
+                        descriptorCount,
+                    },
+                });
             }
             catch (error) {
                 next(error);

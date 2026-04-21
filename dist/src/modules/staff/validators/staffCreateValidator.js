@@ -65,4 +65,7 @@ exports.staffCreateValidator = [
     (0, express_validator_1.body)("otMultiplier").optional().isFloat({ min: 1 }),
     (0, express_validator_1.body)("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off"]),
     (0, express_validator_1.body)("extraOff").optional().isInt({ min: 0 }),
+    (0, express_validator_1.body)("tdsPercentage").optional().isFloat({ min: 0, max: 100 }),
+    (0, express_validator_1.body)("esiPercentage").optional().isFloat({ min: 0, max: 100 }),
+    (0, express_validator_1.body)("pfPercentage").optional().isFloat({ min: 0, max: 100 }),
 ];

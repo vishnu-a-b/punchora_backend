@@ -53,6 +53,7 @@ const staffPayrollRowSchema = new mongoose.Schema(
     overrides:   { type: Map, of: Number, default: () => new Map() },
     formulaDescriptions: { type: Map, of: String, default: () => new Map() },
     customValues: { type: Map, of: Number, default: () => new Map() },
+    notes:        { type: Map, of: String, default: () => new Map() },
   },
   { _id: false }
 );

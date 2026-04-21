@@ -49,4 +49,12 @@ router.post(
   controller.receiveLocation
 );
 
+// Admin: get all outside-staff in a department with last known location
+router.get(
+  "/department/:departmentId/staff",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM]),
+  controller.getDepartmentStaff
+);
+
 export default router;
