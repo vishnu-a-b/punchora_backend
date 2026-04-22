@@ -1,5 +1,7 @@
 import ListFilterData from "../../../interfaces/ListFilterData";
 import { FailedLocationAttempt } from "../models/FailedLocationAttempt";
+import { Alert, AlertType } from "../../alert/models/Alert";
+import LocationAlertGeneratorService from "../../alert/services/LocationAlertGeneratorService";
 
 export default class FailedLocationAttemptService {
   list = async ({ limit, skip, filterQuery, sort }: ListFilterData) => {
@@ -37,7 +39,39 @@ export default class FailedLocationAttemptService {
   };
 
   insertMany = async (data: any[]) => {
-    return await FailedLocationAttempt.insertMany(data);
+    const saved = await FailedLocationAttempt.insertMany(data);
+
+    // Trigger admin alert for each unique staff with location_off
+    const locationOffStaffIds = [
+      ...new Set(
+        saved
+          .filter((r: any) => r.reason === "location_off" && r.staff)
+          .map((r: any) => r.staff.toString())
+      ),
+    ];
+
+    if (locationOffStaffIds.length > 0) {
+      const alertService = new LocationAlertGeneratorService();
+      const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+      await Promise.all(
+        locationOffStaffIds.map(async (staffId) => {
+          const recentAlert = await Alert.findOne({
+            type:      AlertType.LOCATION_DISABLED,
+            staff:     staffId,
+            createdAt: { $gt: thirtyMinAgo },
+          }).lean();
+
+          if (!recentAlert) {
+            await alertService.generateLocationDisabledAlert(staffId).catch((e: any) => {
+              console.error(`[FailedLocationAttempt] Failed to generate alert for ${staffId}:`, e?.message);
+            });
+          }
+        })
+      );
+    }
+
+    return saved;
   };
 
   filterByDate = async (
