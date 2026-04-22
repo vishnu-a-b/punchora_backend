@@ -41,6 +41,14 @@ const initializeSocket = (httpServer) => {
         socket.on("leave-live-track", (staffId) => {
             socket.leave(`live-track:${staffId}`);
         });
+        // Admin joins department-wide live tracking room
+        socket.on("join-dept-track", (departmentId) => {
+            socket.join(`live-dept:${departmentId}`);
+        });
+        // Admin leaves department-wide live tracking room
+        socket.on("leave-dept-track", (departmentId) => {
+            socket.leave(`live-dept:${departmentId}`);
+        });
         socket.on("disconnect", () => { });
     });
     return io;

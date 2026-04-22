@@ -41,11 +41,9 @@ router.get(
   controller.checkActive
 );
 
-// Mobile: send live location (no DB write — broadcast only)
+// Mobile: send live location (no DB write — broadcast only, no auth needed)
 router.post(
   "/location",
-  authenticateUser,
-  checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
   controller.receiveLocation
 );
 

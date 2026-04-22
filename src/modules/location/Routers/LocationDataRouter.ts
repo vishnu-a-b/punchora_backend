@@ -8,7 +8,7 @@ import { locationDataListDoc } from "../docs/locationDataListDoc";
 import { locationDataCreateDoc } from "../docs/locationDataCreateDoc";
 import { createLocationDataValidator } from "../validators/createLocationDataValidator";
 
-const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM, STAFF } = UserRole;
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, CONTROL_ROOM } = UserRole;
 
 const router = express.Router();
 const controller = new LocationDataController();
@@ -73,20 +73,16 @@ router.get(
   controller.list
 );
 
-// Create bulk locations - Staff submits own, admins can submit for anyone
+// Create bulk locations - No auth required (background sync runs after JWT expiry)
 router.post(
   "/bulk",
-  authenticateUser,
-  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, STAFF]),
   locationDataCreateDoc,
   controller.insertMany
 );
 
-// Create location - Staff submits own, admins can submit for anyone
+// Create location - No auth required (background sync runs after JWT expiry)
 router.post(
   "/",
-  authenticateUser,
-  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD, STAFF]),
   locationDataCreateDoc,
   createLocationDataValidator,
   controller.create

@@ -21,4 +21,6 @@ router.get("/sessions", authenticateUser_1.authenticateUser, (0, checkPermission
 router.get("/active/:staffId", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM, STAFF]), controller.checkActive);
 // Mobile: send live location (no DB write — broadcast only)
 router.post("/location", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]), controller.receiveLocation);
+// Admin: get all outside-staff in a department with last known location
+router.get("/department/:departmentId/staff", authenticateUser_1.authenticateUser, (0, checkPermission_1.checkRole)([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM]), controller.getDepartmentStaff);
 exports.default = router;
