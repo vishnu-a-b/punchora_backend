@@ -6,6 +6,8 @@ import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import mongoose from "mongoose";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
 import LocationDataService from "../services/LocationDataService";
+import { getIO } from "../../../socket/SocketServer";
+import { Staff } from "../../staff/models/Staff";
 
 export default class LocationDataController extends BaseController {
   service = new LocationDataService();
@@ -48,6 +50,43 @@ export default class LocationDataController extends BaseController {
       }
       const data = await this.service.insertMany(req.body);
       this.sendSuccessResponse(res, 201, { data: data });
+
+      // Emit dept-live-location socket events so the department map updates
+      // without requiring an active live-tracking session
+      try {
+        const io = getIO();
+        // Pick the latest location per staff from the batch
+        const latestByStaff = new Map<string, any>();
+        for (const loc of req.body) {
+          const staffId = loc.staff?.toString();
+          if (!staffId) continue;
+          const existing = latestByStaff.get(staffId);
+          if (!existing || new Date(loc.date) > new Date(existing.date)) {
+            latestByStaff.set(staffId, loc);
+          }
+        }
+        if (latestByStaff.size === 0) return;
+
+        const staffIds = Array.from(latestByStaff.keys()).map((id) => new mongoose.Types.ObjectId(id));
+        const staffDocs = await Staff.find({ _id: { $in: staffIds } }).select("name department").lean();
+
+        for (const staffDoc of staffDocs) {
+          const loc = latestByStaff.get(staffDoc._id.toString());
+          if (!loc || !(staffDoc as any).department) continue;
+          const deptId = (staffDoc as any).department.toString();
+          const room = io.sockets.adapter.rooms.get(`live-dept:${deptId}`);
+          if (!room || room.size === 0) continue; // nobody watching this dept, skip
+          io.to(`live-dept:${deptId}`).emit("dept-live-location", {
+            staffId: staffDoc._id.toString(),
+            staffName: (staffDoc as any).name,
+            departmentId: deptId,
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+            accuracy: loc.accuracy ?? null,
+            timestamp: loc.date,
+          });
+        }
+      } catch (_) { /* non-fatal — response already sent */ }
     } catch (e: any) {
       if (e instanceof mongoose.Error.ValidationError) {
         next(new ValidationFailedError({ errors: [e.message] }));
