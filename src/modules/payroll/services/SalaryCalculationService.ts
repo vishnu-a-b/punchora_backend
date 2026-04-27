@@ -304,8 +304,11 @@ export async function initializeCalculation(params: InitParams) {
     dateMap.get(dateKey)!.push(rec);
   }
 
-  const rows = staffList.map((staff: any) => {
+  const rows = staffList.flatMap((staff: any) => {
     const dateMap = staffAttendanceMap.get(staff._id.toString()) || new Map<string, any[]>();
+
+    // Skip staff with no punching in this period
+    if (dateMap.size === 0) return [];
 
     let totalDays = 0;
     let totalHours = 0; // ms
@@ -342,62 +345,66 @@ export async function initializeCalculation(params: InitParams) {
     const staffExtraOff = staff.extraOff || 0;
     const extraOffInPeriod = Math.round((staffExtraOff / 30) * allDates.length);
 
-    const effectiveSundayAndHolidayCount =
-      staffWeeklyOff === "no-off" || staffWeeklyOff === "night-off"
-        ? holidayCount
-        : sundayAndHolidayCount;
-
-    // Night-off compensatory offs
-    const nightShiftCompOffDates = new Set<string>();
+    // Night-off: 1 comp-off per consecutive run of night shifts
+    // e.g. Mon+Tue+Wed nights in a row → 1 off; then Fri night → 1 off = 2 total
+    let nightShiftCount = 0;
     if (staffWeeklyOff === "night-off") {
+      const nightDays: number[] = []; // checkin date as ms timestamp (midnight)
       dateMap.forEach((recs) => {
         recs.forEach((rec: any) => {
           if (!rec.checkInTime || !rec.checkOutTime) return;
           const ci = new Date(rec.checkInTime);
           const co = new Date(rec.checkOutTime);
           if (co.toDateString() !== ci.toDateString()) {
-            const compOff = new Date(co);
-            compOff.setHours(0, 0, 0, 0);
-            if (compOff >= periodStart && compOff <= periodEnd) {
-              nightShiftCompOffDates.add(compOff.toDateString());
-            }
+            const day = new Date(ci.getFullYear(), ci.getMonth(), ci.getDate()).getTime();
+            nightDays.push(day);
           }
         });
       });
+
+      nightDays.sort((a, b) => a - b);
+      const ONE_DAY = 86400000;
+      for (let i = 0; i < nightDays.length; i++) {
+        nightShiftCount++; // new run starts
+        // skip all consecutive next days (same run)
+        while (i + 1 < nightDays.length && nightDays[i + 1] - nightDays[i] === ONE_DAY) {
+          i++;
+        }
+      }
     }
 
-    // Total entitled off days
-    const totalOff = effectiveSundayAndHolidayCount + extraOffInPeriod + nightShiftCompOffDates.size;
+    // Entitled paid off days per staff type
+    const effectiveSundayCount =
+      staffWeeklyOff === "no-off" ? 0
+      : staffWeeklyOff === "night-off" ? nightShiftCount
+      : sundayCount;
 
-    const workingDaysInPeriod = allDates.length - totalOff;
+    // totalOff = sundays (or comp-offs) + extra offs + holidays
+    const totalOff = effectiveSundayCount + extraOffInPeriod + holidayCount;
 
-    const sundaysWorked = Array.from(dateMap.keys()).filter(
-      (k) => new Date(k).getDay() === 0
-    ).length;
-    const weekdaysWorked = totalDays - sundaysWorked;
+    // AB = all days in period with no punch (includes Sundays/off days not punched)
+    const AB = allDates.length - totalDays;
 
-    // Sandwich leave policy
+    // Sandwich leave: a Sunday or holiday surrounded by absent working days
+    // counts as a leave, not a paid off day
+    const sundayIsOff = staffWeeklyOff !== "no-off" && staffWeeklyOff !== "night-off";
     const sandwichDates = new Set<string>();
     allDates.forEach((date) => {
       const dateKey = date.toDateString();
       const isSunday = date.getDay() === 0;
       const isHoliday = holidaySet.has(dateKey);
-      const sundayIsOff = staffWeeklyOff !== "no-off" && staffWeeklyOff !== "night-off";
       if (!(isSunday && sundayIsOff) && !isHoliday) return;
-      if (dateMap.has(dateKey)) return;
+      if (dateMap.has(dateKey)) return; // worked that day → not sandwich
 
       let beforeCount = 0;
       const bDate = new Date(date);
       bDate.setDate(bDate.getDate() - 1);
       while (bDate >= periodStart) {
         const k = bDate.toDateString();
-        if (bDate.getDay() === 0 || holidaySet.has(k)) {
-          beforeCount++;
-        } else if (!dateMap.has(k)) {
-          beforeCount++;
-        } else {
-          break;
-        }
+        // For night-off/no-off staff, Sunday is a regular working day — check dateMap
+        if ((sundayIsOff && bDate.getDay() === 0) || holidaySet.has(k)) { beforeCount++; }
+        else if (!dateMap.has(k)) { beforeCount++; }
+        else break;
         bDate.setDate(bDate.getDate() - 1);
       }
 
@@ -406,13 +413,10 @@ export async function initializeCalculation(params: InitParams) {
       aDate.setDate(aDate.getDate() + 1);
       while (aDate <= periodEnd) {
         const k = aDate.toDateString();
-        if (aDate.getDay() === 0 || holidaySet.has(k)) {
-          afterCount++;
-        } else if (!dateMap.has(k)) {
-          afterCount++;
-        } else {
-          break;
-        }
+        // For night-off/no-off staff, Sunday is a regular working day — check dateMap
+        if ((sundayIsOff && aDate.getDay() === 0) || holidaySet.has(k)) { afterCount++; }
+        else if (!dateMap.has(k)) { afterCount++; }
+        else break;
         aDate.setDate(aDate.getDate() + 1);
       }
 
@@ -420,14 +424,12 @@ export async function initializeCalculation(params: InitParams) {
     });
     const sandwichCount = sandwichDates.size;
 
-    const daysWorkedForLeaveCalc =
-      staffWeeklyOff === "no-off" || staffWeeklyOff === "night-off"
-        ? totalDays
-        : weekdaysWorked;
-    const leavesTaken = Math.max(0, workingDaysInPeriod - daysWorkedForLeaveCalc) + sandwichCount;
-    const sundayBonus =
-      staffWeeklyOff !== "no-off" && staffWeeklyOff !== "night-off" ? sundaysWorked : 0;
-    const payableDays = 30 - leavesTaken + sundayBonus;
+    // Absent working days = days with no punch minus entitled off days, plus sandwich
+    const leavesTaken = Math.max(0, AB - totalOff) + sandwichCount;
+
+    // payableDays = (30 - AB) + sundays + extraOff + holidays - sandwich
+    // sandwich Sundays/holidays become leaves, not paid off days
+    const payableDays = (30 - AB) + totalOff - sandwichCount;
 
     const baseSalary = staff.salary ?? null;
     const oneDaySalary = baseSalary ? Math.round((baseSalary / 30) * 100) / 100 : null;
@@ -464,9 +466,10 @@ export async function initializeCalculation(params: InitParams) {
       oneDaySalary:  `Base salary ₹${baseSalary ?? 0} ÷ 30 = ₹${oneDaySalary ?? "N/A"}`,
       oneHourSalary: `One day salary ÷ shift hours = ₹${oneHourSalary ?? "N/A"}`,
       workedDays:    `Days with attendance records in period`,
-      totalOff:      `Entitled off days: ${effectiveSundayAndHolidayCount} (Sun/Holidays) + ${extraOffInPeriod} extra + ${nightShiftCompOffDates.size} night-comp = ${totalOff}`,
-      offTaken:      `Leave days taken (absent on working days) + ${sandwichCount} sandwich leaves = ${leavesTaken}`,
-      payableDays:   `30 - ${leavesTaken} leaves + ${sundayBonus} sunday bonus = ${payableDays}`,
+      abDays:        `Not present: ${allDates.length} period days − ${totalDays} punched = ${AB}`,
+      totalOff:      `Entitled off days: ${effectiveSundayCount} (Sun/Comp) + ${extraOffInPeriod} extra + ${holidayCount} holidays = ${totalOff}`,
+      offTaken:      `Absent: ${AB} no-punch − ${totalOff} off + ${sandwichCount} sandwich = ${leavesTaken}`,
+      payableDays:   `(30 − ${AB}) + ${effectiveSundayCount} sun + ${extraOffInPeriod} extra + ${holidayCount} holidays − ${sandwichCount} sandwich = ${payableDays}`,
       punchoutMissing: `${punchoutMissing} days with missing checkout`,
       punchoutFine: `${punchoutMissing} × ₹100 = ₹${punchoutMissing * 100}`,
       otHours:       `Total overtime hours across all worked days`,
@@ -493,6 +496,7 @@ export async function initializeCalculation(params: InitParams) {
         oneDaySalary,
         oneHourSalary,
         workedDays: totalDays,
+        abDays: AB,
         totalOff,
         offTaken: leavesTaken,
         payableDays,
