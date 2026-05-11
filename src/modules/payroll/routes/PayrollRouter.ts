@@ -48,6 +48,13 @@ router.put(
   controller.update
 );
 
+// Recalculate (refresh computed values, preserve overrides)
+router.put(
+  "/:id/recalculate",
+  checkRole([SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  controller.recalculate
+);
+
 // Finalize
 router.put(
   "/:id/finalize",

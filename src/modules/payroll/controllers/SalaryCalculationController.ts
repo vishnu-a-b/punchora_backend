@@ -160,6 +160,49 @@ export default class SalaryCalculationController extends BaseController {
     }
   };
 
+  // PUT /v1/payroll/:id/recalculate — re-run initializeCalculation, preserve overrides
+  recalculate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const calc = await SalaryCalculation.findById(req.params.id);
+      if (!calc) throw new NotFoundError({ error: "Salary calculation not found" });
+      if (calc.status === "finalized") {
+        throw new BadRequestError({ error: "Cannot recalculate a finalized calculation" });
+      }
+
+      const freshRows = await initializeCalculation({
+        businessId: calc.business.toString(),
+        periodStart: new Date(calc.periodStart),
+        periodEnd: new Date(calc.periodEnd),
+        coolOffMinutes: calc.coolOffMinutes ?? 5,
+        holidays: (calc.holidays ?? []).map((d: any) => new Date(d)),
+      });
+
+      // Merge: update computed values but preserve each row's overrides/customValues/notes
+      const existingMap = new Map(
+        calc.rows.map((r: any) => [r.staff.toString(), r])
+      );
+
+      calc.rows = freshRows.map((freshRow: any) => {
+        const existing = existingMap.get(freshRow.staff.toString());
+        return {
+          ...freshRow,
+          overrides:    existing?.overrides    ?? {},
+          customValues: existing?.customValues ?? {},
+          notes:        existing?.notes        ?? {},
+        };
+      }) as any;
+
+      await calc.save();
+      this.sendSuccessResponse(res, 200, { data: calc });
+    } catch (e: any) {
+      if (e instanceof mongoose.Error.CastError) {
+        next(new BadRequestError({ error: "Invalid id" }));
+        return;
+      }
+      next(e);
+    }
+  };
+
   // PUT /v1/payroll/:id/finalize
   finalize = async (req: Request, res: Response, next: NextFunction) => {
     try {

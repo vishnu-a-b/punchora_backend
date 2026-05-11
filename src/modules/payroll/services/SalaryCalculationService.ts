@@ -292,12 +292,17 @@ export async function initializeCalculation(params: InitParams) {
   ).length;
   const sundayAndHolidayCount = sundayCount + holidayCount;
 
+  // IST = UTC+5:30. Check-ins before 05:30 IST appear as previous day in UTC.
+  // Apply offset so dateKey always reflects the IST calendar date.
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
   // Group attendance by staffId → dateKey → records[]
   const staffAttendanceMap = new Map<string, Map<string, any[]>>();
   for (const rec of attendanceRecords) {
     const sid = rec.staff?.toString();
     if (!sid) continue;
-    const dateKey = new Date(rec.checkInTime || rec.date).toDateString();
+    const rawDate = new Date(rec.checkInTime || rec.date);
+    const dateKey = new Date(rawDate.getTime() + IST_OFFSET_MS).toDateString();
     if (!staffAttendanceMap.has(sid)) staffAttendanceMap.set(sid, new Map());
     const dateMap = staffAttendanceMap.get(sid)!;
     if (!dateMap.has(dateKey)) dateMap.set(dateKey, []);
