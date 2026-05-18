@@ -432,9 +432,15 @@ export async function initializeCalculation(params: InitParams) {
     // Absent working days = days with no punch minus entitled off days, plus sandwich
     const leavesTaken = Math.max(0, AB - totalOff) + sandwichCount;
 
+    // If staff worked fewer than 15 days, base is actual days present only
+    // (no 30-day benefit), but Sunday/extraOff/holiday credits still apply
+    const belowMinAttendance = totalDays < 15;
+
     // payableDays = (30 - AB) + sundays + extraOff + holidays - sandwich
     // sandwich Sundays/holidays become leaves, not paid off days
-    const payableDays = (30 - AB) + totalOff - sandwichCount;
+    const payableDays = belowMinAttendance
+      ? totalDays + totalOff - sandwichCount
+      : (30 - AB) + totalOff - sandwichCount;
 
     const baseSalary = staff.salary ?? null;
     const oneDaySalary = baseSalary ? Math.round((baseSalary / 30) * 100) / 100 : null;
@@ -443,7 +449,10 @@ export async function initializeCalculation(params: InitParams) {
     let totalSalaryAmount: number | null = null;
     let lateFine: number;
 
-    if (staff.shiftType === "no timing") {
+    if (staffWeeklyOff === "full-salary") {
+      totalSalaryAmount = baseSalary;
+      lateFine = 0;
+    } else if (staff.shiftType === "no timing") {
       totalSalaryAmount = baseSalary;
       lateFine = punchoutMissing * 100;
     } else {
@@ -474,7 +483,9 @@ export async function initializeCalculation(params: InitParams) {
       abDays:        `Not present: ${allDates.length} period days − ${totalDays} punched = ${AB}`,
       totalOff:      `Entitled off days: ${effectiveSundayCount} (Sun/Comp) + ${extraOffInPeriod} extra + ${holidayCount} holidays = ${totalOff}`,
       offTaken:      `Absent: ${AB} no-punch − ${totalOff} off + ${sandwichCount} sandwich = ${leavesTaken}`,
-      payableDays:   `(30 − ${AB}) + ${effectiveSundayCount} sun + ${extraOffInPeriod} extra + ${holidayCount} holidays − ${sandwichCount} sandwich = ${payableDays}`,
+      payableDays:   belowMinAttendance
+        ? `Below 15 days present: ${totalDays} worked + ${effectiveSundayCount} sun + ${extraOffInPeriod} extra + ${holidayCount} holidays − ${sandwichCount} sandwich = ${payableDays}`
+        : `(30 − ${AB}) + ${effectiveSundayCount} sun + ${extraOffInPeriod} extra + ${holidayCount} holidays − ${sandwichCount} sandwich = ${payableDays}`,
       punchoutMissing: `${punchoutMissing} days with missing checkout`,
       punchoutFine: `${punchoutMissing} × ₹100 = ₹${punchoutMissing * 100}`,
       otHours:       `Total overtime hours across all worked days`,

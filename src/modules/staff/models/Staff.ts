@@ -93,7 +93,7 @@ const staffSchema = new mongoose.Schema(
     // Off settings
     weeklyOff: {
       type: String,
-      enum: ["weekly-off", "no-off", "night-off"],
+      enum: ["weekly-off", "no-off", "night-off", "full-salary"],
       default: "weekly-off",
     },
     extraOff: { type: Number, default: 0, min: 0 },

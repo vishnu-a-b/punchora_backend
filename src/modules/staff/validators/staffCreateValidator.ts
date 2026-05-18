@@ -50,7 +50,7 @@ export const staffCreateValidator = [
   body("type").isIn(Object.values(StaffTypes)),
   body("otEnabled").optional().isBoolean(),
   body("otMultiplier").optional().isFloat({ min: 1 }),
-  body("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off"]),
+  body("weeklyOff").optional().isIn(["weekly-off", "no-off", "night-off", "full-salary"]),
   body("extraOff").optional().isInt({ min: 0 }),
   body("tdsPercentage").optional().isFloat({ min: 0, max: 100 }),
   body("esiPercentage").optional().isFloat({ min: 0, max: 100 }),

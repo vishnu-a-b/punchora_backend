@@ -177,21 +177,24 @@ export default class SalaryCalculationController extends BaseController {
         holidays: (calc.holidays ?? []).map((d: any) => new Date(d)),
       });
 
-      // Merge: update computed values but preserve each row's overrides/customValues/notes
+      // Preserve each row's overrides/customValues/notes from the existing calculation
       const existingMap = new Map(
         calc.rows.map((r: any) => [r.staff.toString(), r])
       );
 
-      calc.rows = freshRows.map((freshRow: any) => {
+      // splice + push so Mongoose DocumentArray tracks the mutation correctly
+      calc.rows.splice(0, calc.rows.length);
+      for (const freshRow of freshRows) {
         const existing = existingMap.get(freshRow.staff.toString());
-        return {
+        calc.rows.push({
           ...freshRow,
-          overrides:    existing?.overrides    ?? {},
-          customValues: existing?.customValues ?? {},
-          notes:        existing?.notes        ?? {},
-        };
-      }) as any;
+          overrides:    existing?.overrides    ?? new Map(),
+          customValues: existing?.customValues ?? new Map(),
+          notes:        existing?.notes        ?? new Map(),
+        } as any);
+      }
 
+      calc.markModified("rows");
       await calc.save();
       this.sendSuccessResponse(res, 200, { data: calc });
     } catch (e: any) {
