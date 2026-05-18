@@ -312,8 +312,8 @@ export async function initializeCalculation(params: InitParams) {
   const rows = staffList.flatMap((staff: any) => {
     const dateMap = staffAttendanceMap.get(staff._id.toString()) || new Map<string, any[]>();
 
-    // Skip staff with no punching in this period
-    if (dateMap.size === 0) return [];
+    // Skip staff with no punching in this period (except full-salary — always included)
+    if (dateMap.size === 0 && staff.weeklyOff !== "full-salary") return [];
 
     let totalDays = 0;
     let totalHours = 0; // ms
