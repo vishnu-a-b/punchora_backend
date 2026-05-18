@@ -452,6 +452,7 @@ export async function initializeCalculation(params: InitParams) {
     if (staffWeeklyOff === "full-salary") {
       totalSalaryAmount = baseSalary;
       lateFine = 0;
+      totalDailyOTPay = 0;
     } else if (staff.shiftType === "no timing") {
       totalSalaryAmount = baseSalary;
       lateFine = punchoutMissing * 100;
@@ -491,14 +492,18 @@ export async function initializeCalculation(params: InitParams) {
       otHours:       `Total overtime hours across all worked days`,
       otAmount:      `OT pay across all worked days: ₹${totalDailyOTPay.toFixed(2)}`,
       finedHours:    `Total hours penalised for late/shortfall across all days`,
-      lateFine:      staff.shiftType === "no timing"
+      lateFine:      staffWeeklyOff === "full-salary"
+        ? `Full salary staff: no fine`
+        : staff.shiftType === "no timing"
         ? `No timing staff: ₹100 × ${punchoutMissing} missing checkouts = ₹${lateFine}`
         : `Late/shortfall fines ₹${totalDailyFines.toFixed(2)} + ₹100×${punchoutMissing} punchout = ₹${lateFine.toFixed(2)}`,
       tds: `${tdsPercentage}% of Salary column = ₹${tds} (default from base; recalculated in sheet)`,
       esi: `${esiPercentage}% of Salary column = ₹${esi} (default from base; recalculated in sheet)`,
       pf:  `${pfPercentage}%  of Salary column = ₹${pf} (default from base; recalculated in sheet)`,
       netSalary: totalSalaryAmount !== null
-        ? `₹${totalSalaryAmount.toFixed(2)} - ₹${lateFine.toFixed(2)} fine - ₹${tds} TDS - ₹${esi} ESI - ₹${pf} PF + ₹${totalDailyOTPay.toFixed(2)} OT = ₹${netSalary}`
+        ? staffWeeklyOff === "full-salary"
+          ? `Full salary: ₹${totalSalaryAmount.toFixed(2)} - ₹${tds} TDS - ₹${esi} ESI - ₹${pf} PF = ₹${netSalary}`
+          : `₹${totalSalaryAmount.toFixed(2)} - ₹${lateFine.toFixed(2)} fine - ₹${tds} TDS - ₹${esi} ESI - ₹${pf} PF + ₹${totalDailyOTPay.toFixed(2)} OT = ₹${netSalary}`
         : "Salary not set",
     };
 
