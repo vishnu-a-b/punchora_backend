@@ -49,6 +49,7 @@ const staffPayrollRowSchema = new mongoose.Schema(
     name:        { type: String, default: "" },
     designation: { type: String, default: "" },
     department:  { type: String, default: "" },
+    weeklyOff:   { type: String, default: "weekly-off" },
     computed:    { type: computedFieldsSchema, default: () => ({}) },
     overrides:   { type: Map, of: Number, default: () => new Map() },
     formulaDescriptions: { type: Map, of: String, default: () => new Map() },

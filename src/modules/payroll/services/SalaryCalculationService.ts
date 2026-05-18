@@ -512,6 +512,7 @@ export async function initializeCalculation(params: InitParams) {
       name: staff.name || "",
       designation: staff.designation || "",
       department: (staff.department as any)?.name || "",
+      weeklyOff: staff.weeklyOff || "weekly-off",
       computed: {
         baseSalary,
         oneDaySalary,
