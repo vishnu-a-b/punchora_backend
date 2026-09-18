@@ -31,5 +31,13 @@ export const endActivityValidator = [
   body("meterReadingEnd")
     .optional()
     .isNumeric()
-    .withMessage("Meter reading must be a number")
+    .withMessage("Meter reading must be a number"),
+  body("endGpsLocation.latitude")
+    .optional()
+    .isFloat({ min: -90, max: 90 })
+    .withMessage("Invalid latitude"),
+  body("endGpsLocation.longitude")
+    .optional()
+    .isFloat({ min: -180, max: 180 })
+    .withMessage("Invalid longitude")
 ];

@@ -240,6 +240,44 @@ export default class ReportController extends BaseController {
   };
 
   /**
+   * Generate Activity Report
+   * GET /v1/reports/activity
+   */
+  getActivityReport = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { startDate, endDate, business, department, staff } = req.query;
+
+      if (!startDate || !endDate) {
+        throw new BadRequestError({ error: "startDate and endDate are required" });
+      }
+
+      const dateRange = {
+        startDate: new Date(startDate as string),
+        endDate: new Date(endDate as string)
+      };
+
+      const filter: any = {};
+      const businessFilter = (req as any).businessFilter;
+      if (businessFilter) {
+        filter.business = businessFilter;
+      } else if (business) {
+        filter.business = business;
+      }
+      if (department) filter.department = department;
+      if (staff) filter.staff = staff;
+
+      const report = await this.service.generateActivityReport(dateRange, filter);
+
+      this.sendSuccessResponse(res, 200, {
+        message: "Activity report generated successfully",
+        data: report
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * Export any report to various formats
    * POST /v1/reports/export
    */

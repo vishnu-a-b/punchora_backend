@@ -102,9 +102,13 @@ export default class ActivityController extends BaseController {
 
       console.log(`[EndActivity] Authorization successful, proceeding to end activity`);
 
+      const rawEndGps = req.body.endGpsLocation;
       const endData = {
         endTime: req.body.endTime ? new Date(req.body.endTime) : undefined,
-        meterReadingEnd: req.body.meterReadingEnd
+        meterReadingEnd: req.body.meterReadingEnd,
+        endGpsLocation: rawEndGps
+          ? (typeof rawEndGps === "string" ? JSON.parse(rawEndGps) : rawEndGps)
+          : undefined
       };
 
       const updatedActivity = await this.service.endActivity(id, endData);

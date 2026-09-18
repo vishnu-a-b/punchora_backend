@@ -22,6 +22,11 @@ export interface CreateActivityDTO {
 export interface EndActivityDTO {
   endTime?: Date;
   meterReadingEnd?: number;
+  endGpsLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  };
 }
 
 export default class ActivityService {
@@ -61,6 +66,10 @@ export default class ActivityService {
 
     if (data.meterReadingEnd) {
       activity.meterReadingEnd = data.meterReadingEnd;
+    }
+
+    if (data.endGpsLocation) {
+      activity.endGpsLocation = data.endGpsLocation;
     }
 
     // Duration will be calculated by pre-save hook

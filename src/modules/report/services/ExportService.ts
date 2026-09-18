@@ -24,6 +24,8 @@ export default class ExportService {
         return this.exportLateCheckinsToCSV(reportData);
       case "alert_summary":
         return this.exportAlertSummaryToCSV(reportData);
+      case "activity_report":
+        return this.exportActivityReportToCSV(reportData);
       default:
         return this.exportGenericToCSV(reportData);
     }
@@ -96,6 +98,29 @@ export default class ExportService {
     csv += "Type,Count\n";
     Object.entries(report.breakdown.byType).forEach(([type, count]) => {
       csv += `${type},${count}\n`;
+    });
+
+    return csv;
+  }
+
+  /**
+   * Export activity report to CSV
+   */
+  private exportActivityReportToCSV(report: any): string {
+    let csv = "Staff,UID,Department,Activity Type,Status,Start Time,End Time,Duration (min),Location,Reason,Start Lat,Start Lng,End Lat,End Lng,Meter Start,Meter End,Distance (km)\n";
+
+    report.activities.forEach((a: any) => {
+      const startLat = a.gpsLocation?.latitude ?? "";
+      const startLng = a.gpsLocation?.longitude ?? "";
+      const endLat = a.endGpsLocation?.latitude ?? "";
+      const endLng = a.endGpsLocation?.longitude ?? "";
+      csv += `"${a.staff?.name || ""}",${a.staff?.uid || ""},"${a.department || ""}","${a.typeName}","${a.status}",`;
+      csv += `${new Date(a.startTime).toISOString()},`;
+      csv += `${a.endTime ? new Date(a.endTime).toISOString() : ""},`;
+      csv += `${a.duration ?? ""},`;
+      csv += `"${a.location || ""}","${a.reason || ""}",`;
+      csv += `${startLat},${startLng},${endLat},${endLng},`;
+      csv += `${a.meterReadingStart ?? ""},${a.meterReadingEnd ?? ""},${a.distance ?? ""}\n`;
     });
 
     return csv;
@@ -176,6 +201,9 @@ export default class ExportService {
             break;
           case "dashboard":
             this.generateDashboardPDF(doc, template, reportData);
+            break;
+          case "activity_report":
+            this.generateActivityReportPDF(doc, template, reportData);
             break;
           default:
             this.generateGenericPDF(doc, template, reportData);
@@ -497,6 +525,73 @@ export default class ExportService {
         },
       ]);
     }
+  }
+
+  /**
+   * Generate Activity Report PDF
+   */
+  private generateActivityReportPDF(
+    _doc: PDFKit.PDFDocument,
+    template: PDFTemplate,
+    report: any
+  ) {
+    const start = new Date(report.dateRange.startDate).toLocaleDateString();
+    const end = new Date(report.dateRange.endDate).toLocaleDateString();
+
+    template.addHeader("Activity Report", `${start} - ${end}`);
+
+    const durationHours = Math.floor(report.summary.totalDurationMinutes / 60);
+    const durationMins = report.summary.totalDurationMinutes % 60;
+    template.addSummaryBox([
+      { label: "Total Activities", value: report.summary.totalActivities },
+      { label: "With GPS", value: report.summary.activitiesWithGps },
+      { label: "Total Duration", value: `${durationHours}h ${durationMins}m` },
+      { label: "Trip Distance", value: `${report.summary.totalTripDistance} km` }
+    ]);
+
+    template.addSectionHeading("Activity Details");
+
+    const columns = [
+      { header: "Staff", width: 14 },
+      { header: "Type", width: 12 },
+      { header: "Start", width: 12, align: "center" as const },
+      { header: "End", width: 12, align: "center" as const },
+      { header: "Duration", width: 9, align: "right" as const },
+      { header: "Location", width: 12 },
+      { header: "Start GPS", width: 14 },
+      { header: "End GPS", width: 14 },
+      { header: "Meter", width: 11, align: "right" as const }
+    ];
+
+    const rows = report.activities.map((a: any) => {
+      const startGps = a.gpsLocation
+        ? `${a.gpsLocation.latitude.toFixed(4)}, ${a.gpsLocation.longitude.toFixed(4)}`
+        : "-";
+      const endGps = a.endGpsLocation
+        ? `${a.endGpsLocation.latitude.toFixed(4)}, ${a.endGpsLocation.longitude.toFixed(4)}`
+        : "-";
+      const meter = a.meterReadingStart != null
+        ? a.meterReadingEnd != null
+          ? `${a.meterReadingStart}→${a.meterReadingEnd} (${a.distance}km)`
+          : `${a.meterReadingStart}`
+        : "-";
+      const duration = a.duration != null
+        ? `${Math.floor(a.duration / 60)}h ${a.duration % 60}m`
+        : "-";
+      return [
+        a.staff?.name || "",
+        a.typeName,
+        a.startTime ? new Date(a.startTime).toLocaleTimeString() : "",
+        a.endTime ? new Date(a.endTime).toLocaleTimeString() : "-",
+        duration,
+        a.location || "-",
+        startGps,
+        endGps,
+        meter
+      ];
+    });
+
+    template.addTable(columns, rows);
   }
 
   /**

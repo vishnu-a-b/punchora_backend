@@ -43,6 +43,13 @@ export interface IActivity extends Document {
     accuracy?: number;
   };
 
+  // Location when activity ended
+  endGpsLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  };
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -107,15 +114,14 @@ const ActivitySchema: Schema = new Schema(
       type: String
     },
     gpsLocation: {
-      latitude: {
-        type: Number
-      },
-      longitude: {
-        type: Number
-      },
-      accuracy: {
-        type: Number
-      }
+      latitude: { type: Number },
+      longitude: { type: Number },
+      accuracy: { type: Number }
+    },
+    endGpsLocation: {
+      latitude: { type: Number },
+      longitude: { type: Number },
+      accuracy: { type: Number }
     }
   },
   {

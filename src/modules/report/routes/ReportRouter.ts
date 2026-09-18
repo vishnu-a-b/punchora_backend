@@ -5,7 +5,7 @@ import { checkRole } from "../../../middlewares/checkPermission";
 import { UserRole } from "../../../constants/roles";
 import { applyBusinessScoping } from "../../../middlewares/businessScopingValidator";
 
-const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM } = UserRole;
+const { SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN, CONTROL_ROOM, DEPARTMENT_HEAD } = UserRole;
 
 const router = Router();
 const controller = new ReportController();
@@ -78,6 +78,20 @@ router.get(
   checkRole([SUPER_ADMIN, CONTROL_ROOM, BUSINESS_ADMIN]),
   applyBusinessScoping,
   controller.getDashboardReport
+);
+
+/**
+ * @route   GET /v1/reports/activity
+ * @desc    Generate activity report with GPS and meter readings
+ * @access  Private - Super Admin, Control Room, Business Admin, HR Admin
+ * @query   startDate, endDate, business (optional), department (optional), staff (optional)
+ */
+router.get(
+  "/activity",
+  authenticateUser,
+  checkRole([SUPER_ADMIN, CONTROL_ROOM, BUSINESS_ADMIN, HR_ADMIN, DEPARTMENT_HEAD]),
+  applyBusinessScoping,
+  controller.getActivityReport
 );
 
 /**

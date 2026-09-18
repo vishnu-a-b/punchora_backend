@@ -8,6 +8,7 @@
 import { Staff } from "../../staff/models/Staff";
 import { Attendance } from "../../attendance/models/Attendance";
 import { Alert } from "../../alert/models/Alert";
+import { Activity } from "../../activity/models/Activity";
 import mongoose from "mongoose";
 
 export interface ReportDateRange {
@@ -441,7 +442,79 @@ export default class ReportService {
   }
 
   /**
-   * REPORT 5: Comprehensive Control Room Dashboard Report
+   * REPORT 5: Activity Report
+   * Lists all staff activities with GPS and meter reading data
+   */
+  async generateActivityReport(
+    dateRange: ReportDateRange,
+    filter: ReportFilter = {}
+  ): Promise<any> {
+    const query: any = {
+      startTime: { $gte: dateRange.startDate, $lte: dateRange.endDate }
+    };
+    if (filter.business) query.business = filter.business;
+    if (filter.department) query.department = filter.department;
+    if (filter.staff) query.staff = filter.staff;
+
+    const activities = await Activity.find(query)
+      .sort({ startTime: -1 })
+      .populate("staff", "name uid")
+      .populate("department", "name")
+      .lean();
+
+    const activityTypeNames: Record<string, string> = {
+      "tea-break": "Tea Break",
+      "lunch-break": "Lunch Break",
+      "washroom": "Washroom",
+      "care-or-onsite": "Care / On-Site",
+      "trip": "Trip (Driver)",
+      "other": "Other"
+    };
+
+    const items = activities.map((a: any) => ({
+      activityId: a._id,
+      staff: { name: a.staff?.name, uid: a.staff?.uid },
+      department: a.department?.name,
+      type: a.type,
+      typeName: activityTypeNames[a.type] || a.type,
+      status: a.status,
+      startTime: a.startTime,
+      endTime: a.endTime || null,
+      duration: a.duration || null,
+      location: a.location || null,
+      reason: a.reason || null,
+      gpsLocation: a.gpsLocation || null,
+      endGpsLocation: a.endGpsLocation || null,
+      meterReadingStart: a.meterReadingStart ?? null,
+      meterReadingEnd: a.meterReadingEnd ?? null,
+      distance: a.meterReadingStart != null && a.meterReadingEnd != null
+        ? a.meterReadingEnd - a.meterReadingStart
+        : null
+    }));
+
+    const totalDuration = items.reduce((sum, a) => sum + (a.duration || 0), 0);
+    const activitiesWithGps = items.filter(a => a.gpsLocation).length;
+    const tripActivities = items.filter(a => a.type === "trip");
+    const totalDistance = tripActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+
+    return {
+      reportId: new mongoose.Types.ObjectId().toString(),
+      reportType: "activity_report",
+      generatedAt: new Date(),
+      dateRange,
+      filter,
+      summary: {
+        totalActivities: items.length,
+        activitiesWithGps,
+        totalDurationMinutes: totalDuration,
+        totalTripDistance: totalDistance
+      },
+      activities: items
+    };
+  }
+
+  /**
+   * REPORT 6: Comprehensive Control Room Dashboard Report
    * Combines key metrics from all reports
    */
   async generateDashboardReport(
