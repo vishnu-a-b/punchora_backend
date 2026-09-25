@@ -36,6 +36,10 @@ export interface IActivity extends Document {
   meterReadingEnd?: number; // For trip (driver)
   vehiclePhoto?: string; // For trip
 
+  // End photos
+  endPhoto?: string; // Photo taken when ending activity
+  endVehiclePhoto?: string; // Vehicle photo taken when ending trip
+
   // Location data
   gpsLocation?: {
     latitude: number;
@@ -111,6 +115,12 @@ const ActivitySchema: Schema = new Schema(
       type: Number
     },
     vehiclePhoto: {
+      type: String
+    },
+    endPhoto: {
+      type: String
+    },
+    endVehiclePhoto: {
       type: String
     },
     gpsLocation: {

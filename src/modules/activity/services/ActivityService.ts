@@ -27,6 +27,8 @@ export interface EndActivityDTO {
     longitude: number;
     accuracy?: number;
   };
+  endPhoto?: string;
+  endVehiclePhoto?: string;
 }
 
 export default class ActivityService {
@@ -70,6 +72,14 @@ export default class ActivityService {
 
     if (data.endGpsLocation) {
       activity.endGpsLocation = data.endGpsLocation;
+    }
+
+    if (data.endPhoto) {
+      activity.endPhoto = data.endPhoto;
+    }
+
+    if (data.endVehiclePhoto) {
+      activity.endVehiclePhoto = data.endVehiclePhoto;
     }
 
     // Duration will be calculated by pre-save hook
@@ -167,6 +177,7 @@ export default class ActivityService {
       endDate?: Date;
       type?: string;
       departmentId?: string;
+      staffId?: string;
     } = {}
   ): Promise<{ items: IActivity[]; total: number }> {
     const query: any = { business: businessId };
@@ -187,6 +198,10 @@ export default class ActivityService {
 
     if (options.departmentId) {
       query.department = options.departmentId;
+    }
+
+    if (options.staffId) {
+      query.staff = options.staffId;
     }
 
     const [items, total] = await Promise.all([

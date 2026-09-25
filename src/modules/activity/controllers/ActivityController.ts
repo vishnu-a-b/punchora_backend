@@ -5,6 +5,7 @@ import { validationResult } from "express-validator";
 import ValidationFailedError from "../../../errors/errorTypes/ValidationFailedError";
 import NotFoundError from "../../../errors/errorTypes/NotFoundError";
 import BadRequestError from "../../../errors/errorTypes/BadRequestError";
+import Configs from "../../../configs/configs";
 
 export default class ActivityController extends BaseController {
   private service = new ActivityService();
@@ -36,10 +37,10 @@ export default class ActivityController extends BaseController {
 
       if (files) {
         if (files.photo && files.photo[0]) {
-          photoUrl = files.photo[0].path || files.photo[0].filename;
+          photoUrl = Configs.domain + "attendance/" + files.photo[0].filename;
         }
         if (files.vehiclePhoto && files.vehiclePhoto[0]) {
-          vehiclePhotoUrl = files.vehiclePhoto[0].path || files.vehiclePhoto[0].filename;
+          vehiclePhotoUrl = Configs.domain + "attendance/" + files.vehiclePhoto[0].filename;
         }
       }
 
@@ -102,13 +103,28 @@ export default class ActivityController extends BaseController {
 
       console.log(`[EndActivity] Authorization successful, proceeding to end activity`);
 
+      const files = (req as any).files;
+      let endPhotoUrl: string | undefined;
+      let endVehiclePhotoUrl: string | undefined;
+
+      if (files) {
+        if (files.endPhoto && files.endPhoto[0]) {
+          endPhotoUrl = Configs.domain + "attendance/" + files.endPhoto[0].filename;
+        }
+        if (files.endVehiclePhoto && files.endVehiclePhoto[0]) {
+          endVehiclePhotoUrl = Configs.domain + "attendance/" + files.endVehiclePhoto[0].filename;
+        }
+      }
+
       const rawEndGps = req.body.endGpsLocation;
       const endData = {
         endTime: req.body.endTime ? new Date(req.body.endTime) : undefined,
         meterReadingEnd: req.body.meterReadingEnd,
         endGpsLocation: rawEndGps
           ? (typeof rawEndGps === "string" ? JSON.parse(rawEndGps) : rawEndGps)
-          : undefined
+          : undefined,
+        endPhoto: endPhotoUrl,
+        endVehiclePhoto: endVehiclePhotoUrl
       };
 
       const updatedActivity = await this.service.endActivity(id, endData);
@@ -213,7 +229,7 @@ export default class ActivityController extends BaseController {
   ) => {
     try {
       const user = (req as any).user;
-      const { skip, limit, startDate, endDate, type, departmentId } = req.query;
+      const { skip, limit, startDate, endDate, type, departmentId, staffId } = req.query;
 
       console.log(`[GetBusinessActivities] User role: ${user.role}, User business: ${user.business}, Query businessId: ${req.query.businessId}`);
 
@@ -235,7 +251,8 @@ export default class ActivityController extends BaseController {
         startDate: startDate ? new Date(startDate as string) : undefined,
         endDate: endDate ? new Date(endDate as string) : undefined,
         type: type as string,
-        departmentId: departmentId as string
+        departmentId: departmentId as string,
+        staffId: staffId as string
       };
 
       const result = await this.service.getBusinessActivities(

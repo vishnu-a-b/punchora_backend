@@ -49,6 +49,10 @@ router.put(
   "/:id/end",
   authenticateUser,
   checkRole([STAFF, SUPER_ADMIN, BUSINESS_ADMIN, HR_ADMIN]),
+  uploadMiddleware.fields([
+    { name: "endPhoto", maxCount: 1 },
+    { name: "endVehiclePhoto", maxCount: 1 }
+  ]),
   endActivityValidator,
   controller.endActivity
 );
